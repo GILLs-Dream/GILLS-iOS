@@ -1,0 +1,558 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		DCAE8A682DC3946E00A4BEDB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCAE8A492DC3946C00A4BEDB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCAE8A502DC3946C00A4BEDB;
+			remoteInfo = "GILLsDREAM-iOS";
+		};
+		DCAE8A722DC3946E00A4BEDB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCAE8A492DC3946C00A4BEDB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCAE8A502DC3946C00A4BEDB;
+			remoteInfo = "GILLsDREAM-iOS";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		DCAE8A512DC3946C00A4BEDB /* GILLsDREAM-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "GILLsDREAM-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCAE8A672DC3946E00A4BEDB /* GILLsDREAM-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "GILLsDREAM-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCAE8A712DC3946E00A4BEDB /* GILLsDREAM-iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "GILLsDREAM-iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		DCAE8A792DC3946E00A4BEDB /* Exceptions for "GILLsDREAM-iOS" folder in "GILLsDREAM-iOS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = DCAE8A502DC3946C00A4BEDB /* GILLsDREAM-iOS */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		DCAE8A532DC3946C00A4BEDB /* GILLsDREAM-iOS */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				DCAE8A792DC3946E00A4BEDB /* Exceptions for "GILLsDREAM-iOS" folder in "GILLsDREAM-iOS" target */,
+			);
+			path = "GILLsDREAM-iOS";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DCAE8A4E2DC3946C00A4BEDB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DCAE8A642DC3946E00A4BEDB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DCAE8A6E2DC3946E00A4BEDB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DCAE8A482DC3946C00A4BEDB = {
+			isa = PBXGroup;
+			children = (
+				DCAE8A532DC3946C00A4BEDB /* GILLsDREAM-iOS */,
+				DCAE8A522DC3946C00A4BEDB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DCAE8A522DC3946C00A4BEDB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DCAE8A512DC3946C00A4BEDB /* GILLsDREAM-iOS.app */,
+				DCAE8A672DC3946E00A4BEDB /* GILLsDREAM-iOSTests.xctest */,
+				DCAE8A712DC3946E00A4BEDB /* GILLsDREAM-iOSUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DCAE8A502DC3946C00A4BEDB /* GILLsDREAM-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DCAE8A7A2DC3946E00A4BEDB /* Build configuration list for PBXNativeTarget "GILLsDREAM-iOS" */;
+			buildPhases = (
+				DCAE8A4D2DC3946C00A4BEDB /* Sources */,
+				DCAE8A4E2DC3946C00A4BEDB /* Frameworks */,
+				DCAE8A4F2DC3946C00A4BEDB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				DCAE8A532DC3946C00A4BEDB /* GILLsDREAM-iOS */,
+			);
+			name = "GILLsDREAM-iOS";
+			packageProductDependencies = (
+			);
+			productName = "GILLsDREAM-iOS";
+			productReference = DCAE8A512DC3946C00A4BEDB /* GILLsDREAM-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		DCAE8A662DC3946E00A4BEDB /* GILLsDREAM-iOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DCAE8A7F2DC3946E00A4BEDB /* Build configuration list for PBXNativeTarget "GILLsDREAM-iOSTests" */;
+			buildPhases = (
+				DCAE8A632DC3946E00A4BEDB /* Sources */,
+				DCAE8A642DC3946E00A4BEDB /* Frameworks */,
+				DCAE8A652DC3946E00A4BEDB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DCAE8A692DC3946E00A4BEDB /* PBXTargetDependency */,
+			);
+			name = "GILLsDREAM-iOSTests";
+			packageProductDependencies = (
+			);
+			productName = "GILLsDREAM-iOSTests";
+			productReference = DCAE8A672DC3946E00A4BEDB /* GILLsDREAM-iOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		DCAE8A702DC3946E00A4BEDB /* GILLsDREAM-iOSUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DCAE8A822DC3946E00A4BEDB /* Build configuration list for PBXNativeTarget "GILLsDREAM-iOSUITests" */;
+			buildPhases = (
+				DCAE8A6D2DC3946E00A4BEDB /* Sources */,
+				DCAE8A6E2DC3946E00A4BEDB /* Frameworks */,
+				DCAE8A6F2DC3946E00A4BEDB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DCAE8A732DC3946E00A4BEDB /* PBXTargetDependency */,
+			);
+			name = "GILLsDREAM-iOSUITests";
+			packageProductDependencies = (
+			);
+			productName = "GILLsDREAM-iOSUITests";
+			productReference = DCAE8A712DC3946E00A4BEDB /* GILLsDREAM-iOSUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DCAE8A492DC3946C00A4BEDB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1630;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+					DCAE8A502DC3946C00A4BEDB = {
+						CreatedOnToolsVersion = 16.3;
+					};
+					DCAE8A662DC3946E00A4BEDB = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = DCAE8A502DC3946C00A4BEDB;
+					};
+					DCAE8A702DC3946E00A4BEDB = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = DCAE8A502DC3946C00A4BEDB;
+					};
+				};
+			};
+			buildConfigurationList = DCAE8A4C2DC3946C00A4BEDB /* Build configuration list for PBXProject "GILLsDREAM-iOS" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = DCAE8A482DC3946C00A4BEDB;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = DCAE8A522DC3946C00A4BEDB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DCAE8A502DC3946C00A4BEDB /* GILLsDREAM-iOS */,
+				DCAE8A662DC3946E00A4BEDB /* GILLsDREAM-iOSTests */,
+				DCAE8A702DC3946E00A4BEDB /* GILLsDREAM-iOSUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DCAE8A4F2DC3946C00A4BEDB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DCAE8A652DC3946E00A4BEDB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DCAE8A6F2DC3946E00A4BEDB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DCAE8A4D2DC3946C00A4BEDB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DCAE8A632DC3946E00A4BEDB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DCAE8A6D2DC3946E00A4BEDB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DCAE8A692DC3946E00A4BEDB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCAE8A502DC3946C00A4BEDB /* GILLsDREAM-iOS */;
+			targetProxy = DCAE8A682DC3946E00A4BEDB /* PBXContainerItemProxy */;
+		};
+		DCAE8A732DC3946E00A4BEDB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCAE8A502DC3946C00A4BEDB /* GILLsDREAM-iOS */;
+			targetProxy = DCAE8A722DC3946E00A4BEDB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		DCAE8A7B2DC3946E00A4BEDB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y63SPPWMGC;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "GILLsDREAM-iOS/Info.plist";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "sammy.GILLsDREAM-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DCAE8A7C2DC3946E00A4BEDB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y63SPPWMGC;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "GILLsDREAM-iOS/Info.plist";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "sammy.GILLsDREAM-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		DCAE8A7D2DC3946E00A4BEDB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = Y63SPPWMGC;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		DCAE8A7E2DC3946E00A4BEDB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Y63SPPWMGC;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DCAE8A802DC3946E00A4BEDB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y63SPPWMGC;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "sammy.GILLsDREAM-iOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GILLsDREAM-iOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GILLsDREAM-iOS";
+			};
+			name = Debug;
+		};
+		DCAE8A812DC3946E00A4BEDB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y63SPPWMGC;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "sammy.GILLsDREAM-iOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GILLsDREAM-iOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GILLsDREAM-iOS";
+			};
+			name = Release;
+		};
+		DCAE8A832DC3946E00A4BEDB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y63SPPWMGC;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "sammy.GILLsDREAM-iOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "GILLsDREAM-iOS";
+			};
+			name = Debug;
+		};
+		DCAE8A842DC3946E00A4BEDB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y63SPPWMGC;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "sammy.GILLsDREAM-iOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "GILLsDREAM-iOS";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DCAE8A4C2DC3946C00A4BEDB /* Build configuration list for PBXProject "GILLsDREAM-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DCAE8A7D2DC3946E00A4BEDB /* Debug */,
+				DCAE8A7E2DC3946E00A4BEDB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DCAE8A7A2DC3946E00A4BEDB /* Build configuration list for PBXNativeTarget "GILLsDREAM-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DCAE8A7B2DC3946E00A4BEDB /* Debug */,
+				DCAE8A7C2DC3946E00A4BEDB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DCAE8A7F2DC3946E00A4BEDB /* Build configuration list for PBXNativeTarget "GILLsDREAM-iOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DCAE8A802DC3946E00A4BEDB /* Debug */,
+				DCAE8A812DC3946E00A4BEDB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DCAE8A822DC3946E00A4BEDB /* Build configuration list for PBXNativeTarget "GILLsDREAM-iOSUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DCAE8A832DC3946E00A4BEDB /* Debug */,
+				DCAE8A842DC3946E00A4BEDB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DCAE8A492DC3946C00A4BEDB /* Project object */;
+}
