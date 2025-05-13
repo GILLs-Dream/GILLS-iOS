@@ -55,7 +55,6 @@
 				Domain/Usecase/.gitkeep,
 				Global/Components/.gitkeep,
 				Global/Extensions/.gitkeep,
-				Global/Literals/.gitkeep,
 				Global/Utils/.gitkeep,
 				Info.plist,
 			);
