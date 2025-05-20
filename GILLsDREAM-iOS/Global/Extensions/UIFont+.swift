@@ -41,6 +41,8 @@ extension UIFont {
 
 extension UIFont {
     enum PretendardStyle {
+        case extratitle1
+        case extratitle2
         case title1
         case title2
         case title3
@@ -52,9 +54,12 @@ extension UIFont {
         case body1
         case body2
         case body3
+        case smalltext
         
         var font: UIFont {
             switch self {
+            case .extratitle1: return UIFont.pretendard(.semibold, size: 36)
+            case .extratitle2: return UIFont.pretendard(.light, size: 36)
             case .title1: return UIFont.pretendard(.semibold, size: 30)
             case .title2: return UIFont.pretendard(.medium, size: 30)
             case .title3: return UIFont.pretendard(.regular, size: 30)
@@ -66,7 +71,16 @@ extension UIFont {
             case .body1: return UIFont.pretendard(.medium, size: 15)
             case .body2: return UIFont.pretendard(.medium, size: 12)
             case .body3: return UIFont.pretendard(.medium, size: 12)
+            case .smalltext: return UIFont.pretendard(.medium, size: 8)
             }
+        }
+        
+        var lineHeight: CGFloat {
+            140
+        }
+        
+        var kern: CGFloat {
+            0
         }
     }
 }
