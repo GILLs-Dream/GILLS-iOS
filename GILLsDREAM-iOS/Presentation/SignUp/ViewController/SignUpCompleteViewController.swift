@@ -38,7 +38,7 @@ class SignUpCompleteViewController: UIViewController {
         output.navigateToHome
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
-                let vc = MainHomeViewController()
+                let vc = TabBarViewController()
                 self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
