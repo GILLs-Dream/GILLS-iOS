@@ -14,11 +14,11 @@ extension String {
         let font = style.font
         let lineHeight = font.pointSize * style.lineHeight / 100
         let kern = style.kern
-
+        
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.minimumLineHeight = lineHeight
         paragraphStyle.maximumLineHeight = lineHeight
-
+        
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: color,
@@ -27,4 +27,10 @@ extension String {
         ]
         return NSAttributedString(string: self, attributes: attributes)
     }
+    
+    // 한글 조합 중 여부
+    var isComposing: Bool {
+        self.range(of: ".*[ㄱ-ㅎㅏ-ㅣ]+.*", options: .regularExpression) != nil
+    }
+    
 }

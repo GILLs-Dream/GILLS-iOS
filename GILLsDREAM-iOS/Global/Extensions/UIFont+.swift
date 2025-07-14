@@ -51,6 +51,7 @@ extension UIFont {
         case subtitle2
         case subtitle3
         case subtitle4
+        case body0
         case body1
         case body2
         case body3
@@ -68,7 +69,8 @@ extension UIFont {
             case .subtitle2: return UIFont.pretendard(.medium, size: 24)
             case .subtitle3: return UIFont.pretendard(.regular, size: 24)
             case .subtitle4: return UIFont.pretendard(.light, size: 24)
-            case .body1: return UIFont.pretendard(.medium, size: 15)
+            case .body0: return UIFont.pretendard(.semibold, size: 16)
+            case .body1: return UIFont.pretendard(.medium, size: 14)
             case .body2: return UIFont.pretendard(.medium, size: 12)
             case .body3: return UIFont.pretendard(.medium, size: 12)
             case .smalltext: return UIFont.pretendard(.medium, size: 8)
