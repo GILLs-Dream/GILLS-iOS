@@ -44,20 +44,6 @@ final class CustomButton: UIButton {
     func updateTitle(_ title: String) {
         self.title = title
     }
-    
-    // 버튼 교체
-    func updateNextButtonTheme(isAvailable: Bool) {
-        self.updateTheme(isAvailable ? .color : .transparent)
-        if(isAvailable) {
-            self.updateTitle("가입 완료")
-        }
-        self.isEnabled = isAvailable
-    }
-    
-    // 버튼 위치 업데이트
-    func updateNextButtonBottom(by offset: CGFloat) {
-        self.nextButtonBottomConstraint?.update(inset: offset)
-    }
 }
 
 // MARK: - Interface
