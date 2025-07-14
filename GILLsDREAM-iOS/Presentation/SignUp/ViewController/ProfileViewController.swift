@@ -40,12 +40,20 @@ class ProfileViewController: UIViewController {
     //MARK: View Model
     private func bindViewModel() {
         let input = ProfileViewModel.Input(
+            profileImageButtonTapped: rootView.profileSelectButton.rx.tap.asObservable(),
             nicknameInput: rootView.nicknameTextField.rx.text.orEmpty.asObservable(),
             duplicateCheckTapped: rootView.duplicateCheckButton.rx.tap.asObservable(),
             nextButtonTapped: rootView.nextButton.rx.tap.asObservable()
         )
         
         let output = viewModel.transform(input: input)
+        
+        output.selectedImage
+            .drive(onNext: { [weak self] image in
+                guard let self = self else { return }
+                self.rootView.updateProfileImage(image)
+            })
+            .disposed(by: disposeBag)
         
         output.nicknameCountText
             .drive(rootView.lengthLabel.rx.text)

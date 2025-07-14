@@ -16,8 +16,8 @@ final class ProfileView: UIView {
 
     // MARK: Views
     private let titleLabel = UILabel()
-    private let profileView = UIImageView()
-    private let profileSelectButton = UIButton()
+    let profileImageView = UIImageView()
+    let profileSelectButton = UIButton()
     lazy var nicknameTextField = UITextField()
     let duplicateCheckButton = UIButton()
     let errorLabel = UILabel()
@@ -49,7 +49,7 @@ final class ProfileView: UIView {
     private func setUpHierarchy() {
         [
             titleLabel,
-            profileView,
+            profileImageView,
             profileSelectButton,
             nicknameTextField,
             duplicateCheckButton,
@@ -69,7 +69,7 @@ final class ProfileView: UIView {
             $0.attributedText = "길동이의 꿈을 함께 할\n사진과 별명을 추가해주세요".pretendardAttributedString(style: .subtitle2)
         }
         
-        profileView.do {
+        profileImageView.do {
             $0.image = .imgDefaultProfile
             $0.layer.cornerRadius = 80
         }
@@ -116,15 +116,15 @@ final class ProfileView: UIView {
             $0.leading.equalToSuperview().offset(24)
         }
         
-        profileView.snp.makeConstraints {
+        profileImageView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(41)
             $0.centerX.equalToSuperview()
             $0.size.equalTo(160)
         }
         
         profileSelectButton.snp.makeConstraints {
-            $0.bottom.equalTo(profileView)
-            $0.trailing.equalTo(profileView).offset(15)
+            $0.bottom.equalTo(profileImageView)
+            $0.trailing.equalTo(profileImageView).offset(15)
             $0.size.equalTo(50)
         }
         
@@ -165,6 +165,13 @@ final class ProfileView: UIView {
 }
 
 extension ProfileView {
+    // 프로필 이미지 교체
+    func updateProfileImage(_ image: UIImage) {
+        profileImageView.image = image
+        profileImageView.contentMode = .scaleAspectFill
+        profileImageView.makeCircular()
+    }
+    
     // 버튼 교체
     func updateNextButtonTheme(isAvailable: Bool) {
         nextButton.updateTheme(isAvailable ? .color : .transparent)
