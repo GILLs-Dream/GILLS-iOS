@@ -11,7 +11,7 @@ final class CustomButton: UIButton {
 
     // MARK: Properties
     private var theme: CustomButton.Theme
-    private let title: String
+    private var title: String
 
     init(theme: Theme = .transparent, title: String = "다음", enable: Bool = true) {
         self.theme = theme
@@ -39,6 +39,24 @@ final class CustomButton: UIButton {
     func updateTheme(_ theme: Theme) {
         self.theme = theme
         setupUI()
+    }
+    
+    func updateTitle(_ title: String) {
+        self.title = title
+    }
+    
+    // 버튼 교체
+    func updateNextButtonTheme(isAvailable: Bool) {
+        self.updateTheme(isAvailable ? .color : .transparent)
+        if(isAvailable) {
+            self.updateTitle("가입 완료")
+        }
+        self.isEnabled = isAvailable
+    }
+    
+    // 버튼 위치 업데이트
+    func updateNextButtonBottom(by offset: CGFloat) {
+        self.nextButtonBottomConstraint?.update(inset: offset)
     }
 }
 

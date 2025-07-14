@@ -24,8 +24,6 @@ final class ProfileView: UIView {
     let completeLabel = UILabel()
     let lengthLabel = UILabel()
     lazy var nextButton = CustomButton(enable: false)
-    lazy var ableNextButton = CustomButton(theme: .color)
-    
     
     // MARK: Init
     override init(frame: CGRect) {
@@ -56,8 +54,7 @@ final class ProfileView: UIView {
             errorLabel,
             completeLabel,
             lengthLabel,
-            nextButton,
-            ableNextButton
+            nextButton
         ].forEach { self.addSubview($0) }
     }
     
