@@ -21,6 +21,7 @@ final class MainHomeView: UIView {
     private let topBarView = TopBarView()
     private let textLabel = UILabel()
     private let backgroundImage = UIImageView()
+    lazy var travelButton = CustomButton(title: "여행계획 세우기")
     
     // MARK: Init
     override init(frame: CGRect) {
@@ -46,7 +47,8 @@ final class MainHomeView: UIView {
         [
             topBarView,
             textLabel,
-            backgroundImage
+            backgroundImage,
+            travelButton
         ].forEach { self.addSubview($0) }
     }
     
@@ -56,9 +58,10 @@ final class MainHomeView: UIView {
             $0.textAlignment = .left
             $0.numberOfLines = 3
         }
+        
         backgroundImage.do {
-            $0.image = .imgHalfgill
-            $0.contentMode = .scaleAspectFit
+            $0.image = .imgGradGill
+            $0.contentMode = .scaleAspectFill
         }
     }
     
@@ -74,6 +77,17 @@ final class MainHomeView: UIView {
             $0.top.equalTo(topBarView.snp.bottom).offset(50)
             $0.leading.equalTo(self.safeAreaLayoutGuide).offset(20)
             $0.width.equalTo(300)
+        }
+        
+        backgroundImage.snp.makeConstraints {
+            $0.top.equalTo(textLabel.snp.bottom).offset(-50)
+            $0.trailing.equalToSuperview()
+        }
+        
+        travelButton.snp.makeConstraints {
+            $0.height.equalTo(51)
+            $0.horizontalEdges.equalToSuperview().inset(43)
+            $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
         }
     }
     
