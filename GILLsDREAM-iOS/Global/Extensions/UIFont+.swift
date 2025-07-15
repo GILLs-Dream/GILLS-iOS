@@ -65,7 +65,7 @@ extension UIFont {
             case .title1: return UIFont.pretendard(.semibold, size: 30)
             case .title2: return UIFont.pretendard(.medium, size: 30)
             case .title3: return UIFont.pretendard(.regular, size: 30)
-            case .title4: return UIFont.pretendard(.light, size: 30)
+            case .title4: return UIFont.pretendard(.extraLight, size: 30)
             case .subtitle1: return UIFont.pretendard(.semibold, size: 24)
             case .subtitle2: return UIFont.pretendard(.medium, size: 24)
             case .subtitle3: return UIFont.pretendard(.regular, size: 24)
@@ -80,7 +80,12 @@ extension UIFont {
         }
         
         var lineHeight: CGFloat {
-            140
+            switch self {
+            case .title4:
+                return 120
+            default:
+                return 140
+            }
         }
         
         var kern: CGFloat {
