@@ -11,7 +11,6 @@ final class TravelRequestView: UIView {
     // MARK: Views
     private let titleLabel = UILabel()
     private let exampleLabel = UILabel()
-    private let maxLengthLabel = UILabel()
     let requestTextView = UITextView()
     let requestPlaceHolder = UILabel()
     let sendButton = UIButton()
@@ -38,8 +37,8 @@ final class TravelRequestView: UIView {
         [
             titleLabel,
             exampleLabel,
-            maxLengthLabel,
             requestTextView,
+            requestPlaceHolder,
             sendButton
         ].forEach { self.addSubview($0) }
         
@@ -56,10 +55,6 @@ final class TravelRequestView: UIView {
             $0.textAlignment = .left
             $0.numberOfLines = 3
             $0.attributedText = "가을에 찐친 3명과\n핫한 분위기의 여행을\n제주도 지역에서 즐기고 싶어".pretendardAttributedString(style: .title4, color: .gray)
-        }
-        
-        maxLengthLabel.do {
-            $0.attributedText = "최대 80자".pretendardAttributedString(style: .body3, color: .gray)
         }
         
         requestTextView.do {
