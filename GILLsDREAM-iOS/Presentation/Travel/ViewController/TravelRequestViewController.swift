@@ -34,6 +34,7 @@ final class TravelRequestViewController: BaseViewController {
     private func setupTapToDismissKeyboard() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
+        tapGesture.delegate = self
         view.addGestureRecognizer(tapGesture)
     }
 
@@ -41,10 +42,33 @@ final class TravelRequestViewController: BaseViewController {
         view.endEditing(true)
     }
     
+    func showLoading(_ show: Bool) {
+        if show {
+            rootView.loadingView.isHidden = false
+            rootView.loadingLottieView.play()
+            
+            UIView.animate(withDuration: 0.3) {
+                self.rootView.loadingView.alpha = 1
+            }
+        } else {
+            UIView.animate(withDuration: 0.3, animations: {
+                self.rootView.loadingView.alpha = 0
+            }) { _ in
+                self.rootView.loadingView.isHidden = true
+                self.rootView.loadingLottieView.stop()
+            }
+        }
+    }
+    
     private func bindViewModel() {
         let input = TravelRequestViewModel.Input(
             textInput: rootView.requestTextView.rx.text.orEmpty.asObservable(),
-            sendButtonTapped: rootView.sendButton.rx.tap.asObservable()
+            sendButtonTapped: rootView.sendButton.rx.tap
+                .do(onNext: { [weak self] in
+                    self?.view.endEditing(true)
+                })
+                .delay(.milliseconds(100), scheduler: MainScheduler.instance)
+                .asObservable()
         )
 
         let output = viewModel.transform(input: input)
@@ -54,10 +78,19 @@ final class TravelRequestViewController: BaseViewController {
             .disposed(by: disposeBag)
 
         output.navigateToNext
-            .drive(onNext: { [weak self] in
+            .asObservable()
+            .observe(on: MainScheduler.instance)
+            .do(onNext: { [weak self] in
                 guard let self = self else { return }
-//                let nextVC = TravelCreateViewController()
-//                self.navigationController?.pushViewController(nextVC, animated: true)
+                self.view.endEditing(true)      // 키보드 내리기
+                self.showLoading(true)          // 로딩 시작
+            })
+            .delay(.milliseconds(3000), scheduler: MainScheduler.instance)
+            .bind(onNext: { [weak self] in
+                guard let self = self else { return }
+                self.showLoading(false)          // 로딩 종료
+                let nextVC = TravelRequestViewController()
+                self.navigationController?.pushViewController(nextVC, animated: true)
             })
             .disposed(by: disposeBag)
     }
@@ -79,6 +112,15 @@ extension TravelRequestViewController: UITextViewDelegate {
                 }
             }
         }
+    }
+}
 
+extension TravelRequestViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        // sendButton 눌렀을 때는 키보드 내리는 제스처 무시
+        if touch.view?.isDescendant(of: rootView.sendButton) == true {
+            return false
+        }
+        return true
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 final class TravelRequestView: UIView {
     // MARK: Views
@@ -14,6 +15,9 @@ final class TravelRequestView: UIView {
     let requestTextView = UITextView()
     let requestPlaceHolder = UILabel()
     let sendButton = UIButton()
+    let loadingView = UIView()
+    let loadingLottieView = LottieAnimationView(name: "gill's dream")
+    let loadingLabel = UILabel()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,10 +43,16 @@ final class TravelRequestView: UIView {
             exampleLabel,
             requestTextView,
             requestPlaceHolder,
-            sendButton
+            sendButton,
+            loadingView
         ].forEach { self.addSubview($0) }
         
         requestTextView.addSubview(requestPlaceHolder)
+        
+        [
+            loadingLottieView,
+            loadingLabel
+        ].forEach { loadingView.addSubview($0) }
     }
     
     // MARK: setUpUI
@@ -54,7 +64,12 @@ final class TravelRequestView: UIView {
         exampleLabel.do {
             $0.textAlignment = .left
             $0.numberOfLines = 3
-            $0.attributedText = "가을에 찐친 3명과\n핫한 분위기의 여행을\n제주도 지역에서 즐기고 싶어".pretendardAttributedString(style: .title4, color: .gray)
+            let baseText = "가을에 찐친 3명과\n핫한 분위기의 여행을\n제주도에서 즐기고 싶어"
+            $0.attributedText = baseText.pretendardAttributedString(style: .title4, color: .gray)
+            $0.applyMultipleAttributes(styles: [
+                (target: "핫한 분위기의 여행", font: .PretendardStyle.title4.font, color: .mainYellow),
+                (target: "제주도", font: .PretendardStyle.title4.font, color: .mainYellow)
+            ])
         }
         
         requestTextView.do {
@@ -76,6 +91,23 @@ final class TravelRequestView: UIView {
         
         sendButton.do {
             $0.setImage(.imgArrowRight, for: .normal)
+        }
+        
+        loadingView.do {
+            $0.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+            $0.isHidden = true
+        }
+        
+        loadingLottieView.do {
+            $0.loopMode = .loop
+            $0.animationSpeed = 4
+            $0.contentMode = .scaleAspectFill
+        }
+        
+        loadingLabel.do {
+            $0.numberOfLines = 2
+            $0.attributedText = "길동이가 열심히\n여행을 생성 중이에요".pretendardAttributedString(style: .subtitle1, color: .white)
+            $0.textAlignment = .center
         }
     }
     
@@ -107,6 +139,20 @@ final class TravelRequestView: UIView {
             $0.trailing.equalTo(requestTextView).inset(17)
             $0.height.equalTo(20)
             $0.width.equalTo(28)
+        }
+        
+        loadingView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+        loadingLottieView.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            //$0.size.equalTo(200)
+        }
+        
+        loadingLabel.snp.makeConstraints {
+            $0.top.equalTo(loadingLottieView.snp.bottom).offset(-50)
+            $0.centerX.equalToSuperview()
         }
     }
 }
