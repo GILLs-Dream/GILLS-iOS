@@ -10,11 +10,12 @@ import RxCocoa
 
 final class MainHomeViewModel: ViewModelType {
     struct Input {
-        let viewDidLoadTrigger: Observable<Void>
         let buttonTapped: Observable<Void>
     }
 
-    struct Output { }
+    struct Output {
+        let navigateToRequest: Driver<Void>
+    }
 
     var disposeBag = DisposeBag()
 
@@ -22,21 +23,13 @@ final class MainHomeViewModel: ViewModelType {
     private let alarmCountRelay = BehaviorRelay<Int>(value: 0)
 
     func transform(input: Input) -> Output {
-        input.viewDidLoadTrigger
-            .subscribe(onNext: { [weak self] in
-                self?.fetchInitialData()
-            })
-            .disposed(by: disposeBag)
-
         input.buttonTapped
             .bind(to: navigateRelay)
             .disposed(by: disposeBag)
 
         return Output(
+            navigateToRequest: navigateRelay
+                .asDriver(onErrorDriveWith: .empty())
         )
-    }
-
-    private func fetchInitialData() {
-        // API 연결
     }
 }

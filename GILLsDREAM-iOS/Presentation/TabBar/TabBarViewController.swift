@@ -76,4 +76,14 @@ final class TabBarViewController: UITabBarController, UITabBarControllerDelegate
         self.tabBar.tintColor = .mainBlue
         self.tabBar.unselectedItemTintColor = .white
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
 }
