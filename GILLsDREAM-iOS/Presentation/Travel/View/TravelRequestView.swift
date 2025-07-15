@@ -147,7 +147,6 @@ final class TravelRequestView: UIView {
         
         loadingLottieView.snp.makeConstraints {
             $0.center.equalToSuperview()
-            //$0.size.equalTo(200)
         }
         
         loadingLabel.snp.makeConstraints {
