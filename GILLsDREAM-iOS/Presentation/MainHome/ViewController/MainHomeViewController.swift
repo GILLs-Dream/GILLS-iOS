@@ -22,5 +22,24 @@ class MainHomeViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        bindViewModel()
+    }
+    
+    //MARK: View Model
+    private func bindViewModel() {
+        let input = MainHomeViewModel.Input(
+            buttonTapped: rootView.travelButton.rx.tap.asObservable()
+        )
+        
+        let output = viewModel.transform(input: input)
+        
+        output.navigateToRequest
+            .drive(onNext: { [weak self] in
+                guard let self = self else { return }
+                let vc = TravelRequestViewController()
+                vc.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(vc, animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 }
