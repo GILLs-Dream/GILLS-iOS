@@ -52,14 +52,6 @@ final class TravelWhenViewModel {
             .map { _ in true }
             .bind(to: isNextEnabledRelay)
             .disposed(by: disposeBag)
-
-        input.startDateInput
-            .bind(to: startDateRelay)
-            .disposed(by: disposeBag)
-
-        input.endDateInput
-            .bind(to: endDateRelay)
-            .disposed(by: disposeBag)
         
         // 시작일 변경 -> 종료일 계산
         input.startDateInput
@@ -68,9 +60,9 @@ final class TravelWhenViewModel {
                 self.startDateRelay.accept(date)
 
                 if let days = self.travelDaysRelay.value {
-                    let end = Calendar.current.date(byAdding: .day, value: days - 1, to: date)
+                    guard let end = Calendar.current.date(byAdding: .day, value: days - 1, to: date) else { return }
                     self.endDateRelay.accept(end)
-                    self.calculatedEndDateRelay.accept(end!)
+                    self.calculatedEndDateRelay.accept(end)
                 }
             })
             .subscribe()
@@ -83,9 +75,9 @@ final class TravelWhenViewModel {
                 self.endDateRelay.accept(date)
 
                 if let days = self.travelDaysRelay.value {
-                    let start = Calendar.current.date(byAdding: .day, value: -(days - 1), to: date)
+                    guard let start = Calendar.current.date(byAdding: .day, value: -(days - 1), to: date) else { return }
                     self.startDateRelay.accept(start)
-                    self.calculatedStartDateRelay.accept(start!)
+                    self.calculatedStartDateRelay.accept(start)
                 }
             })
             .subscribe()
@@ -98,13 +90,13 @@ final class TravelWhenViewModel {
                 self.travelDaysRelay.accept(days)
 
                 if let start = self.startDateRelay.value {
-                    let end = Calendar.current.date(byAdding: .day, value: days - 1, to: start)
+                    guard let end = Calendar.current.date(byAdding: .day, value: days - 1, to: start) else { return }
                     self.endDateRelay.accept(end)
-                    self.calculatedEndDateRelay.accept(end!)
+                    self.calculatedEndDateRelay.accept(end)
                 } else if let end = self.endDateRelay.value {
-                    let start = Calendar.current.date(byAdding: .day, value: -(days - 1), to: end)
+                    guard let start = Calendar.current.date(byAdding: .day, value: -(days - 1), to: end) else { return }
                     self.startDateRelay.accept(start)
-                    self.calculatedStartDateRelay.accept(start!)
+                    self.calculatedStartDateRelay.accept(start)
                 }
             })
             .map { _ in true }

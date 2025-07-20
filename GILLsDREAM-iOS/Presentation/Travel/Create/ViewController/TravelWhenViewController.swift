@@ -14,8 +14,6 @@ final class TravelWhenViewController: TravelViewController {
     private let viewModel = TravelWhenViewModel()
     private let disposeBag = DisposeBag()
     
-    private var isPending = false
-
     override func loadView() {
         self.view = rootView
     }
