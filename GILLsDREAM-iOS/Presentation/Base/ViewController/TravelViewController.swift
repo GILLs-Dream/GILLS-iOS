@@ -1,14 +1,14 @@
 //
-//  BaseViewController.swift
+//  TravelViewController.swift
 //  GILLsDREAM-iOS
 //
-//  Created by 오연서 on 5/21/25.
+//  Created by 오연서 on 7/16/25.
 //
 
 import UIKit
 
-class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
-    private let backgroundView = BackgroundView()
+class TravelViewController: UIViewController, UIGestureRecognizerDelegate {
+    private let backgroundView = UIImageView(image: .background)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,12 +29,8 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         tapGesture.delegate = self
         view.addGestureRecognizer(tapGesture)
     }
-    
-    func shouldDismissWhenTapped(on view: UIView?) -> Bool {
-        return true
-    }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        return shouldDismissWhenTapped(on: touch.view)
+        true
     }
 }
