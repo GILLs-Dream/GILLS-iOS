@@ -12,6 +12,7 @@ class TravelViewController: UIViewController, UIGestureRecognizerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureCustomNavigationBar()
         backgroundView.frame = view.bounds
         backgroundView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(backgroundView)
