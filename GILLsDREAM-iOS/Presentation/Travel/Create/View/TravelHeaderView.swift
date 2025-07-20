@@ -76,14 +76,14 @@ final class TravelHeaderView: UIView {
         stackView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(15)
             $0.leading.bottom.equalToSuperview()
-            $0.height.equalTo(30)
-            $0.width.equalTo(312)
+            $0.height.equalTo(28)
+            $0.width.equalTo(272)
         }
     }
 
     private func createStepView(title: String) -> UIView {
         let container = UIView().then {
-            $0.layer.cornerRadius = 15
+            $0.layer.cornerRadius = 14
             $0.layer.borderWidth = 1
             $0.layer.borderColor = UIColor.white.cgColor
         }
