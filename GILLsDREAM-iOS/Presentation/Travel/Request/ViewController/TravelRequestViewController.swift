@@ -89,7 +89,7 @@ final class TravelRequestViewController: BaseViewController {
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
                 self.showLoading(false)          // 로딩 종료
-                let nextVC = TravelRequestViewController()
+                let nextVC = TravelWhenViewController()
                 self.navigationController?.pushViewController(nextVC, animated: true)
             })
             .disposed(by: disposeBag)
