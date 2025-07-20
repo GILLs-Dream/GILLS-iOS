@@ -21,25 +21,19 @@ final class TravelRequestViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureCustomNavigationBar()
         setUpDelegate()
-        setupTapToDismissKeyboard()
         bindViewModel()
+    }
+    
+    override func shouldDismissWhenTapped(on view: UIView?) -> Bool {
+        if view?.isDescendant(of: rootView.sendButton) == true {
+            return false
+        }
+        return true
     }
     
     private func setUpDelegate() {
         rootView.requestTextView.delegate = self
-    }
-    
-    private func setupTapToDismissKeyboard() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tapGesture.cancelsTouchesInView = false
-        tapGesture.delegate = self
-        view.addGestureRecognizer(tapGesture)
-    }
-
-    @objc private func dismissKeyboard() {
-        view.endEditing(true)
     }
     
     func showLoading(_ show: Bool) {
@@ -112,15 +106,5 @@ extension TravelRequestViewController: UITextViewDelegate {
                 }
             }
         }
-    }
-}
-
-extension TravelRequestViewController: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        // sendButton 눌렀을 때는 키보드 내리는 제스처 무시
-        if touch.view?.isDescendant(of: rootView.sendButton) == true {
-            return false
-        }
-        return true
     }
 }
