@@ -12,6 +12,7 @@ import RxCocoa
 enum InputMode {
     case numberPicker(range: ClosedRange<Int>)
     case datePicker
+    case keyboard
 }
 
 final class TravelCustomTextField: UIView {
@@ -74,13 +75,13 @@ final class TravelCustomTextField: UIView {
     func setUpUI(unit: String, detail: String) {
         textField.textAlignment = .right
         switch inputMode {
-        case .numberPicker:
-            unitLabel.attributedText = unit.pretendardAttributedString(style: .body3)
-            detailLabel.attributedText = detail.pretendardAttributedString(style: .body3)
         case .datePicker:
             unitLabel.isHidden = true
             textField.attributedPlaceholder = isStartField ? "시작일 입력".pretendardAttributedString(style: .body3, color: .white)
                                                             : "종료일 입력".pretendardAttributedString(style: .body3, color: .white)
+        default:
+            unitLabel.attributedText = unit.pretendardAttributedString(style: .body3)
+            detailLabel.attributedText = detail.pretendardAttributedString(style: .body3)
         }
 
         textField.do {
@@ -109,7 +110,7 @@ final class TravelCustomTextField: UIView {
             switch inputMode {
             case .numberPicker:
                 $0.trailing.equalToSuperview().inset(15)
-            case .datePicker:
+            default:
                 $0.trailing.equalToSuperview()
             }
         }
@@ -147,6 +148,9 @@ final class TravelCustomTextField: UIView {
             datePicker.addTarget(self, action: #selector(dateChanged), for: .valueChanged)
             textField.inputView = datePicker
             self.datePicker = datePicker
+        case .keyboard:
+            textField.inputView = nil
+            textField.keyboardType = .default
         }
     }
 
