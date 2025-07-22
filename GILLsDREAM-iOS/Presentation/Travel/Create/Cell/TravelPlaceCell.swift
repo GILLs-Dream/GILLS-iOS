@@ -89,13 +89,13 @@ final class TravelPlaceCell: UITableViewCell {
         
         deleteButton.snp.makeConstraints {
             $0.trailing.centerY.equalToSuperview()
-            $0.size.equalTo(48)
+            $0.size.equalTo(40)
         }
         
         calendarButton.snp.makeConstraints {
             $0.trailing.equalTo(deleteButton.snp.leading)
             $0.centerY.equalTo(deleteButton)
-            $0.size.equalTo(48)
+            $0.size.equalTo(40)
         }
     }
     
