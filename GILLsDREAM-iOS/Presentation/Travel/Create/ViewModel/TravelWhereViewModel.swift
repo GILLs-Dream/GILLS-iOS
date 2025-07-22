@@ -10,9 +10,15 @@ import RxSwift
 import RxCocoa
 import RxDataSources
 
+enum DatePickerType {
+    case single
+    case range
+}
+
 final class TravelWhereViewModel {
     struct Input {
         let placeAdded: Observable<Place>
+        let calendarIndexPath: Observable<IndexPath>
         let deleteIndexPath: Observable<IndexPath>
         let nextButtonTapped: Observable<Void>
         let prevButtonTapped: Observable<Void>
@@ -24,6 +30,7 @@ final class TravelWhereViewModel {
         let currentPage: Driver<Int>
         let currentTitleText: Driver<String>
         let navigateToNext: Driver<Void>
+        let showDatePicker: Observable<(IndexPath, DatePickerType)>
     }
 
     private let disposeBag = DisposeBag()
@@ -31,6 +38,7 @@ final class TravelWhereViewModel {
     private let pageRelay = BehaviorRelay<Int>(value: 0)
     private let page1Places = BehaviorRelay<[Place]>(value: [])
     private let page2Places = BehaviorRelay<[Place]>(value: [])
+    private let showDatePickerRelay = PublishRelay<(IndexPath, DatePickerType)>()
 
     func transform(input: Input) -> Output {
         input.placeAdded
@@ -41,6 +49,15 @@ final class TravelWhereViewModel {
                 current.accept(current.value + [place])
             }).disposed(by: disposeBag)
 
+        input.calendarIndexPath
+            .withLatestFrom(pageRelay) { ($0, $1) }
+            .map { indexPath, page -> (IndexPath, DatePickerType) in
+                let type: DatePickerType = page == 0 ? .single : .range
+                return (indexPath, type)
+            }
+            .bind(to: showDatePickerRelay)
+            .disposed(by: disposeBag)
+        
         input.deleteIndexPath
             .withLatestFrom(pageRelay) { ($0, $1) }
             .subscribe(onNext: { [weak self] indexPath, page in
@@ -81,7 +98,8 @@ final class TravelWhereViewModel {
             isAddButtonHidden: isAddButtonHidden,
             currentPage: pageRelay.asDriver(),
             currentTitleText: titleText.asDriver(onErrorJustReturn: ""),
-            navigateToNext: input.nextButtonTapped.asDriver(onErrorDriveWith: .empty())
+            navigateToNext: input.nextButtonTapped.asDriver(onErrorDriveWith: .empty()),
+            showDatePicker: showDatePickerRelay.asObservable()
         )
     }
 }
@@ -89,5 +107,28 @@ final class TravelWhereViewModel {
 extension TravelWhereViewModel {
     private func getCurrentPlaces(for page: Int) -> BehaviorRelay<[Place]> {
         return page == 0 ? page1Places : page2Places
+    }
+
+    func updateDate(for indexPath: IndexPath, date: Date) {
+        let current = getCurrentPlaces(for: pageRelay.value)
+        var items = current.value
+        guard indexPath.row < items.count else { return }
+        var updatedPlace = items[indexPath.row]
+        updatedPlace.type = .travel
+        updatedPlace.visitDate = date
+        items[indexPath.row] = updatedPlace
+        current.accept(items)
+    }
+
+    func updateDateRange(for indexPath: IndexPath, checkInDate: Date, checkOutDate: Date) {
+        let current = getCurrentPlaces(for: pageRelay.value)
+        var items = current.value
+        guard indexPath.row < items.count else { return }
+        var updatedPlace = items[indexPath.row]
+        updatedPlace.type = .stay
+        updatedPlace.checkInDate = checkInDate
+        updatedPlace.checkOutDate = checkOutDate
+        items[indexPath.row] = updatedPlace
+        current.accept(items)
     }
 }
