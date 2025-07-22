@@ -38,7 +38,7 @@ extension Place {
     var dateText: String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "YYYY/MM/dd"
+        formatter.dateFormat = "yyyy/MM/dd"
         
         switch type {
         case .travel:

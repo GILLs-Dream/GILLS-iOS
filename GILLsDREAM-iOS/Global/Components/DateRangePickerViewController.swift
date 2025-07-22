@@ -91,6 +91,7 @@ final class DateRangePickerController: UIViewController {
         switch step {
         case .startDate:
             selectedStartDate = datePicker.date
+            datePicker.minimumDate = datePicker.date
             step = .endDate
             updateForCurrentStep()
         case .endDate:
