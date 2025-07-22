@@ -10,11 +10,11 @@ import UIKit
 final class TravelWhereView: UIView {
     let headerView: TravelHeaderView
     private let titleLabel = UILabel()
+    let placeTableView = UITableView()
     let pageLabel = UILabel()
     lazy var addButton = UIButton()
     lazy var previousButton = CustomButton(title: "이전")
     lazy var nextButton = CustomButton()
-    private let placeStackView = UIStackView()
 
     override init(frame: CGRect) {
         self.headerView = TravelHeaderView(titleText: titleText)
@@ -37,7 +37,7 @@ final class TravelWhereView: UIView {
         [
             headerView,
             titleLabel,
-            placeStackView,
+            placeTableView,
             addButton,
             previousButton,
             nextButton,
@@ -50,11 +50,10 @@ final class TravelWhereView: UIView {
             $0.attributedText = "STEP 3. 생각해둔 여행지가 있다면 추가해주세요.".pretendardAttributedString(style: .body1)
         }
         
-        placeStackView.do {
-            $0.axis = .vertical
-            $0.spacing = 10
-            $0.distribution = .fill
-            $0.alignment = .fill
+        placeTableView.do {
+            $0.backgroundColor = .clear
+            $0.allowsSelection = false
+            $0.isScrollEnabled = false
         }
         
         addButton.do {
@@ -81,14 +80,15 @@ final class TravelWhereView: UIView {
             $0.leading.equalTo(headerView)
         }
         
-        addButton.snp.makeConstraints {
+        placeTableView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(20)
-            $0.leading.equalToSuperview().inset(50)
+            $0.horizontalEdges.equalToSuperview().inset(43)
+            $0.height.equalTo(0)
         }
         
-        placeStackView.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
-            $0.leading.trailing.equalToSuperview().inset(43)
+        addButton.snp.makeConstraints {
+            $0.top.equalTo(placeTableView.snp.bottom).offset(16)
+            $0.leading.equalToSuperview().inset(50)
         }
         
         previousButton.snp.makeConstraints {
@@ -117,28 +117,8 @@ extension TravelWhereView {
         titleLabel.attributedText = text.pretendardAttributedString(style: .body1)
     }
     
-    func updatePlaceStack(with places: [Place], onDelete: @escaping (Place) -> Void) {
-        placeStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-
-        for place in places {
-            let cell = TravelPlaceCell(place: place)
-            cell.onDelete = {
-                onDelete(place)
-            }
-            placeStackView.addArrangedSubview(cell)
-            
-            cell.snp.makeConstraints {
-                $0.height.equalTo(38)
-            }
-        }
-
-        addButton.snp.remakeConstraints {
-            $0.top.equalTo(placeStackView.snp.bottom).offset(16)
-            $0.leading.equalToSuperview().inset(50)
-        }
-    }
-    
     func updateButtons(for page: Int) {
+        // TODO: 화면에 previous - next button 있는 것으로 refactoring
         if page == 0 {
             previousButton.isHidden = true
             nextButton.snp.remakeConstraints {
