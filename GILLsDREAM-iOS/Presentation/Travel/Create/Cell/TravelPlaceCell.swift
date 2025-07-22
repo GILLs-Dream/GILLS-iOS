@@ -14,10 +14,13 @@ final class TravelPlaceCell: UITableViewCell {
     
     private let placeImageView = UIImageView()
     private let placeNameLabel = UILabel()
-    let deleteButton = UIButton(type: .custom)
+    let placeDateLabel = UILabel()
+    let calendarButton = UIButton()
+    let deleteButton = UIButton()
     
     var disposeBag = DisposeBag()
     let deleteTapped = PublishRelay<Void>()
+    let calendarTapped = PublishRelay<Void>()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -39,7 +42,9 @@ final class TravelPlaceCell: UITableViewCell {
         [
             placeImageView,
             placeNameLabel,
-            deleteButton
+            placeDateLabel,
+            deleteButton,
+            calendarButton
         ].forEach { contentView.addSubview($0) }
     }
     
@@ -49,8 +54,16 @@ final class TravelPlaceCell: UITableViewCell {
         }
         
         placeNameLabel.do {
-            $0.font = .PretendardStyle.body2.font
+            $0.font = .PretendardStyle.body0.font
             $0.textColor = .white
+        }
+        
+        placeDateLabel.do {
+            $0.attributedText = "날짜 미정".pretendardAttributedString(style: .smalltext)
+        }
+        
+        calendarButton.do {
+            $0.setImage(.imgCalendar, for: .normal)
         }
         
         deleteButton.do {
@@ -65,13 +78,24 @@ final class TravelPlaceCell: UITableViewCell {
         }
         
         placeNameLabel.snp.makeConstraints {
-            $0.centerY.equalToSuperview()
+            $0.top.equalTo(placeImageView).offset(4)
             $0.leading.equalTo(placeImageView.snp.trailing).offset(12)
+        }
+        
+        placeDateLabel.snp.makeConstraints {
+            $0.top.equalTo(placeNameLabel.snp.bottom)
+            $0.leading.equalTo(placeNameLabel)
         }
         
         deleteButton.snp.makeConstraints {
             $0.trailing.centerY.equalToSuperview()
-            $0.size.equalTo(38)
+            $0.size.equalTo(48)
+        }
+        
+        calendarButton.snp.makeConstraints {
+            $0.trailing.equalTo(deleteButton.snp.leading)
+            $0.centerY.equalTo(deleteButton)
+            $0.size.equalTo(48)
         }
     }
     
@@ -93,9 +117,14 @@ extension TravelPlaceCell {
         
         placeImageView.image = place.imageURL
         placeNameLabel.text = place.name
+        placeDateLabel.text = place.dateText
         
         deleteButton.rx.tap
             .bind(to: deleteTapped)
+            .disposed(by: disposeBag)
+        
+        calendarButton.rx.tap
+            .bind(to: calendarTapped)
             .disposed(by: disposeBag)
     }
 }

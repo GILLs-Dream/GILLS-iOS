@@ -117,6 +117,10 @@ extension TravelWhereView {
         titleLabel.attributedText = text.pretendardAttributedString(style: .body1)
     }
     
+    func updatePage(text: String) {
+        pageLabel.attributedText = text.pretendardAttributedString(style: .body2)
+    }
+    
     func updateButtons(for page: Int) {
         // TODO: 화면에 previous - next button 있는 것으로 refactoring
         if page == 0 {
