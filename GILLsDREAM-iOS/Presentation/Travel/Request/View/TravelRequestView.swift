@@ -12,6 +12,8 @@ final class TravelRequestView: UIView {
     // MARK: Views
     private let titleLabel = UILabel()
     private let exampleLabel = UILabel()
+    private let extraLabel = UILabel()
+    private let underlineView = UIView()
     let requestTextView = UITextView()
     let requestPlaceHolder = UILabel()
     let sendButton = UIButton()
@@ -41,6 +43,8 @@ final class TravelRequestView: UIView {
         [
             titleLabel,
             exampleLabel,
+            extraLabel,
+            underlineView,
             requestTextView,
             requestPlaceHolder,
             sendButton,
@@ -64,12 +68,21 @@ final class TravelRequestView: UIView {
         exampleLabel.do {
             $0.textAlignment = .left
             $0.numberOfLines = 3
-            let baseText = "가을에 찐친 3명과\n핫한 분위기의 여행을\n제주도에서 즐기고 싶어"
-            $0.attributedText = baseText.pretendardAttributedString(style: .title4, color: .gray)
+            let baseText = "가을 제주도에서 찐친들과\n인스타그래머블하고 고즈넉한\n여행을 즐기고 싶어"
+            $0.attributedText = baseText.pretendardAttributedString(style: .title4, color: .white)
             $0.applyMultipleAttributes(styles: [
-                (target: "핫한 분위기의 여행", font: .PretendardStyle.title4.font, color: .mainYellow),
-                (target: "제주도", font: .PretendardStyle.title4.font, color: .mainYellow)
+                (target: "가을 제주도에서 찐친들", font: .PretendardStyle.title4.font, color: .mainYellow),
+                (target: "인스타그래머블", font: .PretendardStyle.title4.font, color: .mainYellow),
+                (target: "핫한", font: .PretendardStyle.title4.font, color: .mainYellow)
             ])
+        }
+        
+        extraLabel.do {
+            $0.attributedText = "분위기가 구체적일수록 좋아요!".pretendardAttributedString(style: .body3)
+        }
+        
+        underlineView.do {
+            $0.backgroundColor = .white
         }
         
         requestTextView.do {
@@ -85,7 +98,7 @@ final class TravelRequestView: UIView {
         }
         
         requestPlaceHolder.do {
-            $0.attributedText = "지금 어떤 여행이 가고싶나요?".pretendardAttributedString(style: .subtitle5, color: .white)
+            $0.attributedText = "지금 어떤 분위기의 여행이 가고싶나요?".pretendardAttributedString(style: .subtitle5, color: .white)
             $0.backgroundColor = .clear
         }
         
@@ -114,13 +127,24 @@ final class TravelRequestView: UIView {
     // MARK: setUpLayout
     private func setUpLayout() {
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(self.safeAreaLayoutGuide).offset(15)
+            $0.top.equalTo(self.safeAreaLayoutGuide).offset(10)
             $0.leading.equalToSuperview().offset(24)
         }
         
         exampleLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(5)
             $0.leading.equalTo(titleLabel)
+        }
+        
+        extraLabel.snp.makeConstraints {
+            $0.top.equalTo(exampleLabel.snp.bottom).offset(5)
+            $0.leading.equalTo(titleLabel)
+        }
+        
+        underlineView.snp.makeConstraints {
+            $0.top.equalTo(extraLabel.snp.bottom)
+            $0.horizontalEdges.equalTo(extraLabel)
+            $0.height.equalTo(1)
         }
         
         requestTextView.snp.makeConstraints {
