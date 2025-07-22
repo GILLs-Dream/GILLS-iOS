@@ -45,8 +45,7 @@ final class TravelWhoViewController: TravelViewController {
 
         output.navigateToNext
             .drive(onNext: { [weak self] in
-                let nextVC = TravelWhoViewController()
-                nextVC.view.backgroundColor = .white
+                let nextVC = TravelWhereViewController()
                 self?.navigationController?.pushViewController(nextVC, animated: true)
             })
             .disposed(by: disposeBag)
