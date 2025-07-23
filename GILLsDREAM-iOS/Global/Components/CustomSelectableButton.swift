@@ -11,7 +11,7 @@ final class CustomSelectableButton: UIButton {
     // MARK: Properties
     private var title: String
 
-    init(title: String = "선택") {
+    init(title: String = "") {
         self.title = title
         super.init(frame: .zero)
         setupUI()
@@ -38,11 +38,5 @@ final class CustomSelectableButton: UIButton {
     func updateTitle(_ title: String) {
         self.title = title
         self.setTitle(title, for: .normal)
-    }
-
-    override var isSelected: Bool {
-        didSet {
-            self.setImage(UIImage(named: isSelected ? "img_checked_circle" : "img_circle"), for: .normal)
-        }
     }
 }
