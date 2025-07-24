@@ -29,10 +29,14 @@ final class CustomButton: UIButton {
     private func setupUI() {
         self.setTitle(title, for: .normal)
         self.setTitleColor(.white, for: .normal)
-        self.titleLabel?.font = .PretendardStyle.body0.font
+        if self.titleLabel?.font == nil || self.titleLabel?.font == UIFont.systemFont(ofSize: UIFont.buttonFontSize) {
+            self.titleLabel?.font = .PretendardStyle.body0.font // 폰트가 기본상태일때만 설정
+        }
         self.backgroundColor = theme.backgroundColor
         self.layer.borderColor = theme.outlineColor.cgColor
-        self.layer.cornerRadius = 25
+        if self.layer.cornerRadius == 0 {
+            self.layer.cornerRadius = 25
+        }
         self.layer.borderWidth = 1
     }
     
