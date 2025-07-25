@@ -37,7 +37,8 @@ final class TravelHowViewController: TravelViewController {
         let input = TravelHowViewModel.Input(
             transportTapped: transportTapStream,
             categoryTapped: categoryTapStream,
-            nextButtonTapped: rootView.doneButton.rx.tap.asObservable()
+            prevButtonTapped: rootView.previousButton.rx.tap.asObservable(),
+            doneButtonTapped: rootView.doneButton.rx.tap.asObservable()
         )
         
         let output = viewModel.transform(input: input)
@@ -57,6 +58,12 @@ final class TravelHowViewController: TravelViewController {
                 self.rootView.categoryOptionView.categoryButtons.forEach {
                     $0.updateTheme(selected.contains($0) ? .color : .transparent)
                 }
+            })
+            .disposed(by: disposeBag)
+        
+        output.navigateToPrev
+            .drive(onNext: { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
     }

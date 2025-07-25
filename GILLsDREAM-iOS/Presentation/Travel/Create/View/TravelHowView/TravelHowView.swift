@@ -15,7 +15,8 @@ final class TravelHowView: UIView {
     let transportOptionView = TransportOptionView()
     private let categoryLabel = UILabel()
     let categoryOptionView = CategoryOptionView()
-    lazy var doneButton = CustomButton()
+    lazy var previousButton = CustomButton(title: "이전")
+    lazy var doneButton = CustomButton(title: "완료")
 
     override init(frame: CGRect) {
         self.headerView = TravelHeaderView(titleText: titleText)
@@ -44,6 +45,7 @@ final class TravelHowView: UIView {
             transportOptionView,
             categoryLabel,
             categoryOptionView,
+            previousButton,
             doneButton
         ].forEach { self.addSubview($0) }
     }
@@ -55,7 +57,7 @@ final class TravelHowView: UIView {
         }
         
         transportLabel.do {
-            $0.attributedText = "✪  주요 교통 수단 (복수 선택) :".pretendardAttributedString(style: .body2)
+            $0.attributedText = "✪  주요 교통 수단 (단일 선택) :".pretendardAttributedString(style: .body2)
         }
         
         categoryLabel.do {
@@ -97,9 +99,17 @@ final class TravelHowView: UIView {
             $0.height.equalTo(119)
         }
 
+        previousButton.snp.makeConstraints {
+            $0.height.equalTo(51)
+            $0.leading.equalToSuperview().inset(43)
+            $0.trailing.equalTo(self.snp.centerX).offset(-7)
+            $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
+        }
+
         doneButton.snp.makeConstraints {
             $0.height.equalTo(51)
-            $0.horizontalEdges.equalToSuperview().inset(43)
+            $0.leading.equalTo(self.snp.centerX).offset(7)
+            $0.trailing.equalToSuperview().inset(43)
             $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
         }
     }

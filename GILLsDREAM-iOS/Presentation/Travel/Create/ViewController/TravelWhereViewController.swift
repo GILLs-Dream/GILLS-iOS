@@ -66,7 +66,6 @@ final class TravelWhereViewController: TravelViewController {
             .drive(onNext: { [weak self] page in
                 guard let self = self else { return }
                 self.rootView.updatePage(text: "\(page+1)/2")
-                self.rootView.updateButtons(for: page)
             })
             .disposed(by: disposeBag)
         
@@ -85,6 +84,19 @@ final class TravelWhereViewController: TravelViewController {
                 return Place(name: "길순이네 카페", imageURL: UIImage.imgDefaultProfile, type: type)
             }
             .bind(to: placeAddedSubject)
+            .disposed(by: disposeBag)
+        
+        output.navigatePrev
+            .emit(onNext: { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            })
+            .disposed(by: disposeBag)
+
+        output.navigateNext
+            .emit(onNext: { [weak self] in
+                let nextVC = TravelHowViewController()
+                self?.navigationController?.pushViewController(nextVC, animated: true)
+            })
             .disposed(by: disposeBag)
     }
     

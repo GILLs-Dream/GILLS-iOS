@@ -33,15 +33,16 @@ final class TravelWhoViewController: TravelViewController {
 
         let input = TravelWhoViewModel.Input(
             paxInput: paxInput,
+            prevButtonTapped: rootView.previousButton.rx.tap.asObservable(),
             nextButtonTapped: rootView.nextButton.rx.tap.asObservable()
         )
 
         let output = viewModel.transform(input: input)
 
-        output.isNextEnabled
-            .map { !$0 }
-            .drive(rootView.nextButton.rx.isHidden)
-            .disposed(by: disposeBag)
+//        output.isNextEnabled
+//            .map { !$0 }
+//            .drive(rootView.nextButton.rx.isHidden)
+//            .disposed(by: disposeBag)
 
         output.navigateToNext
             .drive(onNext: { [weak self] in

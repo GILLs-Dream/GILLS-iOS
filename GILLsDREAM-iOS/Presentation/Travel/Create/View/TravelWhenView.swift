@@ -65,10 +65,6 @@ final class TravelWhenView: UIView {
             $0.setAttributedTitle("여행날짜는 미정입니다.".pretendardAttributedString(style: .body3), for: .normal)
             $0.configuration = config
         }
-        
-        nextButton.do {
-            $0.isHidden = true
-        }
     }
     
     // MARK: setUpLayout

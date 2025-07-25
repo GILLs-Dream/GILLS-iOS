@@ -63,10 +63,6 @@ final class TravelWhereView: UIView {
         pageLabel.do {
             $0.attributedText = "1/2".pretendardAttributedString(style: .body2)
         }
-        
-        previousButton.do {
-            $0.isHidden = true
-        }
     }
 
     private func setUpLayout() {
@@ -119,31 +115,5 @@ extension TravelWhereView {
     
     func updatePage(text: String) {
         pageLabel.attributedText = text.pretendardAttributedString(style: .body2)
-    }
-    
-    func updateButtons(for page: Int) {
-        // TODO: 화면에 previous - next button 있는 것으로 refactoring
-        if page == 0 {
-            previousButton.isHidden = true
-            nextButton.snp.remakeConstraints {
-                $0.height.equalTo(51)
-                $0.horizontalEdges.equalToSuperview().inset(43)
-                $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
-            }
-        } else {
-            previousButton.isHidden = false
-            previousButton.snp.remakeConstraints {
-                $0.height.equalTo(51)
-                $0.leading.equalToSuperview().inset(43)
-                $0.trailing.equalTo(self.snp.centerX).offset(-10)
-                $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
-            }
-            nextButton.snp.remakeConstraints {
-                $0.height.equalTo(51)
-                $0.leading.equalTo(self.snp.centerX).offset(10)
-                $0.trailing.equalToSuperview().inset(43)
-                $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
-            }
-        }
     }
 }
