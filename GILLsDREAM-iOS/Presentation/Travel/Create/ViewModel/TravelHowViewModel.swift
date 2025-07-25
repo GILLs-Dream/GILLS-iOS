@@ -13,13 +13,15 @@ final class TravelHowViewModel {
     struct Input {
         let transportTapped: Observable<CustomSelectableButton>
         let categoryTapped: Observable<CustomButton>
-        let nextButtonTapped: Observable<Void>
+        let prevButtonTapped: Observable<Void>
+        let doneButtonTapped: Observable<Void>
     }
 
     struct Output {
         let selectedTransport: Driver<CustomSelectableButton?>
         let selectedCategories: Driver<[CustomButton]>
         let isNextEnabled: Driver<Bool>
+        let navigateToPrev: Driver<Void>
         let navigateToNext: Driver<Void>
     }
 
@@ -27,6 +29,7 @@ final class TravelHowViewModel {
 
     private let selectedTransportRelay = BehaviorRelay<CustomSelectableButton?>(value: nil)
     private let selectedCategoriesRelay = BehaviorRelay<[CustomButton]>(value: [])
+    private let navigateToPrevRelay = PublishRelay<Void>()
     private let navigateToNextRelay = PublishRelay<Void>()
 
     func transform(input: Input) -> Output {
@@ -49,8 +52,12 @@ final class TravelHowViewModel {
             }
             .bind(to: selectedCategoriesRelay)
             .disposed(by: disposeBag)
+        
+        input.prevButtonTapped
+            .bind(to: navigateToPrevRelay)
+            .disposed(by: disposeBag)
 
-        input.nextButtonTapped
+        input.doneButtonTapped
             .bind(to: navigateToNextRelay)
             .disposed(by: disposeBag)
 
@@ -62,6 +69,7 @@ final class TravelHowViewModel {
             selectedTransport: selectedTransportRelay.asDriver(onErrorJustReturn: nil),
             selectedCategories: selectedCategoriesRelay.asDriver(onErrorJustReturn: []),
             isNextEnabled: isNextEnabled.asDriver(onErrorJustReturn: false),
+            navigateToPrev: navigateToPrevRelay.asDriver(onErrorDriveWith: .empty()),
             navigateToNext: navigateToNextRelay.asDriver(onErrorDriveWith: .empty())
         )
     }

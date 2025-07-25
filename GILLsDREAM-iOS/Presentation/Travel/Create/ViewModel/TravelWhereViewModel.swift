@@ -29,11 +29,13 @@ final class TravelWhereViewModel {
         let isAddButtonHidden: Driver<Bool>
         let currentPage: Driver<Int>
         let currentTitleText: Driver<String>
-        let navigateToNext: Driver<Void>
+        let navigatePrev: Signal<Void>
+        let navigateNext: Signal<Void>
         let showDatePicker: Observable<(IndexPath, DatePickerType)>
     }
 
     private let disposeBag = DisposeBag()
+    private let navigateToPrevRelay = PublishRelay<Void>()
     private let navigateToNextRelay = PublishRelay<Void>()
     private let pageRelay = BehaviorRelay<Int>(value: 0)
     private let page1Places = BehaviorRelay<[Place]>(value: [])
@@ -68,11 +70,27 @@ final class TravelWhereViewModel {
                 current.accept(items)
             }).disposed(by: disposeBag)
 
+        input.prevButtonTapped
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                if self.pageRelay.value == 1 {
+                    self.pageRelay.accept(0)  // page 전환
+                } else {
+                    self.navigateToPrevRelay.accept(()) // pop
+                }
+            })
+            .disposed(by: disposeBag)
+        
         input.nextButtonTapped
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
-                self.pageRelay.accept(1)
-            }).disposed(by: disposeBag)
+                if self.pageRelay.value == 0 {
+                    self.pageRelay.accept(1)  // page 전환
+                } else {
+                    self.navigateToNextRelay.accept(()) // push
+                }
+            })
+            .disposed(by: disposeBag)
 
         input.prevButtonTapped
             .subscribe(onNext: { [weak self] in
@@ -98,7 +116,8 @@ final class TravelWhereViewModel {
             isAddButtonHidden: isAddButtonHidden,
             currentPage: pageRelay.asDriver(),
             currentTitleText: titleText.asDriver(onErrorJustReturn: ""),
-            navigateToNext: input.nextButtonTapped.asDriver(onErrorDriveWith: .empty()),
+            navigatePrev: navigateToPrevRelay.asSignal(),
+            navigateNext: navigateToNextRelay.asSignal(),
             showDatePicker: showDatePickerRelay.asObservable()
         )
     }
