@@ -7,11 +7,26 @@
 
 import UIKit
 
-protocol Coordinator: AnyObject {
-    var childCoordinators: [Coordinator] { get set } // 하위 코디네이터 관리
-    var navigationController: UINavigationController { get set }
-    
-    func start() // 코디네이터의 시작화면 표시
+enum CoordinatorType {
+    case app, login, signup, tab, main
+}
 
-    init(navigationController: UINavigationController)
+// MARK: Base Coordinator
+protocol Coordinator: AnyObject {
+    var finishDelegate: CoordinatorFinishDelegate? { get set }
+    var navigationController: UINavigationController { get set }
+    var childCoordinators: [Coordinator] { get set }
+    var type: CoordinatorType { get }
+    
+    func start()
+    func finish()
+    
+    init(_ navigationController: UINavigationController)
+}
+
+extension Coordinator {
+    func finish() {
+        childCoordinators.removeAll()
+        finishDelegate?.coordinatorDidFinish(childCoordinator: self)
+    }
 }
