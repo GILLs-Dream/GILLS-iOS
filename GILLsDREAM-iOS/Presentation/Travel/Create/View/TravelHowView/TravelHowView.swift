@@ -17,9 +17,7 @@ final class TravelHowView: UIView {
     let categoryOptionView = CategoryOptionView()
     lazy var previousButton = CustomButton(title: "이전")
     lazy var doneButton = CustomButton(title: "완료")
-    let loadingView = UIView()
-    let loadingLottieView = LottieAnimationView(name: "gill's dream")
-    let loadingLabel = UILabel()
+    let lottieView = CustomLottieView(text: "길동이가 열심히\n여행을 생성 중이에요!")
 
     override init(frame: CGRect) {
         self.headerView = TravelHeaderView(titleText: titleText)
@@ -49,7 +47,8 @@ final class TravelHowView: UIView {
             categoryLabel,
             categoryOptionView,
             previousButton,
-            doneButton
+            doneButton,
+            lottieView
         ].forEach { self.addSubview($0) }
     }
 
@@ -65,6 +64,10 @@ final class TravelHowView: UIView {
         
         categoryLabel.do {
             $0.attributedText = "✪  선호 카테고리 (복수 선택) :".pretendardAttributedString(style: .body2)
+        }
+        
+        lottieView.do {
+            $0.isHidden = true
         }
     }
 
@@ -114,6 +117,10 @@ final class TravelHowView: UIView {
             $0.leading.equalTo(self.snp.centerX).offset(7)
             $0.trailing.equalToSuperview().inset(43)
             $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
+        }
+        
+        lottieView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
         }
     }
 }

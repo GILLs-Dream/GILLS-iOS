@@ -24,24 +24,6 @@ final class TravelHowViewController: TravelViewController {
         super.viewDidLoad()
         bindViewModel()
     }
-    
-    func showLoading(_ show: Bool) {
-        if show {
-            rootView.loadingView.isHidden = false
-            rootView.loadingLottieView.play()
-            
-            UIView.animate(withDuration: 0.3) {
-                self.rootView.loadingView.alpha = 1
-            }
-        } else {
-            UIView.animate(withDuration: 0.3, animations: {
-                self.rootView.loadingView.alpha = 0
-            }) { _ in
-                self.rootView.loadingView.isHidden = true
-                self.rootView.loadingLottieView.stop()
-            }
-        }
-    }
 
     private func bindViewModel() {
         rootView.headerView.currentStep = 3
@@ -92,12 +74,12 @@ final class TravelHowViewController: TravelViewController {
             .observe(on: MainScheduler.instance)
             .do(onNext: { [weak self] in
                 guard let self = self else { return }
-                self.showLoading(true)          // 로딩 시작
+                self.rootView.lottieView.startAnimating()
             })
             .delay(.milliseconds(3000), scheduler: MainScheduler.instance)
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
-                self.showLoading(false)          // 로딩 종료
+                self.rootView.lottieView.stopAnimating()
                 self.onComplete?()
             })
             .disposed(by: disposeBag)

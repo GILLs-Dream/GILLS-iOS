@@ -17,9 +17,7 @@ final class TravelRequestView: UIView {
     let requestTextView = UITextView()
     let requestPlaceHolder = UILabel()
     let sendButton = UIButton()
-    let loadingView = UIView()
-    let loadingLottieView = LottieAnimationView(name: "gill's dream")
-    let loadingLabel = UILabel()
+    let lottieView = CustomLottieView(text: "길동이가 열심히\n여행을 생성 중이에요")
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -48,15 +46,10 @@ final class TravelRequestView: UIView {
             requestTextView,
             requestPlaceHolder,
             sendButton,
-            loadingView
+            lottieView
         ].forEach { self.addSubview($0) }
         
         requestTextView.addSubview(requestPlaceHolder)
-        
-        [
-            loadingLottieView,
-            loadingLabel
-        ].forEach { loadingView.addSubview($0) }
     }
     
     // MARK: setUpUI
@@ -106,21 +99,8 @@ final class TravelRequestView: UIView {
             $0.setImage(.imgArrowRight, for: .normal)
         }
         
-        loadingView.do {
-            $0.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        lottieView.do {
             $0.isHidden = true
-        }
-        
-        loadingLottieView.do {
-            $0.loopMode = .loop
-            $0.animationSpeed = 4
-            $0.contentMode = .scaleAspectFill
-        }
-        
-        loadingLabel.do {
-            $0.numberOfLines = 2
-            $0.attributedText = "길동이가 열심히\n여행을 생성 중이에요".pretendardAttributedString(style: .subtitle1, color: .white)
-            $0.textAlignment = .center
         }
     }
     
@@ -165,17 +145,8 @@ final class TravelRequestView: UIView {
             $0.width.equalTo(28)
         }
         
-        loadingView.snp.makeConstraints {
+        lottieView.snp.makeConstraints {
             $0.edges.equalToSuperview()
-        }
-        
-        loadingLottieView.snp.makeConstraints {
-            $0.center.equalToSuperview()
-        }
-        
-        loadingLabel.snp.makeConstraints {
-            $0.top.equalTo(loadingLottieView.snp.bottom).offset(-50)
-            $0.centerX.equalToSuperview()
         }
     }
 }

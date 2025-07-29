@@ -37,24 +37,6 @@ final class TravelRequestViewController: BaseViewController {
         rootView.requestTextView.delegate = self
     }
     
-    func showLoading(_ show: Bool) {
-        if show {
-            rootView.loadingView.isHidden = false
-            rootView.loadingLottieView.play()
-            
-            UIView.animate(withDuration: 0.3) {
-                self.rootView.loadingView.alpha = 1
-            }
-        } else {
-            UIView.animate(withDuration: 0.3, animations: {
-                self.rootView.loadingView.alpha = 0
-            }) { _ in
-                self.rootView.loadingView.isHidden = true
-                self.rootView.loadingLottieView.stop()
-            }
-        }
-    }
-    
     private func bindViewModel() {
         let input = TravelRequestViewModel.Input(
             textInput: rootView.requestTextView.rx.text.orEmpty.asObservable(),
@@ -65,25 +47,25 @@ final class TravelRequestViewController: BaseViewController {
                 .delay(.milliseconds(100), scheduler: MainScheduler.instance)
                 .asObservable()
         )
-
+        
         let output = viewModel.transform(input: input)
-
+        
         output.isSendEnabled
             .drive(rootView.sendButton.rx.isEnabled)
             .disposed(by: disposeBag)
-
+        
         output.navigateToNext
             .asObservable()
             .observe(on: MainScheduler.instance)
             .do(onNext: { [weak self] in
                 guard let self = self else { return }
-                self.view.endEditing(true)      // 키보드 내리기
-                self.showLoading(true)          // 로딩 시작
+                self.view.endEditing(true) // 키보드 내리기
+                self.rootView.lottieView.startAnimating()
             })
             .delay(.milliseconds(3000), scheduler: MainScheduler.instance)
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
-                self.showLoading(false)          // 로딩 종료
+                self.rootView.lottieView.stopAnimating()
                 self.onNext?()
             })
             .disposed(by: disposeBag)
