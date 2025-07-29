@@ -7,19 +7,16 @@
 
 import UIKit
 
-protocol AppCoordinatorProtocol: Coordinator {
-    func showLoginFlow()
-    func showTabBarFlow()
-}
-
-final class AppCoordinator: AppCoordinatorProtocol {
-    var childCoordinators: [Coordinator] = []
+final class AppCoordinator: Coordinator {
+    var finishDelegate: CoordinatorFinishDelegate?
     var navigationController: UINavigationController
+    var childCoordinators: [Coordinator] = []
+    var type: CoordinatorType { .app }
     
-    init(navigationController: UINavigationController) {
+    required init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
-        
+    
     func start() {
         if isValidToken() {
             showTabBarFlow()
@@ -27,22 +24,51 @@ final class AppCoordinator: AppCoordinatorProtocol {
             showLoginFlow()
         }
     }
-
+    
     private func isValidToken() -> Bool {
-        guard UserDefaultsManager.shared.isLogin else { return false }
-        // TODO: 토큰 만료 여부 체크
-        return true // 임시 반환
+        return UserDefaultsManager.shared.isLogin
     }
 
     func showLoginFlow() {
-        let loginCoordinator = LoginCoordinator(navigationController: navigationController)
+        let loginCoordinator = LoginCoordinator(navigationController)
+        loginCoordinator.finishDelegate = self
         childCoordinators.append(loginCoordinator)
         loginCoordinator.start()
     }
+    
+    func showSignUpFlow() {
+        let signUpCoordinator = SignUpCoordinator(navigationController)
+        signUpCoordinator.finishDelegate = self
+        childCoordinators.append(signUpCoordinator)
+        signUpCoordinator.start()
+    }
 
     func showTabBarFlow() {
-        let tabBarCoordinator = TabBarCoordinator(navigationController: navigationController)
-        childCoordinators.append(tabBarCoordinator)
-        tabBarCoordinator.start()
+        let tabCoordinator = TabBarCoordinator(navigationController)
+        tabCoordinator.finishDelegate = self
+        childCoordinators.append(tabCoordinator)
+        tabCoordinator.start()
+    }
+}
+
+// MARK: Finish Delegate Handling
+extension AppCoordinator: CoordinatorFinishDelegate {
+    func coordinatorDidFinish(childCoordinator: Coordinator) {
+        childCoordinators.removeAll { $0 === childCoordinator }
+
+        switch childCoordinator.type {
+        case .login:
+            if UserDefaultsManager.shared.isOnboarding {
+                showTabBarFlow()
+            } else {
+                showLoginFlow()
+            }
+        case .signup:
+            showTabBarFlow()
+        case .tab:
+            showLoginFlow() // 로그아웃시
+        default:
+            break
+        }
     }
 }
