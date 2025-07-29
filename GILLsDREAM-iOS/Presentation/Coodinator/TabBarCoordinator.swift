@@ -7,29 +7,19 @@
 
 import UIKit
 
-//protocol TabBarCoordinator: Coordinator {
-//    var tabBarController: UITabBarController { get set }
-//    func selectPage(_ page: TabBarPage)
-//    func setSelectedIndex(_ index: Int)
-//    func currentPage() -> TabBarPage?
-//}
-
-protocol TabBarCoordinatorProtocol: Coordinator {
-    func showTabBarViewController()
-}
-
 final class TabBarCoordinator: Coordinator {
+    var finishDelegate: CoordinatorFinishDelegate?
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
+    var type: CoordinatorType { .tab }
     
-    init(navigationController: UINavigationController) {
+    init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
     
     func start() {
-        showTabBarViewController()
-    }
-    
-    func showTabBarViewController() {
+        print("✅ TabBarCoordinator started")
+        let tabBarController = TabBarViewController()
+        navigationController.setViewControllers([tabBarController], animated: true)
     }
 }
