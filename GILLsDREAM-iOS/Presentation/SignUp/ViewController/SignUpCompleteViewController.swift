@@ -14,6 +14,7 @@ class SignUpCompleteViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private let rootView = SignUpCompleteView()
     private let viewModel = SignUpCompleteViewModel()
+    var onDone: (() -> Void)?
     
     
     // MARK: Life Cycle
@@ -38,8 +39,7 @@ class SignUpCompleteViewController: UIViewController {
         output.navigateToHome
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
-                let vc = TabBarViewController()
-                self.navigationController?.pushViewController(vc, animated: true)
+                self.onDone?()
             })
             .disposed(by: disposeBag)
     }

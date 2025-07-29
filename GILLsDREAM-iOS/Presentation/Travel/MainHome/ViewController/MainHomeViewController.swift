@@ -14,6 +14,7 @@ class MainHomeViewController: BaseViewController {
     private let disposeBag = DisposeBag()
     private let rootView = MainHomeView()
     private let viewModel = MainHomeViewModel()
+    var onStart: (() -> Void)?
 
     // MARK: Life Cycle
     override func loadView() {
@@ -36,9 +37,7 @@ class MainHomeViewController: BaseViewController {
         output.navigateToRequest
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
-                let vc = TravelRequestViewController()
-                vc.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(vc, animated: true)
+                self.onStart?()
             })
             .disposed(by: disposeBag)
     }

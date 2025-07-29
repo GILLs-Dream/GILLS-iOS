@@ -67,6 +67,7 @@ final class TabBarViewController: UITabBarController, UITabBarControllerDelegate
                                                      selectedImage: tab.selectedImage)
         }
         self.setViewControllers(viewControllerList, animated: false)
+        self.selectedIndex = 2
     }
     
     // MARK: setUpStyle

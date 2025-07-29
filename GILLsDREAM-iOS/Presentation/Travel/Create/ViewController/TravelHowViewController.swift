@@ -13,6 +13,8 @@ final class TravelHowViewController: TravelViewController {
     private let rootView = TravelHowView()
     private let viewModel = TravelHowViewModel()
     private let disposeBag = DisposeBag()
+    var onPrev: (() -> Void)?
+    var onComplete: (() -> Void)?
 
     override func loadView() {
         self.view = rootView
@@ -21,6 +23,24 @@ final class TravelHowViewController: TravelViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bindViewModel()
+    }
+    
+    func showLoading(_ show: Bool) {
+        if show {
+            rootView.loadingView.isHidden = false
+            rootView.loadingLottieView.play()
+            
+            UIView.animate(withDuration: 0.3) {
+                self.rootView.loadingView.alpha = 1
+            }
+        } else {
+            UIView.animate(withDuration: 0.3, animations: {
+                self.rootView.loadingView.alpha = 0
+            }) { _ in
+                self.rootView.loadingView.isHidden = true
+                self.rootView.loadingLottieView.stop()
+            }
+        }
     }
 
     private func bindViewModel() {
@@ -63,7 +83,22 @@ final class TravelHowViewController: TravelViewController {
         
         output.navigateToPrev
             .drive(onNext: { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
+                self?.onPrev?()
+            })
+            .disposed(by: disposeBag)
+
+        output.navigateToNext
+            .asObservable()
+            .observe(on: MainScheduler.instance)
+            .do(onNext: { [weak self] in
+                guard let self = self else { return }
+                self.showLoading(true)          // 로딩 시작
+            })
+            .delay(.milliseconds(3000), scheduler: MainScheduler.instance)
+            .bind(onNext: { [weak self] in
+                guard let self = self else { return }
+                self.showLoading(false)          // 로딩 종료
+                self.onComplete?()
             })
             .disposed(by: disposeBag)
     }

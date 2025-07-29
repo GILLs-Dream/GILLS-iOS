@@ -13,6 +13,7 @@ final class TravelWhenViewController: TravelViewController {
     private let rootView = TravelWhenView()
     private let viewModel = TravelWhenViewModel()
     private let disposeBag = DisposeBag()
+    var onNext: (() -> Void)?
     
     override func loadView() {
         self.view = rootView
@@ -96,8 +97,7 @@ final class TravelWhenViewController: TravelViewController {
             .asObservable()
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
-                let nextVC = TravelWhoViewController()
-                self.navigationController?.pushViewController(nextVC, animated: true)
+                self.onNext?()
             })
             .disposed(by: disposeBag)
     }

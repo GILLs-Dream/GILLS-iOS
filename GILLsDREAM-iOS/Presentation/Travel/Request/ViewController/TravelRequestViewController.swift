@@ -14,6 +14,7 @@ final class TravelRequestViewController: BaseViewController {
     private let rootView = TravelRequestView()
     private let viewModel = TravelRequestViewModel()
     private let disposeBag = DisposeBag()
+    var onNext: (() -> Void)?
     
     override func loadView() {
         self.view = rootView
@@ -83,8 +84,7 @@ final class TravelRequestViewController: BaseViewController {
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
                 self.showLoading(false)          // 로딩 종료
-                let nextVC = TravelWhenViewController()
-                self.navigationController?.pushViewController(nextVC, animated: true)
+                self.onNext?()
             })
             .disposed(by: disposeBag)
     }

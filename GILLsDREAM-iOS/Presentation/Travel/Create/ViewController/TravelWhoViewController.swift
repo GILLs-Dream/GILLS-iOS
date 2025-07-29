@@ -13,6 +13,8 @@ final class TravelWhoViewController: TravelViewController {
     private let rootView = TravelWhoView()
     private let viewModel = TravelWhoViewModel()
     private let disposeBag = DisposeBag()
+    var onPrev: (() -> Void)?
+    var onNext: (() -> Void)?
     
     override func loadView() {
         self.view = rootView
@@ -44,10 +46,17 @@ final class TravelWhoViewController: TravelViewController {
 //            .drive(rootView.nextButton.rx.isHidden)
 //            .disposed(by: disposeBag)
 
+        output.navigateToPrev
+            .drive(onNext: { [weak self] in
+                guard let self = self else { return }
+                self.onPrev?()
+            })
+            .disposed(by: disposeBag)
+        
         output.navigateToNext
             .drive(onNext: { [weak self] in
-                let nextVC = TravelWhereViewController()
-                self?.navigationController?.pushViewController(nextVC, animated: true)
+                guard let self = self else { return }
+                self.onNext?()
             })
             .disposed(by: disposeBag)
     }

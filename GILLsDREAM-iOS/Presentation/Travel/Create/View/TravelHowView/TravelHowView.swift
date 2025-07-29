@@ -17,6 +17,9 @@ final class TravelHowView: UIView {
     let categoryOptionView = CategoryOptionView()
     lazy var previousButton = CustomButton(title: "이전")
     lazy var doneButton = CustomButton(title: "완료")
+    let loadingView = UIView()
+    let loadingLottieView = LottieAnimationView(name: "gill's dream")
+    let loadingLabel = UILabel()
 
     override init(frame: CGRect) {
         self.headerView = TravelHeaderView(titleText: titleText)

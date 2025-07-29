@@ -73,7 +73,7 @@ final class TravelRequestView: UIView {
             $0.applyMultipleAttributes(styles: [
                 (target: "가을 제주도에서 찐친들", font: .PretendardStyle.title4.font, color: .mainYellow),
                 (target: "인스타그래머블", font: .PretendardStyle.title4.font, color: .mainYellow),
-                (target: "핫한", font: .PretendardStyle.title4.font, color: .mainYellow)
+                (target: "고즈넉한", font: .PretendardStyle.title4.font, color: .mainYellow)
             ])
         }
         

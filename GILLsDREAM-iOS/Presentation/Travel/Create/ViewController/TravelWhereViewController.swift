@@ -19,6 +19,8 @@ final class TravelWhereViewController: TravelViewController {
     private let deleteIndexPathSubject = PublishSubject<IndexPath>()
     private let calendarTappedSubject = PublishSubject<(IndexPath)>()
     private let currentPageRelay = BehaviorRelay<Int>(value: 0)
+    var onPrev: (() -> Void)?
+    var onNext: (() -> Void)?
     
     override func loadView() {
         self.view = rootView
@@ -88,14 +90,15 @@ final class TravelWhereViewController: TravelViewController {
         
         output.navigatePrev
             .emit(onNext: { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
+                guard let self = self else { return }
+                self.onPrev?()
             })
             .disposed(by: disposeBag)
 
         output.navigateNext
             .emit(onNext: { [weak self] in
-                let nextVC = TravelHowViewController()
-                self?.navigationController?.pushViewController(nextVC, animated: true)
+                guard let self = self else { return }
+                self.onNext?()
             })
             .disposed(by: disposeBag)
     }
