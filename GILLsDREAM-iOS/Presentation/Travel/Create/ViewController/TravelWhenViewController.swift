@@ -11,9 +11,18 @@ import RxCocoa
 
 final class TravelWhenViewController: TravelViewController {
     private let rootView = TravelWhenView()
-    private let viewModel = TravelWhenViewModel()
+    private let viewModel: TravelWhenViewModel
     private let disposeBag = DisposeBag()
     var onNext: (() -> Void)?
+    
+    init(flowViewModel: TravelRequestFlowViewModel) {
+        self.viewModel = TravelWhenViewModel(flowViewModel: flowViewModel)
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         self.view = rootView
@@ -63,20 +72,14 @@ final class TravelWhenViewController: TravelViewController {
                 guard let self = self else { return }
                 if let startDateText = self.rootView.travelDateView.startField.textField.text,
                    !startDateText.isEmpty {
-                    let formatter = DateFormatter()
-                    formatter.locale = Locale(identifier: "ko_KR")
-                    formatter.dateFormat = "yyyy년  M월  d일"
-                    self.rootView.travelDateView.endField?.updateText(formatter.string(from: endDate))
+                    self.rootView.travelDateView.endField?.updateText(endDate.formatted("yyyy년 M월 d일"))
                 }
             })
             .disposed(by: disposeBag)
-        
+
         output.calculatedStartDate
             .drive(onNext: { [weak self] startDate in
-                let formatter = DateFormatter()
-                formatter.locale = Locale(identifier: "ko_KR")
-                formatter.dateFormat = "yyyy년  M월  d일"
-                self?.rootView.travelDateView.startField.updateText(formatter.string(from: startDate))
+                self?.rootView.travelDateView.startField.updateText(startDate.formatted("yyyy년 M월 d일"))
             })
             .disposed(by: disposeBag)
         
