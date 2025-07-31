@@ -36,20 +36,15 @@ extension PlaceSection: SectionModelType {
 
 extension Place {
     var dateText: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy/MM/dd"
-        
         switch type {
         case .travel:
-            if let date = visitDate {
-                return formatter.string(from: date)
-            }
+            return visitDate?.formatted("yyyy/MM/dd") ?? "날짜 미정"
         case .stay:
             if let checkIn = checkInDate, let checkOut = checkOutDate {
-                return "\(formatter.string(from: checkIn)) - \(formatter.string(from: checkOut))"
+                return "\(checkIn.formatted("yyyy/MM/dd")) - \(checkOut.formatted("yyyy/MM/dd"))"
+            } else {
+                return "날짜 미정"
             }
         }
-        return "날짜 미정"
     }
 }
