@@ -12,23 +12,22 @@ final class MainHomeCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
     var type: CoordinatorType { .main }
+    private let flowViewModel = TravelRequestFlowViewModel()
     
     init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
     
     func start() {
-        showMainHomeVC()
+        showMainHomeVC(MainHomeViewController())
     }
     
-    private func showMainHomeVC() {
-        let vc = MainHomeViewController()
-        vc.onStart = { [weak self] in
+    func showMainHomeVC(_ mainVC: MainHomeViewController) {
+        mainVC.onStart = { [weak self] in
             self?.showTravelRequestVC()
         }
-        navigationController.setViewControllers([vc], animated: false)
     }
-    
+
     private func showTravelRequestVC() {
         let vc = TravelRequestViewController()
         vc.onNext = { [weak self] in
@@ -38,7 +37,7 @@ final class MainHomeCoordinator: Coordinator {
     }
     
     private func showTravelWhenVC() {
-        let vc = TravelWhenViewController()
+        let vc = TravelWhenViewController(flowViewModel: flowViewModel)
         vc.onNext = { [weak self] in
             self?.showTravelWhoVC()
         }

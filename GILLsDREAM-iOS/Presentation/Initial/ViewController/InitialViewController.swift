@@ -11,6 +11,7 @@ import RxSwift
 final class InitialViewController: UIViewController {
     
     // MARK: Properties
+    weak var coordinator: LoginCoordinator?
     private let disposeBag = DisposeBag()
     private let rootView = InitialView()
     private let viewModel = InitialViewModel()
@@ -35,17 +36,13 @@ final class InitialViewController: UIViewController {
 
         output.navigateToKakaoSignUp
             .drive(onNext: { [weak self] in
-                // 임시
-                let profileVC = ProfileViewController()
-                self?.navigationController?.pushViewController(profileVC, animated: true)
+                self?.coordinator?.startSignUp()
             })
             .disposed(by: disposeBag)
 
         output.navigateToAppleSignUp
             .drive(onNext: { [weak self] in
-                // 임시
-                let profileVC = ProfileViewController()
-                self?.navigationController?.pushViewController(profileVC, animated: true)
+                self?.coordinator?.startSignUp()
             })
             .disposed(by: disposeBag)
     }
