@@ -41,7 +41,7 @@ final class TosDetailView: UIView {
     
     private func setUpUI() {
         titleLabel.do {
-            $0.font = .PretendardStyle.subtitle5.font
+            $0.font = .PretendardStyle.subtitle6.font
         }
         
         contentLabel.do {
