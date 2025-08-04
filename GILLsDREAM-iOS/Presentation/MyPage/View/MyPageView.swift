@@ -8,6 +8,12 @@
 import UIKit
 
 final class MyPageView: UIView {
+    
+    // MARK: Properties
+    //FIX: 임시
+    private var userNickname: String = "SAM"
+    private var userEmail: String = "gildong@gill.com"
+    
     // MARK: Views
     let profileImageView = UIImageView()
     let nicknameLabel = UILabel()
@@ -60,11 +66,11 @@ final class MyPageView: UIView {
         }
         
         nicknameLabel.do {
-            $0.attributedText = "안녕하세요, SAM님".pretendardAttributedString(style: .subtitle2)
+            $0.attributedText = "안녕하세요, \(userNickname)님".pretendardAttributedString(style: .subtitle2)
         }
         
         emailLabel.do {
-            $0.attributedText = "gildong@gill.com".pretendardAttributedString(style: .body2)
+            $0.attributedText = "\(userEmail)".pretendardAttributedString(style: .body2)
         }
         
         divideLine.do {

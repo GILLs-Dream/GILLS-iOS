@@ -11,7 +11,6 @@ import RxCocoa
 final class MyPageViewModel: ViewModelType {
     
     struct Input {
-//        let personalInfoTapped: Observable<Void>
         let serviceTapped: Observable<Void>
         let withdrawTapped: Observable<Void>
         let logoutTapped: Observable<Void>
