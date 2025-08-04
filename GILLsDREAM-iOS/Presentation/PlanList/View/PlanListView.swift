@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class PlanListView: UIView {
     lazy var myPlanCollectionView: UICollectionView = {

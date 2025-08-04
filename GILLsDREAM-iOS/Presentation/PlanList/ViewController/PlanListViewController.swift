@@ -37,8 +37,9 @@ final class PlanListViewController: BaseViewController {
             .disposed(by: disposeBag)
 
         output.selectedPlan
-            .emit(onNext: { plan in
+            .emit(onNext: { [weak self] plan in
                 // TODO: 상세 페이지 이동
+                // self?.navigateToDetail(plan: plan)
             })
             .disposed(by: disposeBag)
     }
