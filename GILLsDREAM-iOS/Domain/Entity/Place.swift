@@ -5,8 +5,7 @@
 //  Created by 오연서 on 7/22/25.
 //
 
-import UIKit
-import RxDataSources
+import Foundation
 
 enum PlaceType {
     case travel //여행지
@@ -15,23 +14,12 @@ enum PlaceType {
 
 struct Place {
     let name: String
-    let imageURL: UIImage?
+    let imageURL: String?
     var type: PlaceType
     
     var visitDate: Date?
     var checkInDate: Date?
     var checkOutDate: Date?
-}
-
-struct PlaceSection {
-    var items: [Place]
-}
-
-extension PlaceSection: SectionModelType {
-    init(original: PlaceSection, items: [Place]) {
-        self = original
-        self.items = items
-    }
 }
 
 extension Place {

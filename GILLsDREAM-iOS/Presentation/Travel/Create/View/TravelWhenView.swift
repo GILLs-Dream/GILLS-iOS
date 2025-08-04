@@ -62,7 +62,7 @@ final class TravelWhenView: UIView {
             var config = UIButton.Configuration.plain()
             config.imagePadding = 8
             $0.setImage(.imgCircle, for: .normal)
-            $0.setAttributedTitle("여행날짜는 미정입니다.".pretendardAttributedString(style: .body3), for: .normal)
+            $0.setAttributedTitle("여행날짜는 미정입니다.".pretendardAttributedString(style: .body2), for: .normal)
             $0.configuration = config
         }
         
