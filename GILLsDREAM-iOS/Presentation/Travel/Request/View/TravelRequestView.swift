@@ -71,7 +71,7 @@ final class TravelRequestView: UIView {
         }
         
         extraLabel.do {
-            $0.attributedText = "분위기가 구체적일수록 좋아요!".pretendardAttributedString(style: .body3)
+            $0.attributedText = "분위기가 구체적일수록 좋아요!".pretendardAttributedString(style: .body2)
         }
         
         underlineView.do {
@@ -84,14 +84,14 @@ final class TravelRequestView: UIView {
             $0.layer.cornerRadius = 30
             $0.layer.borderWidth = 5
             $0.layer.borderColor = UIColor.white.cgColor
-            $0.font = .PretendardStyle.subtitle5.font
+            $0.font = .PretendardStyle.subtitle6.font
             $0.textColor = .white
             $0.textContainerInset = .init(top: 15, left: 17, bottom: 15, right: 53)
             $0.isScrollEnabled = false
         }
         
         requestPlaceHolder.do {
-            $0.attributedText = "지금 어떤 분위기의 여행이 가고싶나요?".pretendardAttributedString(style: .subtitle5, color: .white)
+            $0.attributedText = "지금 어떤 분위기의 여행이 가고싶나요?".pretendardAttributedString(style: .subtitle6, color: .white)
             $0.backgroundColor = .clear
         }
         

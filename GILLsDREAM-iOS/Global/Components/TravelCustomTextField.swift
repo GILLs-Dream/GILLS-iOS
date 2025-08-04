@@ -77,16 +77,16 @@ final class TravelCustomTextField: UIView {
         switch inputMode {
         case .datePicker:
             unitLabel.isHidden = true
-            textField.attributedPlaceholder = isStartField ? "시작일 입력".pretendardAttributedString(style: .body3, color: .white)
-                                                            : "종료일 입력".pretendardAttributedString(style: .body3, color: .white)
+            textField.attributedPlaceholder = isStartField ? "시작일 입력".pretendardAttributedString(style: .body2, color: .white)
+                                                            : "종료일 입력".pretendardAttributedString(style: .body2, color: .white)
         default:
-            unitLabel.attributedText = unit.pretendardAttributedString(style: .body3)
-            detailLabel.attributedText = detail.pretendardAttributedString(style: .body3)
+            unitLabel.attributedText = unit.pretendardAttributedString(style: .body2)
+            detailLabel.attributedText = detail.pretendardAttributedString(style: .body2)
         }
 
         textField.do {
             $0.textAlignment = .right
-            $0.font = .PretendardStyle.body3.font
+            $0.font = .PretendardStyle.body2.font
             $0.textColor = .white
         }
 

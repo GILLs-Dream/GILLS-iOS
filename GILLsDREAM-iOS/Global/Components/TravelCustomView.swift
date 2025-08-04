@@ -66,7 +66,7 @@ private extension TravelCustomView {
 
     func setUpUI() {
         waveLabel.do {
-            $0.attributedText = "~".pretendardAttributedString(style: .body3, color: .white)
+            $0.attributedText = "~".pretendardAttributedString(style: .body2, color: .white)
             $0.isHidden = (endField == nil)
         }
     }
