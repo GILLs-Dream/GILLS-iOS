@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import RxDataSources
 
 enum PlaceType {
     case travel //여행지
@@ -21,17 +20,6 @@ struct Place {
     var visitDate: Date?
     var checkInDate: Date?
     var checkOutDate: Date?
-}
-
-struct PlaceSection {
-    var items: [Place]
-}
-
-extension PlaceSection: SectionModelType {
-    init(original: PlaceSection, items: [Place]) {
-        self = original
-        self.items = items
-    }
 }
 
 extension Place {
