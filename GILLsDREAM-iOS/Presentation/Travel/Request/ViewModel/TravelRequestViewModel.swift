@@ -22,10 +22,10 @@ final class TravelRequestViewModel {
     }
 
     let disposeBag = DisposeBag()
-    let currentStep = BehaviorRelay<TravelRequestStep>(value: .location)
-    var location: String = ""
+    let currentStep = BehaviorRelay<TravelRequestStep>(value: .region)
+    var region: String = ""
     var mood: String = ""
-    var videoURL: String = ""
+    var video: String = ""
     private let travelTextRelay = BehaviorRelay<String>(value: "")
     private let navigateToNextRelay = PublishRelay<Void>()
 
@@ -40,8 +40,8 @@ final class TravelRequestViewModel {
                 guard let self = self else { return }
 
                 switch self.currentStep.value {
-                case .location:
-                    self.location = text
+                case .region:
+                    self.region = text
                     self.travelTextRelay.accept("")
                     self.currentStep.accept(.mood)
 
@@ -51,7 +51,7 @@ final class TravelRequestViewModel {
                     self.currentStep.accept(.video)
                     //TODO: 여행무드 api 연결
                 case .video:
-                    self.videoURL = text
+                    self.video = text
                     self.navigateToNextRelay.accept(())
                     //TODO: 지역, 유튜브링크 전송 api 연결
                 }

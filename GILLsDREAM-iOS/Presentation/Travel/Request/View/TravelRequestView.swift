@@ -9,9 +9,9 @@ import UIKit
 import Lottie
 
 enum TravelRequestStep {
-    case location
+    case region
     case mood
-    case video
+    case videoURL
 }
 
 final class TravelRequestView: UIView {
@@ -152,7 +152,7 @@ final class TravelRequestView: UIView {
 extension TravelRequestView {
     func update(for step: TravelRequestStep, with location: String? = nil) {
         switch step {
-        case .location:
+        case .region:
             exampleLabel.attributedText = "묵호".pretendardAttributedString(style: .title4, color: .mainYellow)
             extraLabel.isHidden = true
             underlineView.isHidden = true
@@ -171,7 +171,7 @@ extension TravelRequestView {
                     (target: "고즈넉한", font: .PretendardStyle.title4.font, color: .mainYellow)
                 ])
             }
-        case .video:
+        case .videoURL:
             requestPlaceHolder.attributedText = "참고하고 싶은 여행영상이 있나요?".pretendardAttributedString(style: .subtitle6)
             extraLabel.isHidden = false
             underlineView.isHidden = true

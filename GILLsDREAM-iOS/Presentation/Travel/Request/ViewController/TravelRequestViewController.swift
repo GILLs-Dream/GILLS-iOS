@@ -77,16 +77,16 @@ final class TravelRequestViewController: BaseViewController {
                 guard let self = self else { return }
 
                 switch step {
-                case .location:
-                    self.rootView.update(for: .location)
+                case .region:
+                    self.rootView.update(for: .region)
                 case .mood:
                     self.rootView.requestTextView.text = ""
                     self.rootView.requestPlaceHolder.isHidden = false
-                    self.rootView.update(for: .mood, with: self.viewModel.location)
-                case .video:
+                    self.rootView.update(for: .mood, with: self.viewModel.region)
+                case .videoURL:
                     self.rootView.requestTextView.text = ""
                     self.rootView.requestPlaceHolder.isHidden = false
-                    self.rootView.update(for: .video)
+                    self.rootView.update(for: .videoURL)
                 }
             })
             .disposed(by: disposeBag)
