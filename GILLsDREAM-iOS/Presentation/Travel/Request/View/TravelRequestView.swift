@@ -8,12 +8,6 @@
 import UIKit
 import Lottie
 
-enum TravelRequestStep {
-    case region
-    case mood
-    case videoURL
-}
-
 final class TravelRequestView: UIView {
     // MARK: Views
     private let titleLabel = UILabel()
@@ -171,7 +165,7 @@ extension TravelRequestView {
                     (target: "고즈넉한", font: .PretendardStyle.title4.font, color: .mainYellow)
                 ])
             }
-        case .videoURL:
+        case .video:
             requestPlaceHolder.attributedText = "참고하고 싶은 여행영상이 있나요?".pretendardAttributedString(style: .subtitle6)
             extraLabel.isHidden = false
             underlineView.isHidden = true

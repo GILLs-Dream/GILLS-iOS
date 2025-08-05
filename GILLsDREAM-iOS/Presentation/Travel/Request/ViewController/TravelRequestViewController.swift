@@ -9,6 +9,12 @@ import UIKit
 import RxSwift
 import RxCocoa
 
+enum TravelRequestStep {
+    case region
+    case mood
+    case video
+}
+
 final class TravelRequestViewController: BaseViewController {
     
     private let rootView = TravelRequestView()
@@ -83,10 +89,10 @@ final class TravelRequestViewController: BaseViewController {
                     self.rootView.requestTextView.text = ""
                     self.rootView.requestPlaceHolder.isHidden = false
                     self.rootView.update(for: .mood, with: self.viewModel.region)
-                case .videoURL:
+                case .video:
                     self.rootView.requestTextView.text = ""
                     self.rootView.requestPlaceHolder.isHidden = false
-                    self.rootView.update(for: .videoURL)
+                    self.rootView.update(for: .video)
                 }
             })
             .disposed(by: disposeBag)
