@@ -7,13 +7,6 @@
 
 import UIKit
 
-protocol TabBarCoordinatorProtocol: Coordinator {
-    var tabBarController: UITabBarController { get set }
-    func selectPage(_ page: AppTab)
-    func setSelectedIndex(_ index: Int)
-    func currentPage() -> AppTab?
-}
-
 final class TabBarCoordinator: NSObject, Coordinator {
     weak var finishDelegate: CoordinatorFinishDelegate?
     var childCoordinators: [Coordinator] = []

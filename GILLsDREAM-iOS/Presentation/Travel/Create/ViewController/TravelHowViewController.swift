@@ -25,11 +25,11 @@ final class TravelHowViewController: TravelViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func loadView() {
         self.view = rootView
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         bindFlowViewModel()
@@ -44,7 +44,7 @@ final class TravelHowViewController: TravelViewController {
                 viewModel.selectedTransportRelay.accept(matchedButton)
             }
         }
-
+        
         if let selectedCategoryTitles = flowViewModel.categories.value {
             let matchedButtons = rootView.categoryOptionView.categoryButtons.filter {
                 guard let title = $0.title(for: .normal) else { return false }
@@ -53,7 +53,7 @@ final class TravelHowViewController: TravelViewController {
             viewModel.selectedCategoriesRelay.accept(matchedButtons)
         }
     }
-
+    
     private func bindViewModel() {
         rootView.headerView.currentStep = 3
         
@@ -101,24 +101,20 @@ final class TravelHowViewController: TravelViewController {
             .disposed(by: disposeBag)
 
         output.navigateToNext
-            .asObservable()
-            .observe(on: MainScheduler.instance)
-            .do(onNext: { [weak self] in
+            .drive(onNext: { [weak self] in
                 guard let self = self else { return }
                 self.flowViewModel.transportation.accept(self.viewModel.transportation)
                 self.flowViewModel.categories.accept(self.viewModel.categories)
-                guard self.flowViewModel.isHowValid else {
+                
+                if self.flowViewModel.isHowValid {
+                    self.rootView.lottieView.startAnimating()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+                        self?.rootView.lottieView.stopAnimating()
+                        self?.onComplete?()
+                    }
+                } else {
                     ToastManager.shared.show(message: "필수 정보를 입력하지 않았습니다.")
-                    throw NSError(domain: "InvalidInput", code: 0) // 스트림 중단용 에러
                 }
-                self.rootView.lottieView.startAnimating()
-            })
-            .delay(.milliseconds(3000), scheduler: MainScheduler.instance)
-            .catch { _ in Observable.empty() } // 유효성 실패 시 이후 로직 막기
-            .bind(onNext: { [weak self] in
-                guard let self = self else { return }
-                self.rootView.lottieView.stopAnimating()
-                self.onComplete?()
             })
             .disposed(by: disposeBag)
     }

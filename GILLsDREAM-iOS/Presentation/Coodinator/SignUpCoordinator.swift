@@ -56,7 +56,7 @@ final class SignUpCoordinator: Coordinator {
             sheet.detents = [.medium()]
             sheet.prefersGrabberVisible = true
         }
-        navigationController.pushViewController(vc, animated: true)
+        navigationController.present(vc, animated: true)
     }
 
     private func showSignupCompleteVC() {

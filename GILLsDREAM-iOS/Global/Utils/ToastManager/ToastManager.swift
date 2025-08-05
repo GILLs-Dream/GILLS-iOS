@@ -12,7 +12,8 @@ final class ToastManager {
     private init() {}
     
     func show(message: String, duration: TimeInterval = 2.0) {
-        guard let window = UIApplication.shared.windows.first else { return }
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else { return }
         
         let toastView = ToastView(message: message)
         window.addSubview(toastView)

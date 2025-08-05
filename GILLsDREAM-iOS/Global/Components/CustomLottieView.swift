@@ -23,7 +23,6 @@ final class CustomLottieView: UIView {
         setUpUI()
         setUpLayout()
         setText(text)
-        startAnimating()
     }
     
     required init?(coder: NSCoder) {

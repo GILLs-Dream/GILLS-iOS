@@ -18,8 +18,4 @@ class TravelViewController: UIViewController {
         view.addSubview(backgroundView)
         view.sendSubviewToBack(backgroundView)
     }
-
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        true
-    }
 }

@@ -34,7 +34,6 @@ final class CustomSelectableButton: UIButton {
         self.setImage(.imgCircle, for: .normal)
         self.setImage(.imgCheckedCircle, for: .selected)
         self.contentHorizontalAlignment = .left
-        self.setTitle(title, for: .normal)
     }
 
     func updateTitle(_ title: String) {

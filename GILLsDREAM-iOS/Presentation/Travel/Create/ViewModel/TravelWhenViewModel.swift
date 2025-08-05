@@ -47,7 +47,20 @@ final class TravelWhenViewModel {
 
         input.travelDaysInput
             .do(onNext: { [weak self] days in
-                self?.travelDaysRelay.accept(days)
+                guard let self else { return }
+                self.travelDaysRelay.accept(days)
+
+                if let start = self.startDateRelay.value {
+                    if let end = Calendar.current.date(byAdding: .day, value: days - 1, to: start) {
+                        self.endDateRelay.accept(end)
+                        self.calculatedEndDateRelay.accept(end)
+                    }
+                } else if let end = self.endDateRelay.value {
+                    if let start = Calendar.current.date(byAdding: .day, value: -(days - 1), to: end) {
+                        self.startDateRelay.accept(start)
+                        self.calculatedStartDateRelay.accept(start)
+                    }
+                }
             })
             .map { _ in true }
             .bind(to: isNextEnabledRelay)
@@ -83,27 +96,6 @@ final class TravelWhenViewModel {
                 }
             })
             .subscribe()
-            .disposed(by: disposeBag)
-
-        input.travelDaysInput
-            .do(onNext: { [weak self] days in
-                guard let self else { return }
-                self.travelDaysRelay.accept(days)
-
-                if let start = self.startDateRelay.value {
-                    if let end = Calendar.current.date(byAdding: .day, value: days - 1, to: start) {
-                        self.endDateRelay.accept(end)
-                        self.calculatedEndDateRelay.accept(end)
-                    }
-                } else if let end = self.endDateRelay.value {
-                    if let start = Calendar.current.date(byAdding: .day, value: -(days - 1), to: end) {
-                        self.startDateRelay.accept(start)
-                        self.calculatedStartDateRelay.accept(start)
-                    }
-                }
-            })
-            .map { _ in true }
-            .bind(to: isNextEnabledRelay)
             .disposed(by: disposeBag)
 
         input.nextButtonTapped

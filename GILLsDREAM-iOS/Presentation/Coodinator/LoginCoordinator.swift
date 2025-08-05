@@ -7,14 +7,8 @@
 
 import UIKit
 
-protocol LoginCoordinatorDelegate {
-    func didKakaoLoggedIn(_ coordinator: LoginCoordinator)
-    func didAppleLoggedIn(_ coordinator: LoginCoordinator)
-}
-
 final class LoginCoordinator: Coordinator {
     weak var finishDelegate: CoordinatorFinishDelegate?
-    var delegate: LoginCoordinatorDelegate?
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
     var type: CoordinatorType { .login }
