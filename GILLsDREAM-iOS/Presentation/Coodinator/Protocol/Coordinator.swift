@@ -18,8 +18,6 @@ enum CoordinatorType {
     case tab
     /// main : 여행정보 입력, 생성, 결과 등 여행 생성 관련 로직을 담당하는 코디네이터
     case main
-    /// mypage : 회원탈퇴 및 로그아웃을 담당하는 코디네이터
-    case mypage
 }
 
 // MARK: Base Coordinator

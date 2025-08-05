@@ -14,6 +14,7 @@ final class MyPageViewController: BaseViewController {
     private let disposeBag = DisposeBag()
     private let rootView = MyPageView()
     private let viewModel = MyPageViewModel()
+    var onLogout: (() -> Void)?
 
     override func loadView() {
         self.view = rootView
@@ -48,6 +49,7 @@ final class MyPageViewController: BaseViewController {
                     confirmTitle: "탈퇴",
                     confirmAction: {
                         // TODO: 회원탈퇴 API 연결
+                        self.onLogout?()
                     }
                 )
             }
@@ -60,7 +62,8 @@ final class MyPageViewController: BaseViewController {
                     title: "로그아웃 하시겠습니까?",
                     confirmTitle: "로그아웃",
                     confirmAction: {
-                        // TODO: 로그아웃 API 연결 후 InitialVC로 이동
+                        // TODO: 로그아웃 API 연결
+                        self.onLogout?()
                     }
                 )
             }
