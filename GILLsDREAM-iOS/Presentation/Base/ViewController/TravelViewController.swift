@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TravelViewController: UIViewController, UIGestureRecognizerDelegate {
+class TravelViewController: UIViewController {
     private let backgroundView = UIImageView(image: UIImage(named: "img_background"))
 
     override func viewDidLoad() {
@@ -17,17 +17,6 @@ class TravelViewController: UIViewController, UIGestureRecognizerDelegate {
         backgroundView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(backgroundView)
         view.sendSubviewToBack(backgroundView)
-    }
-    
-    @objc func dismissKeyboardAndPickers() {
-        view.endEditing(true)
-    }
-
-    func setupTapToDismissAllInputs() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboardAndPickers))
-        tapGesture.cancelsTouchesInView = false
-        tapGesture.delegate = self
-        view.addGestureRecognizer(tapGesture)
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {

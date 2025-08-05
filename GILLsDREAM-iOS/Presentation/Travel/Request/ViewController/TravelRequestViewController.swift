@@ -22,6 +22,7 @@ final class TravelRequestViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupTapToDismissAllInputs()
         setUpDelegate()
         bindViewModel()
     }

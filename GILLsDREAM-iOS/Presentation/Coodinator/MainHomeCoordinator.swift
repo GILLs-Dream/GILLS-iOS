@@ -80,7 +80,7 @@ final class MainHomeCoordinator: Coordinator {
     }
     
     private func showTravelResultVC() {
-        let vc = TravelRequestViewController() // 재사용되는 VC
+        let vc = TravelRequestViewController() // TODO: TravelResultVC 구현 후 변경
         navigationController.pushViewController(vc, animated: true)
     }
 }

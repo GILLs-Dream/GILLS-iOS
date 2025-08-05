@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension UIViewController {
+extension UIViewController: @retroactive UIGestureRecognizerDelegate {
     /// 네비게이션 바 커스텀 설정: 백버튼 숨김, 틴트 컬러 흰색
     func configureCustomNavigationBar(
         title: String? = nil,
@@ -37,5 +37,16 @@ extension UIViewController {
         if let title = title {
             self.title = title
         }
+    }
+    
+    @objc func dismissKeyboardAndPickers() {
+        view.endEditing(true)
+    }
+
+    func setupTapToDismissAllInputs() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboardAndPickers))
+        tapGesture.cancelsTouchesInView = false
+        tapGesture.delegate = self
+        view.addGestureRecognizer(tapGesture)
     }
 }
