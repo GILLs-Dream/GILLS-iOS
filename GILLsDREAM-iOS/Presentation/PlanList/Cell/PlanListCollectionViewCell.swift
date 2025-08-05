@@ -15,7 +15,7 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
 
     //MARK: views
     let planImageView = UIImageView()
-    let isPinnedLabel = UILabel()
+    let pinImageView = UIImageView()
     let planTitle = UILabel()
     let planDate = UILabel()
     let detailButton = UIButton()
@@ -51,7 +51,7 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
     private func setUpHierarchy() {
         [
             planImageView,
-            isPinnedLabel,
+            pinImageView,
             planTitle,
             planDate,
             detailButton
@@ -65,8 +65,9 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
             $0.contentMode = .scaleAspectFill
         }
         
-        isPinnedLabel.do {
-            $0.attributedText = "고정됨".pretendardAttributedString(style: .body2, color: .white)
+        pinImageView.do {
+            $0.image = UIImage(systemName: "pin.fill")
+            $0.tintColor = .white
             $0.isHidden = true
         }
         
@@ -81,19 +82,20 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
             $0.size.equalTo(86)
         }
         
-        isPinnedLabel.snp.makeConstraints {
+        pinImageView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(2)
             $0.leading.equalTo(planImageView.snp.trailing).offset(7)
+            $0.size.equalTo(14)
         }
         
         planTitle.snp.makeConstraints {
-            $0.top.equalTo(isPinnedLabel.snp.bottom).offset(2)
-            $0.leading.equalTo(isPinnedLabel)
+            $0.top.equalTo(pinImageView.snp.bottom).offset(2)
+            $0.leading.equalTo(pinImageView)
         }
         
         planDate.snp.makeConstraints {
             $0.top.equalTo(planTitle.snp.bottom).offset(2)
-            $0.leading.equalTo(isPinnedLabel).offset(1)
+            $0.leading.equalTo(pinImageView).offset(1)
         }
         
         detailButton.snp.makeConstraints {
@@ -133,8 +135,8 @@ extension PlanListCollectionViewCell {
     func configure(with model: Plan) {
         planTitle.attributedText = model.title.pretendardAttributedString(style: .subtitle5)
         planDate.attributedText = model.dateRange?.pretendardAttributedString(style: .body3) ?? "날짜 미정".pretendardAttributedString(style: .body3)
-        isPinnedLabel.isHidden = !model.isPinned
-        planImageView.image = model.imageURL ?? UIImage.imgDefaultGillSquare
+        pinImageView.isHidden = !model.isPinned
+        //planImageView.image = model.imageURL ?? UIImage.imgDefaultGillSquare
         setUpMenu(isPinned: model.isPinned)
     }
 }
