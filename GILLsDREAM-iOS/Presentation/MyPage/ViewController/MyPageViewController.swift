@@ -14,6 +14,7 @@ final class MyPageViewController: BaseViewController {
     private let disposeBag = DisposeBag()
     private let rootView = MyPageView()
     private let viewModel = MyPageViewModel()
+    var onLogout: (() -> Void)?
 
     override func loadView() {
         self.view = rootView
@@ -21,7 +22,6 @@ final class MyPageViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureCustomNavigationBar()
         bindViewModel()
     }
 
@@ -37,7 +37,7 @@ final class MyPageViewController: BaseViewController {
         output.showServiceTerms
             .bind { [weak self] in
                 guard let self = self else { return }
-                self.presentDetail(title: "서비스 이용약관", content: TermsContent.service)
+                self.presentDetail(title: "서비스 이용약관", content: TermsContent.service.content)
             }
             .disposed(by: disposeBag)
 
@@ -48,7 +48,9 @@ final class MyPageViewController: BaseViewController {
                     title: "정말로 길동이의 꿈을\n탈퇴하시겠습니까?",
                     confirmTitle: "탈퇴",
                     confirmAction: {
+                        UserDefaultsManager.shared.isOnboarding = false
                         // TODO: 회원탈퇴 API 연결
+                        self.onLogout?()
                     }
                 )
             }
@@ -61,7 +63,8 @@ final class MyPageViewController: BaseViewController {
                     title: "로그아웃 하시겠습니까?",
                     confirmTitle: "로그아웃",
                     confirmAction: {
-                        // TODO: 로그아웃 API 연결 후 InitialVC로 이동
+                        // TODO: 로그아웃 API 연결
+                        self.onLogout?()
                     }
                 )
             }

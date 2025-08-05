@@ -14,7 +14,8 @@ class TosViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private let rootView = TosView()
     private let viewModel = TosViewModel()
-    
+    var onDetail: ((TermsContent) -> Void)?
+    var onComplete: (() -> Void)?
     
     // MARK: Life Cycle
     override func loadView() {
@@ -77,24 +78,22 @@ class TosViewController: UIViewController {
         
         output.navigateToNext
             .drive(onNext: { [weak self] in
-                guard let self = self else { return }
-                let vc = SignUpCompleteViewController()
-                self.navigationController?.pushViewController(vc, animated: true)
+                self?.onComplete?()
             })
             .disposed(by: disposeBag)
     }
     
     private func bindDetailButtonActions() {
         rootView.serviceAgreementView.detailButton.rx.tap
-            .bind { [weak self] in self?.presentDetail(title: "서비스 이용약관", content: TermsContent.service) }
+            .bind { [weak self] in self?.onDetail?(.service) }
             .disposed(by: disposeBag)
 
         rootView.personalAgreementView.detailButton.rx.tap
-            .bind { [weak self] in self?.presentDetail(title: "개인정보 수집/이용 동의", content: TermsContent.personal) }
+            .bind { [weak self] in self?.onDetail?(.personal) }
             .disposed(by: disposeBag)
 
         rootView.marketingAgreementView.detailButton.rx.tap
-            .bind { [weak self] in self?.presentDetail(title: "마케팅 정보 수신 동의", content: TermsContent.marketing) }
+            .bind { [weak self] in self?.onDetail?(.marketing) }
             .disposed(by: disposeBag)
     }
 

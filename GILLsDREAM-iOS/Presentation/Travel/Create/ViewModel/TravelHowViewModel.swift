@@ -13,26 +13,29 @@ final class TravelHowViewModel {
     struct Input {
         let transportTapped: Observable<CustomSelectableButton>
         let categoryTapped: Observable<CustomButton>
-        let nextButtonTapped: Observable<Void>
+        let prevButtonTapped: Observable<Void>
+        let doneButtonTapped: Observable<Void>
     }
 
     struct Output {
         let selectedTransport: Driver<CustomSelectableButton?>
         let selectedCategories: Driver<[CustomButton]>
         let isNextEnabled: Driver<Bool>
+        let navigateToPrev: Driver<Void>
         let navigateToNext: Driver<Void>
     }
 
     private let disposeBag = DisposeBag()
 
-    private let selectedTransportRelay = BehaviorRelay<CustomSelectableButton?>(value: nil)
-    private let selectedCategoriesRelay = BehaviorRelay<[CustomButton]>(value: [])
+    let selectedTransportRelay = BehaviorRelay<CustomSelectableButton?>(value: nil)
+    let selectedCategoriesRelay = BehaviorRelay<[CustomButton]>(value: [])
+    private let navigateToPrevRelay = PublishRelay<Void>()
     private let navigateToNextRelay = PublishRelay<Void>()
 
     func transform(input: Input) -> Output {
         input.transportTapped
-            .withLatestFrom(selectedTransportRelay) { new, current -> CustomSelectableButton? in
-                return current == new ? new : new // 변경이 있으면 갱신
+            .map { [weak self] tapped in
+                return self?.selectedTransportRelay.value == tapped ? nil : tapped
             }
             .bind(to: selectedTransportRelay)
             .disposed(by: disposeBag)
@@ -49,8 +52,12 @@ final class TravelHowViewModel {
             }
             .bind(to: selectedCategoriesRelay)
             .disposed(by: disposeBag)
+        
+        input.prevButtonTapped
+            .bind(to: navigateToPrevRelay)
+            .disposed(by: disposeBag)
 
-        input.nextButtonTapped
+        input.doneButtonTapped
             .bind(to: navigateToNextRelay)
             .disposed(by: disposeBag)
 
@@ -62,7 +69,19 @@ final class TravelHowViewModel {
             selectedTransport: selectedTransportRelay.asDriver(onErrorJustReturn: nil),
             selectedCategories: selectedCategoriesRelay.asDriver(onErrorJustReturn: []),
             isNextEnabled: isNextEnabled.asDriver(onErrorJustReturn: false),
+            navigateToPrev: navigateToPrevRelay.asDriver(onErrorDriveWith: .empty()),
             navigateToNext: navigateToNextRelay.asDriver(onErrorDriveWith: .empty())
         )
+    }
+}
+
+extension TravelHowViewModel {
+    // MARK: Output accessors
+    var transportation: String? {
+        return selectedTransportRelay.value?.title(for: .normal)
+    }
+
+    var categories: [String]? {
+        return selectedCategoriesRelay.value.map { $0.title(for: .normal) ?? "" }
     }
 }

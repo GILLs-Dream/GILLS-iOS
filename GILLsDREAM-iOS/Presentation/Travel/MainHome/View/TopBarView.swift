@@ -81,26 +81,26 @@ final class TopBarView: UIView {
             $0.leading.equalToSuperview().offset(20)
         }
         
-        accountButton.snp.makeConstraints {
-            $0.centerY.equalToSuperview()
-            $0.trailing.equalToSuperview().inset(20)
-            $0.size.equalTo(22)
-        }
-        
-        alarmButton.snp.makeConstraints {
-            $0.centerY.equalTo(accountButton)
-            $0.trailing.equalTo(accountButton.snp.leading).offset(-15)
-            $0.size.equalTo(22)
-        }
-        
-        alarmView.snp.makeConstraints {
-            $0.trailing.equalTo(alarmButton).inset(-3)
-            $0.bottom.equalTo(alarmButton).inset(-3)
-            $0.size.equalTo(13)
-        }
-        
-        alarmLabel.snp.makeConstraints {
-            $0.center.equalTo(alarmView)
-        }
+//        accountButton.snp.makeConstraints {
+//            $0.centerY.equalToSuperview()
+//            $0.trailing.equalToSuperview().inset(20)
+//            $0.size.equalTo(22)
+//        }
+//        
+//        alarmButton.snp.makeConstraints {
+//            $0.centerY.equalTo(accountButton)
+//            $0.trailing.equalTo(accountButton.snp.leading).offset(-15)
+//            $0.size.equalTo(22)
+//        }
+//        
+//        alarmView.snp.makeConstraints {
+//            $0.trailing.equalTo(alarmButton).inset(-3)
+//            $0.bottom.equalTo(alarmButton).inset(-3)
+//            $0.size.equalTo(13)
+//        }
+//        
+//        alarmLabel.snp.makeConstraints {
+//            $0.center.equalTo(alarmView)
+//        }
     }
 }

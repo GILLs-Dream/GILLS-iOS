@@ -13,11 +13,11 @@ final class TravelWhenView: UIView {
     // MARK: Views
     let headerView: TravelHeaderView
     private let titleLabel = UILabel()
-    let travelDurationView = TravelCustomView(title: "✪  여행 기간:",
+    let travelDurationView = TravelCustomView(title: "✪  여행 기간:\n  (필수)",
                                                       inputMode: .numberPicker(range: 1...7),
                                                       unit: "일",
                                                       detail: "* 최대 7일")
-    let travelDateView = TravelCustomView(title: "✪  여행 날짜:",
+    let travelDateView = TravelCustomView(title: "✪  여행 날짜:\n  (필수)",
                                                   inputMode: .datePicker)
     lazy var pendingButton = UIButton()
     lazy var nextButton = CustomButton()
@@ -64,10 +64,6 @@ final class TravelWhenView: UIView {
             $0.setImage(.imgCircle, for: .normal)
             $0.setAttributedTitle("여행날짜는 미정입니다.".pretendardAttributedString(style: .body2), for: .normal)
             $0.configuration = config
-        }
-        
-        nextButton.do {
-            $0.isHidden = true
         }
     }
     

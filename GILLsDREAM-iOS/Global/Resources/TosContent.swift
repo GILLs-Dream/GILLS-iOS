@@ -6,25 +6,47 @@
 //
 
 enum TermsContent {
-    static let service = """
+    case service
+    case personal
+    case marketing
+    
+    var title: String {
+        switch self {
+        case .service:
+            return "서비스 이용약관"
+        case .personal:
+            return "개인정보 수집/이용 동의"
+        case .marketing:
+            return "마케팅 정보 수신 동의"
+        }
+    }
+    
+    var content: String {
+        switch self {
+        case .service:
+            return """
     제 1 장 총칙
     본 약관은 회사가 제공하는 서비스를 이용함에 있어 회원의 권리·의무·책임 사항을 규정함을 목적으로 합니다.
-
+    
     제 5 조 (서비스의 제공 및 변경)
     회사는 모바일 앱 및 웹을 통해 디지털 콘텐츠 및 서비스를 제공합니다...
     """
-
-    static let personal = """
+            
+        case .personal:
+            return """
     개인정보 수집 및 이용 동의
     • 수집 목적: 서비스 제공 및 이용자 식별
     • 수집 항목: 이름, 연락처, 이메일 등
     • 보유 및 이용 기간: 수집일로부터 5년 이내
     • 동의 거부 시 회원가입 제한이 있을 수 있습니다.
     """
-
-    static let marketing = """
+            
+        case .marketing:
+            return """
     마케팅 정보 수신 동의 (선택)
     동의 시, 이벤트·쿠폰·혜택 정보를 이메일, SMS, 푸시 알림 등을 통해 수신할 수 있습니다.
     거부 시 서비스 이용에는 영향을 미치지 않습니다.
     """
+        }
+    }
 }

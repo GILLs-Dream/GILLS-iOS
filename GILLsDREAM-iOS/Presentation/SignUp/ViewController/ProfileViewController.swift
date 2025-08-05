@@ -17,6 +17,7 @@ class ProfileViewController: UIViewController {
     private let viewModel = ProfileViewModel()
     private let nicknameMaxLength = 10
     private var isEnable: Bool = true
+    var onNext: (() -> Void)?
     
     
     // MARK: Life Cycle
@@ -71,8 +72,7 @@ class ProfileViewController: UIViewController {
         output.navigateToNext
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
-                let tosVC = TosViewController()
-                self.navigationController?.pushViewController(tosVC, animated: true)
+                self.onNext?()
             })
             .disposed(by: disposeBag)
     }

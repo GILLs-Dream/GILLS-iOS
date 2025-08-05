@@ -166,10 +166,7 @@ final class TravelCustomTextField: UIView {
 
     @objc func dateChanged() {
         guard let datePicker = datePicker else { return }
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy년  M월  d일"
-        textField.text = formatter.string(from: datePicker.date)
+        textField.text = datePicker.date.formatted("yyyy년 M월 d일")
     }
     
     private func createToolBar() -> UIToolbar {

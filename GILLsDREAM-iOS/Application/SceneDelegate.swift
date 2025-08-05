@@ -10,6 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
+    var appCoordinator: AppCoordinator?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
@@ -17,7 +18,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: windowScene)
         self.window = window
-        window.rootViewController = ViewController()
-        window.makeKeyAndVisible()
+        
+        let navigationController: UINavigationController = .init()
+        navigationController.interactivePopGestureRecognizer?.isEnabled = false
+        self.window?.rootViewController = navigationController
+        self.window?.makeKeyAndVisible()
+        
+        self.appCoordinator = AppCoordinator(navigationController)
+        self.appCoordinator?.start()
     }
 }

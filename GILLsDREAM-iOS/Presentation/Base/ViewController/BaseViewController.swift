@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
+class BaseViewController: UIViewController {
     private let backgroundView = BackgroundView()
 
     override func viewDidLoad() {
@@ -17,17 +17,6 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         backgroundView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(backgroundView)
         view.sendSubviewToBack(backgroundView)
-    }
-    
-    @objc func dismissKeyboardAndPickers() {
-        view.endEditing(true)
-    }
-
-    func setupTapToDismissAllInputs() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboardAndPickers))
-        tapGesture.cancelsTouchesInView = false
-        tapGesture.delegate = self
-        view.addGestureRecognizer(tapGesture)
     }
     
     func shouldDismissWhenTapped(on view: UIView?) -> Bool {

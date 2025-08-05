@@ -10,10 +10,11 @@ import RxSwift
 
 final class TosDetailViewController: UIViewController {
 
-    
+    // MARK: Properties
     private let rootView = TosDetailView()
     private let viewModel: TosDetailViewModel
     private let disposeBag = DisposeBag()
+    var onDismiss: (() -> Void)?
 
     init(viewModel: TosDetailViewModel) {
         self.viewModel = viewModel
@@ -50,7 +51,9 @@ final class TosDetailViewController: UIViewController {
 
         output.dismiss
             .drive(onNext: { [weak self] in
-                self?.dismiss(animated: true)
+                self?.dismiss(animated: true, completion: {
+                    self?.onDismiss?()
+                })
             })
             .disposed(by: disposeBag)
     }

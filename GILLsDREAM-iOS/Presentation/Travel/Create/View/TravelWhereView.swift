@@ -6,11 +6,15 @@
 //
 
 import UIKit
+import SnapKit
 
 final class TravelWhereView: UIView {
+    var addButtonTopConstraint: Constraint?
+    
     let headerView: TravelHeaderView
     private let titleLabel = UILabel()
     let placeTableView = UITableView()
+    let stayTableView = UITableView()
     let pageLabel = UILabel()
     lazy var addButton = UIButton()
     lazy var previousButton = CustomButton(title: "이전")
@@ -38,6 +42,7 @@ final class TravelWhereView: UIView {
             headerView,
             titleLabel,
             placeTableView,
+            stayTableView,
             addButton,
             previousButton,
             nextButton,
@@ -47,7 +52,7 @@ final class TravelWhereView: UIView {
 
     private func setUpUI() {
         titleLabel.do {
-            $0.attributedText = "STEP 3. 생각해둔 여행지가 있다면 추가해주세요.".pretendardAttributedString(style: .body1)
+            $0.attributedText = "STEP 3. 생각해둔 여행지가 있다면 추가해주세요. (선택)".pretendardAttributedString(style: .body1)
         }
         
         placeTableView.do {
@@ -56,16 +61,19 @@ final class TravelWhereView: UIView {
             $0.isScrollEnabled = false
         }
         
+        stayTableView.do {
+            $0.backgroundColor = .clear
+            $0.allowsSelection = false
+            $0.isScrollEnabled = false
+            $0.isHidden = true
+        }
+        
         addButton.do {
             $0.setAttributedTitle("✚  내 지도에서 추가하기 (최대 5개)".pretendardAttributedString(style: .body2), for: .normal)
         }
         
         pageLabel.do {
             $0.attributedText = "1/2".pretendardAttributedString(style: .body2)
-        }
-        
-        previousButton.do {
-            $0.isHidden = true
         }
     }
 
@@ -86,8 +94,14 @@ final class TravelWhereView: UIView {
             $0.height.equalTo(0)
         }
         
+        stayTableView.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
+            $0.horizontalEdges.equalToSuperview().inset(43)
+            $0.height.equalTo(0)
+        }
+        
         addButton.snp.makeConstraints {
-            $0.top.equalTo(placeTableView.snp.bottom).offset(16)
+            self.addButtonTopConstraint = $0.top.equalTo(placeTableView.snp.bottom).offset(16).constraint
             $0.leading.equalToSuperview().inset(50)
         }
         
@@ -119,31 +133,5 @@ extension TravelWhereView {
     
     func updatePage(text: String) {
         pageLabel.attributedText = text.pretendardAttributedString(style: .body2)
-    }
-    
-    func updateButtons(for page: Int) {
-        // TODO: 화면에 previous - next button 있는 것으로 refactoring
-        if page == 0 {
-            previousButton.isHidden = true
-            nextButton.snp.remakeConstraints {
-                $0.height.equalTo(51)
-                $0.horizontalEdges.equalToSuperview().inset(43)
-                $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
-            }
-        } else {
-            previousButton.isHidden = false
-            previousButton.snp.remakeConstraints {
-                $0.height.equalTo(51)
-                $0.leading.equalToSuperview().inset(43)
-                $0.trailing.equalTo(self.snp.centerX).offset(-10)
-                $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
-            }
-            nextButton.snp.remakeConstraints {
-                $0.height.equalTo(51)
-                $0.leading.equalTo(self.snp.centerX).offset(10)
-                $0.trailing.equalToSuperview().inset(43)
-                $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
-            }
-        }
     }
 }
