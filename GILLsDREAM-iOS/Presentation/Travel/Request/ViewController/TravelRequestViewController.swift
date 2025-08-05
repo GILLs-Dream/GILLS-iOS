@@ -70,6 +70,26 @@ final class TravelRequestViewController: BaseViewController {
                 self.onNext?()
             })
             .disposed(by: disposeBag)
+        
+        viewModel.currentStep
+            .asDriver()
+            .drive(onNext: { [weak self] step in
+                guard let self = self else { return }
+
+                switch step {
+                case .location:
+                    self.rootView.update(for: .location)
+                case .mood:
+                    self.rootView.requestTextView.text = ""
+                    self.rootView.requestPlaceHolder.isHidden = false
+                    self.rootView.update(for: .mood, with: self.viewModel.location)
+                case .video:
+                    self.rootView.requestTextView.text = ""
+                    self.rootView.requestPlaceHolder.isHidden = false
+                    self.rootView.update(for: .video)
+                }
+            })
+            .disposed(by: disposeBag)
     }
 }
 
