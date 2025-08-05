@@ -14,7 +14,7 @@ final class TravelWhoView: UIView {
     let travelPaxView = TravelCustomView(title: "✪  인원수:\n  (필수)",
                                                       inputMode: .numberPicker(range: 1...20),
                                                       unit: "명",)
-    let travelWhoView = TravelCustomView(title: "✪  누구와:\n  (필수)",
+    let travelWhoView = TravelCustomView(title: "✪  누구와:\n  (선택)",
                                          inputMode: .keyboard)
     lazy var previousButton = CustomButton(title: "이전")
     lazy var nextButton = CustomButton()

@@ -49,10 +49,10 @@ final class TravelWhoViewController: TravelViewController {
     private func bindViewModel() {
         rootView.headerView.currentStep = 1
 
-        let peopleCountInput = rootView.travelPaxView.startField.textField.rx
-            .controlEvent(.editingDidEnd)
-            .withLatestFrom(rootView.travelPaxView.startField.textField.rx.text.orEmpty)
+        let peopleCountInput = rootView.travelPaxView.startField.textField.rx.text
+            .orEmpty
             .compactMap { Int($0) }
+            .distinctUntilChanged()
         
         let peopleDetailInput = rootView.travelWhoView.startField.textField.rx
             .controlEvent(.editingDidEnd)
@@ -66,11 +66,6 @@ final class TravelWhoViewController: TravelViewController {
         )
 
         let output = viewModel.transform(input: input)
-
-//        output.isNextEnabled
-//            .map { !$0 }
-//            .drive(rootView.nextButton.rx.isHidden)
-//            .disposed(by: disposeBag)
 
         output.navigateToPrev
             .drive(onNext: { [weak self] in
@@ -86,7 +81,11 @@ final class TravelWhoViewController: TravelViewController {
                 guard let self = self else { return }
                 self.flowViewModel.peopleCount.accept(self.viewModel.peopleCount)
                 self.flowViewModel.peopleDetail.accept(self.viewModel.peopleDetail)
-                self.onNext?()
+                if self.flowViewModel.isWhoValid {
+                    self.onNext?()
+                } else {
+                    ToastManager.shared.show(message: "필수 정보를 입력하지 않았습니다.")
+                }
             })
             .disposed(by: disposeBag)
     }

@@ -105,9 +105,16 @@ final class TravelHowViewController: TravelViewController {
             .observe(on: MainScheduler.instance)
             .do(onNext: { [weak self] in
                 guard let self = self else { return }
+                self.flowViewModel.transportation.accept(self.viewModel.transportation)
+                self.flowViewModel.categories.accept(self.viewModel.categories)
+                guard self.flowViewModel.isHowValid else {
+                    ToastManager.shared.show(message: "필수 정보를 입력하지 않았습니다.")
+                    throw NSError(domain: "InvalidInput", code: 0) // 스트림 중단용 에러
+                }
                 self.rootView.lottieView.startAnimating()
             })
             .delay(.milliseconds(3000), scheduler: MainScheduler.instance)
+            .catch { _ in Observable.empty() } // 유효성 실패 시 이후 로직 막기
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
                 self.rootView.lottieView.stopAnimating()
@@ -116,3 +123,4 @@ final class TravelHowViewController: TravelViewController {
             .disposed(by: disposeBag)
     }
 }
+

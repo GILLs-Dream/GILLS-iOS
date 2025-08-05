@@ -20,7 +20,7 @@ final class TravelWhenViewController: TravelViewController {
         self.flowViewModel = flowViewModel
         super.init(nibName: nil, bundle: nil)
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -28,7 +28,7 @@ final class TravelWhenViewController: TravelViewController {
     override func loadView() {
         self.view = rootView
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         bindFlowViewModel()
@@ -53,15 +53,15 @@ final class TravelWhenViewController: TravelViewController {
             rootView.pendingButton.isSelected = true
         }
     }
-
+    
     private func bindViewModel() {
         rootView.headerView.currentStep = 0
-
+        
         let travelDays = rootView.travelDurationView.startField.textField.rx
             .controlEvent(.editingDidEnd)
             .withLatestFrom(rootView.travelDurationView.startField.textField.rx.text.orEmpty)
             .compactMap { Int($0) }
-
+        
         let startDate = rootView.travelDateView.startField.textField.rx
             .controlEvent(.editingDidEnd)
             .map { self.rootView.travelDateView.startField.selectedDate }
@@ -71,7 +71,7 @@ final class TravelWhenViewController: TravelViewController {
             .controlEvent(.editingDidEnd)
             .map { self.rootView.travelDateView.endField!.selectedDate }
             .compactMap { $0 }
-
+        
         let input = TravelWhenViewModel.Input(
             travelDaysInput: travelDays,
             startDateInput: startDate,
@@ -79,14 +79,9 @@ final class TravelWhenViewController: TravelViewController {
             pendingButtonTapped: rootView.pendingButton.rx.tap.asObservable(),
             nextButtonTapped: rootView.nextButton.rx.tap.asObservable()
         )
-
+        
         let output = viewModel.transform(input: input)
-
-//        output.isNextEnabled
-//            .map { !$0 }
-//            .drive(rootView.nextButton.rx.isHidden)
-//            .disposed(by: disposeBag)
-
+        
         output.calculatedEndDate
             .drive(onNext: { [weak self] endDate in
                 guard let self = self else { return }
@@ -96,7 +91,7 @@ final class TravelWhenViewController: TravelViewController {
                 }
             })
             .disposed(by: disposeBag)
-
+        
         output.calculatedStartDate
             .drive(onNext: { [weak self] startDate in
                 self?.rootView.travelDateView.startField.updateText(startDate.formatted("yyyy년 M월 d일"))
@@ -117,14 +112,17 @@ final class TravelWhenViewController: TravelViewController {
             .disposed(by: disposeBag)
         
         output.navigateToNext
-            .asObservable()
-            .bind(onNext: { [weak self] in
+            .drive(onNext: { [weak self] in
                 guard let self = self else { return }
                 self.flowViewModel.travelDays.accept(self.viewModel.travelDays)
                 self.flowViewModel.startDate.accept(self.viewModel.startDate)
                 self.flowViewModel.endDate.accept(self.viewModel.endDate)
                 self.flowViewModel.datePending.accept(self.viewModel.datePending)
-                self.onNext?()
+                if self.flowViewModel.isWhenValid {
+                    self.onNext?()
+                } else {
+                    ToastManager.shared.show(message: "필수 정보를 입력하지 않았습니다.")
+                }
             })
             .disposed(by: disposeBag)
     }
@@ -137,7 +135,7 @@ final class TravelWhenViewController: TravelViewController {
                 }
             }
         }
-
+        
         rootView.travelDateView.endField?.onTappedWhilePending = { [weak self] in
             self?.viewModel.handleDateFieldTapped {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
