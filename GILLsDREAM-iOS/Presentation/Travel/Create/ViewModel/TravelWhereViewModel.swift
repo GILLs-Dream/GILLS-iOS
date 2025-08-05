@@ -25,7 +25,8 @@ final class TravelWhereViewModel {
     }
 
     struct Output {
-        let sections: Driver<[PlaceSection]>
+        let placeSections: Driver<[PlaceSection]>
+        let staySections: Driver<[PlaceSection]>
         let isAddButtonHidden: Driver<Bool>
         let currentPage: Driver<Int>
         let currentTitleText: Driver<String>
@@ -38,11 +39,12 @@ final class TravelWhereViewModel {
     private let navigateToPrevRelay = PublishRelay<Void>()
     private let navigateToNextRelay = PublishRelay<Void>()
     private let pageRelay = BehaviorRelay<Int>(value: 0)
-    private let page1Places = BehaviorRelay<[Place]>(value: [])
-    private let page2Places = BehaviorRelay<[Place]>(value: [])
+    private let travelPlacesRelay = BehaviorRelay<[Place]>(value: [])
+    private let stayPlacesRelay = BehaviorRelay<[Place]>(value: [])
     private let showDatePickerRelay = PublishRelay<(IndexPath, DatePickerType)>()
 
     func transform(input: Input) -> Output {
+        // 여행지 or 숙소 추가
         input.placeAdded
             .withLatestFrom(pageRelay) { ($0, $1) }
             .subscribe(onNext: { [weak self] place, page in
@@ -51,6 +53,7 @@ final class TravelWhereViewModel {
                 current.accept(current.value + [place])
             }).disposed(by: disposeBag)
 
+        // 날짜 선택
         input.calendarIndexPath
             .withLatestFrom(pageRelay) { ($0, $1) }
             .map { indexPath, page -> (IndexPath, DatePickerType) in
@@ -59,7 +62,8 @@ final class TravelWhereViewModel {
             }
             .bind(to: showDatePickerRelay)
             .disposed(by: disposeBag)
-        
+
+        // 삭제
         input.deleteIndexPath
             .withLatestFrom(pageRelay) { ($0, $1) }
             .subscribe(onNext: { [weak self] indexPath, page in
@@ -70,64 +74,67 @@ final class TravelWhereViewModel {
                 current.accept(items)
             }).disposed(by: disposeBag)
 
+        // 페이지 이동
         input.prevButtonTapped
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 if self.pageRelay.value == 1 {
-                    self.pageRelay.accept(0)  // page 전환
+                    self.pageRelay.accept(0)
                 } else {
-                    self.navigateToPrevRelay.accept(()) // pop
+                    self.navigateToPrevRelay.accept(())
                 }
-            })
-            .disposed(by: disposeBag)
-        
+            }).disposed(by: disposeBag)
+
         input.nextButtonTapped
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 if self.pageRelay.value == 0 {
-                    self.pageRelay.accept(1)  // page 전환
+                    self.pageRelay.accept(1)
                 } else {
-                    self.navigateToNextRelay.accept(()) // push
+                    self.navigateToNextRelay.accept(())
                 }
-            })
-            .disposed(by: disposeBag)
-
-        input.prevButtonTapped
-            .subscribe(onNext: { [weak self] in
-                guard let self = self else { return }
-                self.pageRelay.accept(0)
             }).disposed(by: disposeBag)
 
-        let sections = pageRelay
-            .flatMapLatest { page -> Observable<[Place]> in
-                return page == 0 ? self.page1Places.asObservable() : self.page2Places.asObservable()
-            }
+        // Output 생성
+        let placeSections = travelPlacesRelay
             .map { [PlaceSection(items: $0)] }
             .asDriver(onErrorJustReturn: [])
 
-        let isAddButtonHidden = sections
-            .map { $0.first?.items.count ?? 0 >= 5 }
+        let staySections = stayPlacesRelay
+            .map { [PlaceSection(items: $0)] }
+            .asDriver(onErrorJustReturn: [])
+
+        let isAddButtonHidden = Observable
+            .combineLatest(pageRelay, travelPlacesRelay, stayPlacesRelay)
+            .map { page, travel, stay in
+                let count = (page == 0) ? travel.count : stay.count
+                return count >= 5
+            }
+            .distinctUntilChanged()
+            .asDriver(onErrorJustReturn: false)
 
         let titleText = pageRelay
-            .map { $0 == 0 ? "STEP 3. 생각해둔 여행지가 있다면 추가해주세요." : "STEP 3. 예약해둔 숙소가 있다면 추가해주세요." }
+            .map { $0 == 0 ? "STEP 3. 생각해둔 여행지가 있다면 추가해주세요. (선택)" : "STEP 3. 예약해둔 숙소가 있다면 추가해주세요. (선택)" }
+            .asDriver(onErrorJustReturn: "")
 
         return Output(
-            sections: sections,
+            placeSections: placeSections,
+            staySections: staySections,
             isAddButtonHidden: isAddButtonHidden,
             currentPage: pageRelay.asDriver(),
-            currentTitleText: titleText.asDriver(onErrorJustReturn: ""),
+            currentTitleText: titleText,
             navigatePrev: navigateToPrevRelay.asSignal(),
             navigateNext: navigateToNextRelay.asSignal(),
             showDatePicker: showDatePickerRelay.asObservable()
         )
     }
+
+    private func getCurrentPlaces(for page: Int) -> BehaviorRelay<[Place]> {
+        return page == 0 ? travelPlacesRelay : stayPlacesRelay
+    }
 }
 
 extension TravelWhereViewModel {
-    private func getCurrentPlaces(for page: Int) -> BehaviorRelay<[Place]> {
-        return page == 0 ? page1Places : page2Places
-    }
-
     func updateDate(for indexPath: IndexPath, date: Date) {
         let current = getCurrentPlaces(for: pageRelay.value)
         var items = current.value
@@ -149,5 +156,23 @@ extension TravelWhereViewModel {
         updatedPlace.checkOutDate = checkOutDate
         items[indexPath.row] = updatedPlace
         current.accept(items)
+    }
+    
+    func setInitialPlaces(travel: [Place], stay: [Place]) {
+        travelPlacesRelay.accept(travel)
+        stayPlacesRelay.accept(stay)
+    }
+    
+    // MARK: Output accessors
+    var currentPageValue: Int {
+        return pageRelay.value
+    }
+    
+    var travelPlaces: [Place]? {
+        return travelPlacesRelay.value
+    }
+
+    var stayPlaces: [Place]? {
+        return stayPlacesRelay.value
     }
 }

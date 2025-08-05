@@ -6,11 +6,15 @@
 //
 
 import UIKit
+import SnapKit
 
 final class TravelWhereView: UIView {
+    var addButtonTopConstraint: Constraint?
+    
     let headerView: TravelHeaderView
     private let titleLabel = UILabel()
     let placeTableView = UITableView()
+    let stayTableView = UITableView()
     let pageLabel = UILabel()
     lazy var addButton = UIButton()
     lazy var previousButton = CustomButton(title: "이전")
@@ -38,6 +42,7 @@ final class TravelWhereView: UIView {
             headerView,
             titleLabel,
             placeTableView,
+            stayTableView,
             addButton,
             previousButton,
             nextButton,
@@ -47,13 +52,20 @@ final class TravelWhereView: UIView {
 
     private func setUpUI() {
         titleLabel.do {
-            $0.attributedText = "STEP 3. 생각해둔 여행지가 있다면 추가해주세요.".pretendardAttributedString(style: .body1)
+            $0.attributedText = "STEP 3. 생각해둔 여행지가 있다면 추가해주세요. (선택)".pretendardAttributedString(style: .body1)
         }
         
         placeTableView.do {
             $0.backgroundColor = .clear
             $0.allowsSelection = false
             $0.isScrollEnabled = false
+        }
+        
+        stayTableView.do {
+            $0.backgroundColor = .clear
+            $0.allowsSelection = false
+            $0.isScrollEnabled = false
+            $0.isHidden = true
         }
         
         addButton.do {
@@ -82,8 +94,14 @@ final class TravelWhereView: UIView {
             $0.height.equalTo(0)
         }
         
+        stayTableView.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
+            $0.horizontalEdges.equalToSuperview().inset(43)
+            $0.height.equalTo(0)
+        }
+        
         addButton.snp.makeConstraints {
-            $0.top.equalTo(placeTableView.snp.bottom).offset(16)
+            self.addButtonTopConstraint = $0.top.equalTo(placeTableView.snp.bottom).offset(16).constraint
             $0.leading.equalToSuperview().inset(50)
         }
         
