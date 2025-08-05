@@ -48,6 +48,7 @@ final class MyPageViewController: BaseViewController {
                     title: "정말로 길동이의 꿈을\n탈퇴하시겠습니까?",
                     confirmTitle: "탈퇴",
                     confirmAction: {
+                        UserDefaultsManager.shared.isOnboarding = false
                         // TODO: 회원탈퇴 API 연결
                         self.onLogout?()
                     }

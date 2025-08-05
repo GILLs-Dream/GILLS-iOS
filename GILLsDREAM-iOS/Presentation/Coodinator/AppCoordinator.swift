@@ -58,7 +58,7 @@ extension AppCoordinator: CoordinatorFinishDelegate {
             }
         case .signup, .main:
             showTabBarFlow()
-        case .tab, .mypage:
+        case .tab:
             showLoginFlow()
         default:
             break

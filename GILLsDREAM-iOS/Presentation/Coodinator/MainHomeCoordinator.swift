@@ -35,7 +35,7 @@ final class MainHomeCoordinator: Coordinator {
         vc.onNext = { [weak self] in
             self?.showTravelWhenVC()
         }
-        navigationController.pushViewController(vc, animated: true)
+        navigationController.pushViewController(vc, animated: false)
     }
     
     private func showTravelWhenVC() {
@@ -52,9 +52,9 @@ final class MainHomeCoordinator: Coordinator {
             self?.showTravelWhereVC()
         }
         vc.onPrev = { [weak self] in
-            self?.navigationController.popViewController(animated: true)
+            self?.navigationController.popViewController(animated: false)
         }
-        navigationController.pushViewController(vc, animated: true)
+        navigationController.pushViewController(vc, animated: false)
     }
     
     private func showTravelWhereVC() {
@@ -63,9 +63,9 @@ final class MainHomeCoordinator: Coordinator {
             self?.showTravelHowVC()
         }
         vc.onPrev = { [weak self] in
-            self?.navigationController.popViewController(animated: true)
+            self?.navigationController.popViewController(animated: false)
         }
-        navigationController.pushViewController(vc, animated: true)
+        navigationController.pushViewController(vc, animated: false)
     }
     
     private func showTravelHowVC() {
@@ -74,9 +74,9 @@ final class MainHomeCoordinator: Coordinator {
             self?.showTravelResultVC()
         }
         vc.onPrev = { [weak self] in
-            self?.navigationController.popViewController(animated: true)
+            self?.navigationController.popViewController(animated: false)
         }
-        navigationController.pushViewController(vc, animated: true)
+        navigationController.pushViewController(vc, animated: false)
     }
     
     private func showTravelResultVC() {

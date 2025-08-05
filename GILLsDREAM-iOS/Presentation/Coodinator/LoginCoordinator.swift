@@ -24,38 +24,28 @@ final class LoginCoordinator: Coordinator {
     }
     
     func start() {
-        showInitialVC()
+        let didSignUp = didSignUp()
+        showInitialVC(didSignUp)
     }
     
-    private func showInitialVC() {
+    private func didSignUp() -> Bool {
+        return UserDefaultsManager.shared.isOnboarding
+    }
+    
+    private func showInitialVC(_ didSignUp: Bool) {
         let vc = InitialViewController()
-        vc.onKakaoSignUp = { [weak self] in
-            self?.startKakaoSignUp()
+        vc.onKakaoLogin = { [weak self] in
+            if (didSignUp) { self?.finish() }
+            self?.startLogin()
         }
-        vc.onAppleSignUp = { [weak self] in
-            self?.startAppleSignUp()
+        vc.onAppleLogin = { [weak self] in
+            if (didSignUp) { self?.finish() }
+            self?.startLogin()
         }
         navigationController.pushViewController(vc, animated: true)
     }
     
-    func kakaoLogin() {
-        delegate?.didKakaoLoggedIn(self)
-        finish()
-    }
-    
-    func appleLogin() {
-        delegate?.didAppleLoggedIn(self)
-        finish()
-    }
-    
-    func startKakaoSignUp() {
-        let signUpCoordinator = SignUpCoordinator(navigationController)
-        signUpCoordinator.finishDelegate = self.finishDelegate
-        childCoordinators.append(signUpCoordinator)
-        signUpCoordinator.start()
-    }
-    
-    func startAppleSignUp() {
+    func startLogin() {
         let signUpCoordinator = SignUpCoordinator(navigationController)
         signUpCoordinator.finishDelegate = self.finishDelegate
         childCoordinators.append(signUpCoordinator)

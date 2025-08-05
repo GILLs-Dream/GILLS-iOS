@@ -65,7 +65,13 @@ final class TabBarCoordinator: NSObject, Coordinator {
             let myPageVC = MyPageViewController()
             myPageVC.onLogout = { [weak self] in
                 guard let self = self else { return }
-                self.finishDelegate?.coordinatorDidFinish(childCoordinator: self)
+                self.tabBarController.viewControllers?.forEach {
+                    if let nav = $0 as? UINavigationController {
+                        nav.popToRootViewController(animated: false)
+                    }
+                }
+                self.navigationController.setViewControllers([], animated: false)
+                self.finish()
             }
             rootVC = myPageVC
         }

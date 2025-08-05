@@ -11,8 +11,8 @@ import RxSwift
 final class InitialViewController: UIViewController {
     
     // MARK: Properties
-    var onKakaoSignUp: (() -> Void)?
-    var onAppleSignUp: (() -> Void)?
+    var onKakaoLogin: (() -> Void)?
+    var onAppleLogin: (() -> Void)?
     
     private let disposeBag = DisposeBag()
     private let rootView = InitialView()
@@ -38,13 +38,13 @@ final class InitialViewController: UIViewController {
 
         output.navigateToKakaoSignUp
             .drive(onNext: { [weak self] in
-                self?.onKakaoSignUp?()
+                self?.onKakaoLogin?()
             })
             .disposed(by: disposeBag)
 
         output.navigateToAppleSignUp
             .drive(onNext: { [weak self] in
-                self?.onAppleSignUp?()
+                self?.onAppleLogin?()
             })
             .disposed(by: disposeBag)
     }
