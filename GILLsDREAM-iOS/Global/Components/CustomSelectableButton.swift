@@ -29,10 +29,12 @@ final class CustomSelectableButton: UIButton {
         config.background.backgroundColor = .clear
 
         self.configuration = config
+        self.setTitle(title, for: .normal)
         self.setAttributedTitle(title.pretendardAttributedString(style: .body2), for: .normal)
         self.setImage(.imgCircle, for: .normal)
         self.setImage(.imgCheckedCircle, for: .selected)
         self.contentHorizontalAlignment = .left
+        self.setTitle(title, for: .normal)
     }
 
     func updateTitle(_ title: String) {

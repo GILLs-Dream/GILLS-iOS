@@ -12,9 +12,19 @@ import RxCocoa
 final class TravelHowViewController: TravelViewController {
     private let rootView = TravelHowView()
     private let viewModel = TravelHowViewModel()
+    private let flowViewModel: TravelRequestFlowViewModel
     private let disposeBag = DisposeBag()
     var onPrev: (() -> Void)?
     var onComplete: (() -> Void)?
+    
+    init(flowViewModel: TravelRequestFlowViewModel) {
+        self.flowViewModel = flowViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func loadView() {
         self.view = rootView
@@ -22,7 +32,26 @@ final class TravelHowViewController: TravelViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        bindFlowViewModel()
         bindViewModel()
+    }
+    
+    private func bindFlowViewModel() {
+        if let transportTitle = flowViewModel.transportation.value {
+            if let matchedButton = rootView.transportOptionView.transportButtons.first(where: {
+                $0.title(for: .normal) == transportTitle
+            }) {
+                viewModel.selectedTransportRelay.accept(matchedButton)
+            }
+        }
+
+        if let selectedCategoryTitles = flowViewModel.categories.value {
+            let matchedButtons = rootView.categoryOptionView.categoryButtons.filter {
+                guard let title = $0.title(for: .normal) else { return false }
+                return selectedCategoryTitles.contains(title)
+            }
+            viewModel.selectedCategoriesRelay.accept(matchedButtons)
+        }
     }
 
     private func bindViewModel() {
@@ -65,6 +94,8 @@ final class TravelHowViewController: TravelViewController {
         
         output.navigateToPrev
             .drive(onNext: { [weak self] in
+                self?.flowViewModel.transportation.accept(self?.viewModel.transportation)
+                self?.flowViewModel.categories.accept(self?.viewModel.categories)
                 self?.onPrev?()
             })
             .disposed(by: disposeBag)

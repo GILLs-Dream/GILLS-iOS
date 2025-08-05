@@ -27,15 +27,15 @@ final class TravelHowViewModel {
 
     private let disposeBag = DisposeBag()
 
-    private let selectedTransportRelay = BehaviorRelay<CustomSelectableButton?>(value: nil)
-    private let selectedCategoriesRelay = BehaviorRelay<[CustomButton]>(value: [])
+    let selectedTransportRelay = BehaviorRelay<CustomSelectableButton?>(value: nil)
+    let selectedCategoriesRelay = BehaviorRelay<[CustomButton]>(value: [])
     private let navigateToPrevRelay = PublishRelay<Void>()
     private let navigateToNextRelay = PublishRelay<Void>()
 
     func transform(input: Input) -> Output {
         input.transportTapped
-            .withLatestFrom(selectedTransportRelay) { new, current -> CustomSelectableButton? in
-                return current == new ? new : new // 변경이 있으면 갱신
+            .map { [weak self] tapped in
+                return self?.selectedTransportRelay.value == tapped ? nil : tapped
             }
             .bind(to: selectedTransportRelay)
             .disposed(by: disposeBag)
@@ -72,5 +72,16 @@ final class TravelHowViewModel {
             navigateToPrev: navigateToPrevRelay.asDriver(onErrorDriveWith: .empty()),
             navigateToNext: navigateToNextRelay.asDriver(onErrorDriveWith: .empty())
         )
+    }
+}
+
+extension TravelHowViewModel {
+    // MARK: Output accessors
+    var transportation: String? {
+        return selectedTransportRelay.value?.title(for: .normal)
+    }
+
+    var categories: [String]? {
+        return selectedCategoriesRelay.value.map { $0.title(for: .normal) ?? "" }
     }
 }
