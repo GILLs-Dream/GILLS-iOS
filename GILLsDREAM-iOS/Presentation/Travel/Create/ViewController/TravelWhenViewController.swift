@@ -11,12 +11,13 @@ import RxCocoa
 
 final class TravelWhenViewController: TravelViewController {
     private let rootView = TravelWhenView()
-    private let viewModel: TravelWhenViewModel
+    private let viewModel = TravelWhenViewModel()
+    private let flowViewModel: TravelRequestFlowViewModel
     private let disposeBag = DisposeBag()
     var onNext: (() -> Void)?
     
     init(flowViewModel: TravelRequestFlowViewModel) {
-        self.viewModel = TravelWhenViewModel(flowViewModel: flowViewModel)
+        self.flowViewModel = flowViewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -30,8 +31,27 @@ final class TravelWhenViewController: TravelViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        bindFlowViewModel()
         bindViewModel()
         pendingControl()
+    }
+    
+    private func bindFlowViewModel() {
+        if let travelDays = flowViewModel.travelDays.value {
+            rootView.travelDurationView.startField.textField.text = "\(travelDays)"
+        }
+        
+        if let startDate = flowViewModel.startDate.value {
+            rootView.travelDateView.startField.textField.text = "\(startDate)"
+        }
+        
+        if let endDate = flowViewModel.endDate.value {
+            rootView.travelDateView.endField?.textField.text = "\(endDate)"
+        }
+        
+        if flowViewModel.datePending.value {
+            rootView.pendingButton.isSelected = true
+        }
     }
 
     private func bindViewModel() {
@@ -100,6 +120,10 @@ final class TravelWhenViewController: TravelViewController {
             .asObservable()
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
+                self.flowViewModel.travelDays.accept(self.viewModel.travelDays)
+                self.flowViewModel.startDate.accept(self.viewModel.startDate)
+                self.flowViewModel.endDate.accept(self.viewModel.endDate)
+                self.flowViewModel.datePending.accept(self.viewModel.datePending)
                 self.onNext?()
             })
             .disposed(by: disposeBag)

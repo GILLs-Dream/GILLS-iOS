@@ -19,6 +19,7 @@ final class TravelCustomView: UIView {
     // MARK: Init
     init(title: String, inputMode: InputMode, unit: String = "", detail: String = "") {
         self.titleLabel.attributedText = title.pretendardAttributedString(style: .body2, color: .white)
+        self.titleLabel.numberOfLines = 2
         self.startField = TravelCustomTextField(
             unit: unit,
             detail: detail,

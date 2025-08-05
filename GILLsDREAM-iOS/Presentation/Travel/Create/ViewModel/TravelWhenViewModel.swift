@@ -10,26 +10,6 @@ import RxSwift
 import RxCocoa
 
 final class TravelWhenViewModel {
-    private let flowViewModel: TravelRequestFlowViewModel
-
-    init(flowViewModel: TravelRequestFlowViewModel) {
-        self.flowViewModel = flowViewModel
-
-        // 초기값 세팅
-        travelDaysRelay.accept(flowViewModel.travelDays.value)
-        startDateRelay.accept(flowViewModel.startDate.value)
-        endDateRelay.accept(flowViewModel.endDate.value)
-        isPendingRelay.accept(flowViewModel.datePending.value ?? false)
-
-        // 초기값 기반으로 텍스트 반영용 emit
-        if let start = flowViewModel.startDate.value {
-            calculatedStartDateRelay.accept(start)
-        }
-        if let end = flowViewModel.endDate.value {
-            calculatedEndDateRelay.accept(end)
-        }
-    }
-
     struct Input {
         let travelDaysInput: Observable<Int>
         let startDateInput: Observable<Date>
@@ -62,16 +42,12 @@ final class TravelWhenViewModel {
         input.pendingButtonTapped
             .withLatestFrom(isPendingRelay)
             .map { !$0 }
-            .do(onNext: { [weak self] pending in
-                self?.flowViewModel.datePending.accept(pending)
-            })
             .bind(to: isPendingRelay)
             .disposed(by: disposeBag)
 
         input.travelDaysInput
             .do(onNext: { [weak self] days in
                 self?.travelDaysRelay.accept(days)
-                self?.flowViewModel.travelDays.accept(days)
             })
             .map { _ in true }
             .bind(to: isNextEnabledRelay)
@@ -82,12 +58,10 @@ final class TravelWhenViewModel {
             .do(onNext: { [weak self] date in
                 guard let self else { return }
                 self.startDateRelay.accept(date)
-                self.flowViewModel.startDate.accept(date)
 
                 if let days = self.travelDaysRelay.value {
                     if let end = Calendar.current.date(byAdding: .day, value: days - 1, to: date) {
                         self.endDateRelay.accept(end)
-                        self.flowViewModel.endDate.accept(end)
                         self.calculatedEndDateRelay.accept(end)
                     }
                 }
@@ -100,12 +74,10 @@ final class TravelWhenViewModel {
             .do(onNext: { [weak self] date in
                 guard let self else { return }
                 self.endDateRelay.accept(date)
-                self.flowViewModel.endDate.accept(date)
 
                 if let days = self.travelDaysRelay.value {
                     if let start = Calendar.current.date(byAdding: .day, value: -(days - 1), to: date) {
                         self.startDateRelay.accept(start)
-                        self.flowViewModel.startDate.accept(start)
                         self.calculatedStartDateRelay.accept(start)
                     }
                 }
@@ -117,18 +89,15 @@ final class TravelWhenViewModel {
             .do(onNext: { [weak self] days in
                 guard let self else { return }
                 self.travelDaysRelay.accept(days)
-                self.flowViewModel.travelDays.accept(days)
 
                 if let start = self.startDateRelay.value {
                     if let end = Calendar.current.date(byAdding: .day, value: days - 1, to: start) {
                         self.endDateRelay.accept(end)
-                        self.flowViewModel.endDate.accept(end)
                         self.calculatedEndDateRelay.accept(end)
                     }
                 } else if let end = self.endDateRelay.value {
                     if let start = Calendar.current.date(byAdding: .day, value: -(days - 1), to: end) {
                         self.startDateRelay.accept(start)
-                        self.flowViewModel.startDate.accept(start)
                         self.calculatedStartDateRelay.accept(start)
                     }
                 }
@@ -153,8 +122,26 @@ final class TravelWhenViewModel {
     func handleDateFieldTapped(_ onCancelPending: @escaping () -> Void) {
         if isPendingRelay.value {
             isPendingRelay.accept(false)
-            flowViewModel.datePending.accept(false)
             onCancelPending()
         }
+    }
+}
+
+extension TravelWhenViewModel {
+    // MARK: Output accessors
+    var travelDays: Int? {
+        return travelDaysRelay.value
+    }
+
+    var startDate: Date? {
+        return startDateRelay.value
+    }
+
+    var endDate: Date? {
+        return endDateRelay.value
+    }
+
+    var datePending: Bool {
+        return isPendingRelay.value
     }
 }

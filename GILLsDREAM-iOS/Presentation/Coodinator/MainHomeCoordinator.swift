@@ -47,7 +47,7 @@ final class MainHomeCoordinator: Coordinator {
     }
     
     private func showTravelWhoVC() {
-        let vc = TravelWhoViewController()
+        let vc = TravelWhoViewController(flowViewModel: flowViewModel)
         vc.onNext = { [weak self] in
             self?.showTravelWhereVC()
         }
@@ -58,7 +58,7 @@ final class MainHomeCoordinator: Coordinator {
     }
     
     private func showTravelWhereVC() {
-        let vc = TravelWhereViewController()
+        let vc = TravelWhereViewController(flowViewModel: flowViewModel)
         vc.onNext = { [weak self] in
             self?.showTravelHowVC()
         }
@@ -69,7 +69,7 @@ final class MainHomeCoordinator: Coordinator {
     }
     
     private func showTravelHowVC() {
-        let vc = TravelHowViewController()
+        let vc = TravelHowViewController(flowViewModel: flowViewModel)
         vc.onComplete = { [weak self] in
             self?.showTravelResultVC()
         }
@@ -81,6 +81,6 @@ final class MainHomeCoordinator: Coordinator {
     
     private func showTravelResultVC() {
         let vc = TravelRequestViewController() // TODO: TravelResultVC 구현 후 변경
-        navigationController.pushViewController(vc, animated: true)
+        self.navigationController.setViewControllers([vc], animated: false)
     }
 }
