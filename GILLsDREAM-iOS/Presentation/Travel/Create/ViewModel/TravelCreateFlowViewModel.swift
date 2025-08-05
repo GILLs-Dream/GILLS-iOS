@@ -11,22 +11,22 @@ import RxCocoa
 
 final class TravelRequestFlowViewModel {
     // MARK: When
-    let travelDays = BehaviorRelay<Int?>(value: nil)
-    let startDate = BehaviorRelay<Date?>(value: nil)
-    let endDate   = BehaviorRelay<Date?>(value: nil)
-    let datePending = BehaviorRelay<Bool?>(value: nil)
+    let travelDays = BehaviorRelay<Int?>(value: nil) //필수
+    let startDate = BehaviorRelay<Date?>(value: nil) //선택
+    let endDate   = BehaviorRelay<Date?>(value: nil) //선택
+    let datePending = BehaviorRelay<Bool>(value: false) //필수 (default값 = false)
 
     // MARK: Who
-    let peopleCount  = BehaviorRelay<Int?>(value: nil)
-    let peopleDetail = BehaviorRelay<String>(value: "")
+    let peopleCount  = BehaviorRelay<Int?>(value: nil) //필수
+    let peopleDetail = BehaviorRelay<String?>(value: nil) //선택
 
     // MARK: Where
-    let travelPlaces = BehaviorRelay<[Place]>(value: [])
-    let stayPlaces   = BehaviorRelay<[Place]>(value: [])
+    let travelPlaces = BehaviorRelay<[Place]?>(value: []) //선택
+    let stayPlaces   = BehaviorRelay<[Place]?>(value: []) //선택
 
     // MARK: How
-    let transportation = BehaviorRelay<String?>(value: nil)
-    let categories     = BehaviorRelay<[String]>(value: [])
+    let transportation = BehaviorRelay<String?>(value: nil) //필수
+    let categories     = BehaviorRelay<[String]?>(value: []) //필수
 
     // MARK: Validation
     var isWhenValid: Bool {
@@ -40,6 +40,6 @@ final class TravelRequestFlowViewModel {
     }
 
     var isHowValid: Bool {
-        (transportation.value?.isEmpty == false) && (categories.value.isEmpty == false)
+        (transportation.value?.isEmpty == false) && (categories.value?.isEmpty == false)
     }
 }

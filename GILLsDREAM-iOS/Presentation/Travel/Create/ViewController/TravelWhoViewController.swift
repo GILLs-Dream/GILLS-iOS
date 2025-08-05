@@ -12,9 +12,19 @@ import RxCocoa
 final class TravelWhoViewController: TravelViewController {
     private let rootView = TravelWhoView()
     private let viewModel = TravelWhoViewModel()
+    private let flowViewModel: TravelRequestFlowViewModel
     private let disposeBag = DisposeBag()
     var onPrev: (() -> Void)?
     var onNext: (() -> Void)?
+    
+    init(flowViewModel: TravelRequestFlowViewModel) {
+        self.flowViewModel = flowViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         self.view = rootView
@@ -22,19 +32,35 @@ final class TravelWhoViewController: TravelViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        bindFlowViewModel()
         bindViewModel()
+    }
+    
+    private func bindFlowViewModel() {
+        if let peopleCount = flowViewModel.peopleCount.value {
+            rootView.travelPaxView.startField.textField.text = "\(peopleCount)"
+        }
+        
+        if let peopleDetail = flowViewModel.peopleDetail.value {
+            rootView.travelWhoView.startField.textField.text = peopleDetail
+        }
     }
 
     private func bindViewModel() {
         rootView.headerView.currentStep = 1
 
-        let paxInput = rootView.travelPaxView.startField.textField.rx
+        let peopleCountInput = rootView.travelPaxView.startField.textField.rx
             .controlEvent(.editingDidEnd)
             .withLatestFrom(rootView.travelPaxView.startField.textField.rx.text.orEmpty)
             .compactMap { Int($0) }
+        
+        let peopleDetailInput = rootView.travelWhoView.startField.textField.rx
+            .controlEvent(.editingDidEnd)
+            .withLatestFrom(rootView.travelWhoView.startField.textField.rx.text.orEmpty)
 
         let input = TravelWhoViewModel.Input(
-            paxInput: paxInput,
+            peopleCountInput: peopleCountInput,
+            peopleDetailInput: peopleDetailInput,
             prevButtonTapped: rootView.previousButton.rx.tap.asObservable(),
             nextButtonTapped: rootView.nextButton.rx.tap.asObservable()
         )
@@ -49,6 +75,8 @@ final class TravelWhoViewController: TravelViewController {
         output.navigateToPrev
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
+                self.flowViewModel.peopleCount.accept(self.viewModel.peopleCount)
+                self.flowViewModel.peopleDetail.accept(self.viewModel.peopleDetail)
                 self.onPrev?()
             })
             .disposed(by: disposeBag)
@@ -56,6 +84,8 @@ final class TravelWhoViewController: TravelViewController {
         output.navigateToNext
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
+                self.flowViewModel.peopleCount.accept(self.viewModel.peopleCount)
+                self.flowViewModel.peopleDetail.accept(self.viewModel.peopleDetail)
                 self.onNext?()
             })
             .disposed(by: disposeBag)

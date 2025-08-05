@@ -11,12 +11,11 @@ final class TravelWhoView: UIView {
     // MARK: Views
     let headerView: TravelHeaderView
     private let titleLabel = UILabel()
-    let travelPaxView = TravelCustomView(title: "✪  인원수:",
+    let travelPaxView = TravelCustomView(title: "✪  인원수:\n  (필수)",
                                                       inputMode: .numberPicker(range: 1...20),
                                                       unit: "명",)
-    let travelWhoView = TravelCustomView(title: "✪  누구와:",
-                                         inputMode: .keyboard,
-                                         detail: "* 선택사항입니다.")
+    let travelWhoView = TravelCustomView(title: "✪  누구와:\n  (필수)",
+                                         inputMode: .keyboard)
     lazy var previousButton = CustomButton(title: "이전")
     lazy var nextButton = CustomButton()
     
