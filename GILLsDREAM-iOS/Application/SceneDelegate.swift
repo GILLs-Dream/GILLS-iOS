@@ -20,8 +20,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = window
         
         let navigationController: UINavigationController = .init()
-//        let travelResultVC = InitialViewController()
-//        let vc = UINavigationController(rootViewController: travelResultVC)
         navigationController.interactivePopGestureRecognizer?.isEnabled = false
         self.window?.rootViewController = navigationController
         self.window?.makeKeyAndVisible()

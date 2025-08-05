@@ -8,13 +8,14 @@
 import UIKit
 
 enum AppTab: String, CaseIterable {
-    case map, plane, list
+    case map, plane, list, mypage
 
     init?(index: Int) {
         switch index {
         case 0: self = .map
         case 1: self = .plane
         case 2: self = .list
+        case 3: self = .mypage
         default: return nil
         }
     }
@@ -24,6 +25,7 @@ enum AppTab: String, CaseIterable {
         case .map: return 0
         case .plane: return 1
         case .list: return 2
+        case .mypage: return 3
         }
     }
 
@@ -32,6 +34,7 @@ enum AppTab: String, CaseIterable {
         case .map: return .icMapFill
         case .plane: return .icPlane
         case .list: return .icListFill
+        case .mypage: return .icAccount
         }
     }
 
@@ -40,6 +43,7 @@ enum AppTab: String, CaseIterable {
         case .map: return .icMap
         case .plane: return .icPlane
         case .list: return .icList
+        case .mypage: return .icAccount
         }
     }
 }
@@ -53,9 +57,10 @@ final class TabBarViewController: UITabBarController, UITabBarControllerDelegate
 
     private func setUpStyle() {
         tabBar.backgroundColor = .clear
-        tabBar.barTintColor = .white
+        tabBar.backgroundImage = UIImage()
+        tabBar.shadowImage = UIImage()
+        tabBar.isTranslucent = true
         tabBar.tintColor = .mainBlue
         tabBar.unselectedItemTintColor = .white
-        tabBar.isTranslucent = false
     }
 }

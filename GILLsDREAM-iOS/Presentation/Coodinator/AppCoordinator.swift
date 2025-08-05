@@ -21,7 +21,7 @@ final class AppCoordinator: Coordinator {
         if isValidToken() {
             showTabBarFlow()
         } else {
-            showLoginFlow()
+            showTabBarFlow() //showLoginFlow()
         }
     }
     
@@ -34,13 +34,6 @@ final class AppCoordinator: Coordinator {
         loginCoordinator.finishDelegate = self
         childCoordinators.append(loginCoordinator)
         loginCoordinator.start()
-    }
-    
-    func showSignUpFlow() {
-        let signUpCoordinator = SignUpCoordinator(navigationController)
-        signUpCoordinator.finishDelegate = self
-        childCoordinators.append(signUpCoordinator)
-        signUpCoordinator.start()
     }
 
     func showTabBarFlow() {
@@ -63,10 +56,10 @@ extension AppCoordinator: CoordinatorFinishDelegate {
             } else {
                 showLoginFlow()
             }
-        case .signup:
+        case .signup, .main:
             showTabBarFlow()
-        case .tab:
-            showLoginFlow() // 로그아웃시
+        case .tab, .mypage:
+            showLoginFlow()
         default:
             break
         }

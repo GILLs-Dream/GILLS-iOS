@@ -19,13 +19,15 @@ final class MainHomeCoordinator: Coordinator {
     }
     
     func start() {
-        showMainHomeVC(MainHomeViewController())
+        showMainHomeVC()
     }
     
-    func showMainHomeVC(_ mainVC: MainHomeViewController) {
-        mainVC.onStart = { [weak self] in
+    func showMainHomeVC() {
+        let vc = MainHomeViewController()
+        vc.onStart = { [weak self] in
             self?.showTravelRequestVC()
         }
+        navigationController.setViewControllers([vc], animated: false)
     }
 
     private func showTravelRequestVC() {

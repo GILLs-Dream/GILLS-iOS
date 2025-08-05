@@ -29,7 +29,12 @@ final class LoginCoordinator: Coordinator {
     
     private func showInitialVC() {
         let vc = InitialViewController()
-        vc.coordinator = self
+        vc.onKakaoSignUp = { [weak self] in
+            self?.startKakaoSignUp()
+        }
+        vc.onAppleSignUp = { [weak self] in
+            self?.startAppleSignUp()
+        }
         navigationController.pushViewController(vc, animated: true)
     }
     
@@ -43,7 +48,14 @@ final class LoginCoordinator: Coordinator {
         finish()
     }
     
-    func startSignUp() {
+    func startKakaoSignUp() {
+        let signUpCoordinator = SignUpCoordinator(navigationController)
+        signUpCoordinator.finishDelegate = self.finishDelegate
+        childCoordinators.append(signUpCoordinator)
+        signUpCoordinator.start()
+    }
+    
+    func startAppleSignUp() {
         let signUpCoordinator = SignUpCoordinator(navigationController)
         signUpCoordinator.finishDelegate = self.finishDelegate
         childCoordinators.append(signUpCoordinator)
