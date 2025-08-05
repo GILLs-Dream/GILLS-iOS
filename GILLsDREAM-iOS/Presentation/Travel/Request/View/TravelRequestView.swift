@@ -55,19 +55,12 @@ final class TravelRequestView: UIView {
     // MARK: setUpUI
     private func setUpUI() {
         titleLabel.do {
-            $0.attributedText = "예시".pretendardAttributedString(style: .title1)
+            $0.attributedText = "입력 예시".pretendardAttributedString(style: .title1)
         }
         
         exampleLabel.do {
             $0.textAlignment = .left
             $0.numberOfLines = 3
-            let baseText = "가을 제주도에서 찐친들과\n인스타그래머블하고 고즈넉한\n여행을 즐기고 싶어"
-            $0.attributedText = baseText.pretendardAttributedString(style: .title4, color: .white)
-            $0.applyMultipleAttributes(styles: [
-                (target: "가을 제주도에서 찐친들", font: .PretendardStyle.title4.font, color: .mainYellow),
-                (target: "인스타그래머블", font: .PretendardStyle.title4.font, color: .mainYellow),
-                (target: "고즈넉한", font: .PretendardStyle.title4.font, color: .mainYellow)
-            ])
         }
         
         extraLabel.do {
@@ -91,7 +84,6 @@ final class TravelRequestView: UIView {
         }
         
         requestPlaceHolder.do {
-            $0.attributedText = "지금 어떤 분위기의 여행이 가고싶나요?".pretendardAttributedString(style: .subtitle6, color: .white)
             $0.backgroundColor = .clear
         }
         
@@ -147,6 +139,42 @@ final class TravelRequestView: UIView {
         
         lottieView.snp.makeConstraints {
             $0.edges.equalToSuperview()
+        }
+    }
+}
+
+extension TravelRequestView {
+    func update(for step: TravelRequestStep, with location: String? = nil) {
+        switch step {
+        case .region:
+            exampleLabel.attributedText = "묵호".pretendardAttributedString(style: .title4, color: .mainYellow)
+            extraLabel.isHidden = true
+            underlineView.isHidden = true
+            requestPlaceHolder.attributedText = "어디 지역으로 여행을 계획하시나요?".pretendardAttributedString(style: .subtitle6)
+        case .mood:
+            extraLabel.isHidden = false
+            underlineView.isHidden = false
+            requestPlaceHolder.attributedText = "지금 어떤 분위기의 여행이 가고싶나요?".pretendardAttributedString(style: .subtitle6)
+
+            if let location = location {
+                let baseText = "\(location)에서 찐친들과\n인스타그래머블하고 고즈넉한\n여행을 즐기고 싶어"
+                exampleLabel.attributedText = baseText.pretendardAttributedString(style: .title4)
+                exampleLabel.applyMultipleAttributes(styles: [
+                    (target: "\(location)에서 찐친들", font: .PretendardStyle.title4.font, color: .mainYellow),
+                    (target: "인스타그래머블", font: .PretendardStyle.title4.font, color: .mainYellow),
+                    (target: "고즈넉한", font: .PretendardStyle.title4.font, color: .mainYellow)
+                ])
+            }
+        case .video:
+            requestPlaceHolder.attributedText = "참고하고 싶은 여행영상이 있나요?".pretendardAttributedString(style: .subtitle6)
+            extraLabel.isHidden = false
+            underlineView.isHidden = true
+            extraLabel.text = "*영상 길이 최대 5분"
+            extraLabel.snp.remakeConstraints {
+                $0.top.equalTo(exampleLabel.snp.bottom).offset(5)
+                $0.leading.equalTo(titleLabel)
+            }
+            exampleLabel.attributedText = "www.gills-dream.com/\nshorts/gills1234".pretendardAttributedString(style: .title4, color: .mainYellow)
         }
     }
 }

@@ -22,6 +22,10 @@ final class TravelRequestViewModel {
     }
 
     let disposeBag = DisposeBag()
+    let currentStep = BehaviorRelay<TravelRequestStep>(value: .region)
+    var region: String = ""
+    var mood: String = ""
+    var video: String = ""
     private let travelTextRelay = BehaviorRelay<String>(value: "")
     private let navigateToNextRelay = PublishRelay<Void>()
 
@@ -29,14 +33,30 @@ final class TravelRequestViewModel {
         input.textInput
             .bind(to: travelTextRelay)
             .disposed(by: disposeBag)
-
+        
         input.sendButtonTapped
             .withLatestFrom(travelTextRelay)
-            .do(onNext: { text in
-                print(text)
+            .do(onNext: { [weak self] text in
+                guard let self = self else { return }
+
+                switch self.currentStep.value {
+                case .region:
+                    self.region = text
+                    self.travelTextRelay.accept("")
+                    self.currentStep.accept(.mood)
+
+                case .mood:
+                    self.mood = text
+                    self.travelTextRelay.accept("")
+                    self.currentStep.accept(.video)
+                    //TODO: 여행무드 api 연결
+                case .video:
+                    self.video = text
+                    self.navigateToNextRelay.accept(())
+                    //TODO: 지역, 유튜브링크 전송 api 연결
+                }
             })
-            .map { _ in }
-            .bind(to: navigateToNextRelay)
+            .subscribe()
             .disposed(by: disposeBag)
 
         return Output(

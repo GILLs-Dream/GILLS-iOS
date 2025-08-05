@@ -63,4 +63,11 @@ final class TabBarViewController: UITabBarController, UITabBarControllerDelegate
         tabBar.tintColor = .mainBlue
         tabBar.unselectedItemTintColor = .white
     }
+    
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        // 동일 탭이 재탭된 경우 확인
+        if let nav = viewController as? UINavigationController {
+            nav.popToRootViewController(animated: true)
+        }
+    }
 }

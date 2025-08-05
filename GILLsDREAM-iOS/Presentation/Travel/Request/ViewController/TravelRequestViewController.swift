@@ -9,6 +9,12 @@ import UIKit
 import RxSwift
 import RxCocoa
 
+enum TravelRequestStep {
+    case region
+    case mood
+    case video
+}
+
 final class TravelRequestViewController: BaseViewController {
     
     private let rootView = TravelRequestView()
@@ -68,6 +74,26 @@ final class TravelRequestViewController: BaseViewController {
                 guard let self = self else { return }
                 self.rootView.lottieView.stopAnimating()
                 self.onNext?()
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.currentStep
+            .asDriver()
+            .drive(onNext: { [weak self] step in
+                guard let self = self else { return }
+
+                switch step {
+                case .region:
+                    self.rootView.update(for: .region)
+                case .mood:
+                    self.rootView.requestTextView.text = ""
+                    self.rootView.requestPlaceHolder.isHidden = false
+                    self.rootView.update(for: .mood, with: self.viewModel.region)
+                case .video:
+                    self.rootView.requestTextView.text = ""
+                    self.rootView.requestPlaceHolder.isHidden = false
+                    self.rootView.update(for: .video)
+                }
             })
             .disposed(by: disposeBag)
     }
