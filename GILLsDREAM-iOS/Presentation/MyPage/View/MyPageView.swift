@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class MyPageView: UIView {
     
@@ -15,6 +16,7 @@ final class MyPageView: UIView {
     private var userEmail: String = "gildong@gill.com"
     
     // MARK: Views
+    private let titleLabel = UILabel()
     let profileImageView = UIImageView()
     let nicknameLabel = UILabel()
     let emailLabel = UILabel()
@@ -44,6 +46,7 @@ final class MyPageView: UIView {
     // MARK: setUpHierarchy
     private func setUpHierarchy() {
         [
+            titleLabel,
             profileImageView,
             nicknameLabel,
             emailLabel,
@@ -60,13 +63,17 @@ final class MyPageView: UIView {
     
     // MARK: setUpUI
     private func setUpUI() {
+        titleLabel.do {
+            $0.attributedText = "마이페이지".pretendardAttributedString(style: .body0)
+        }
+        
         profileImageView.do {
             $0.image = .imgDefaultProfile
             $0.layer.cornerRadius = 38
         }
         
         nicknameLabel.do {
-            $0.attributedText = "안녕하세요, \(userNickname)님".pretendardAttributedString(style: .subtitle2)
+            $0.attributedText = "안녕하세요, \(userNickname)님!".pretendardAttributedString(style: .subtitle2)
         }
         
         emailLabel.do {
@@ -98,8 +105,13 @@ final class MyPageView: UIView {
     
     // MARK: setUpLayout
     private func setUpLayout() {
+        titleLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(60)
+            $0.centerX.equalToSuperview()
+        }
+        
         profileImageView.snp.makeConstraints {
-            $0.top.equalTo(self.safeAreaLayoutGuide).offset(15)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(25)
             $0.leading.equalToSuperview().offset(24)
             $0.size.equalTo(78)
         }
@@ -108,6 +120,7 @@ final class MyPageView: UIView {
             $0.leading.equalTo(profileImageView.snp.trailing).offset(15)
             $0.centerY.equalTo(profileImageView).offset(-10)
         }
+        
         emailLabel.snp.makeConstraints {
             $0.leading.equalTo(nicknameLabel)
             $0.top.equalTo(nicknameLabel.snp.bottom)
@@ -116,7 +129,7 @@ final class MyPageView: UIView {
         divideLine.snp.makeConstraints {
             $0.top.equalTo(profileImageView.snp.bottom).offset(26)
             $0.horizontalEdges.equalToSuperview().inset(17)
-            $0.height.equalTo(1)
+            $0.height.equalTo(0.7)
         }
         
         buttonStackView.snp.makeConstraints {

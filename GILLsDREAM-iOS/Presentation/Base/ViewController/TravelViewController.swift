@@ -8,7 +8,7 @@
 import UIKit
 
 class TravelViewController: UIViewController, UIGestureRecognizerDelegate {
-    private let backgroundView = UIImageView(image: .background)
+    private let backgroundView = UIImageView(image: UIImage(named: "img_background"))
 
     override func viewDidLoad() {
         super.viewDidLoad()

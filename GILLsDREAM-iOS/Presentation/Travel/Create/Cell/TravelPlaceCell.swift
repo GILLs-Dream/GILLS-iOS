@@ -115,7 +115,7 @@ extension TravelPlaceCell {
     func configure(with place: Place) {
         disposeBag = DisposeBag()
         
-        placeImageView.image = place.imageURL
+        //placeImageView.image = place.imageURL
         placeNameLabel.text = place.name
         placeDateLabel.text = place.dateText
         

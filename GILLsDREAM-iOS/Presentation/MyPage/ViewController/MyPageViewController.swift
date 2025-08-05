@@ -21,7 +21,6 @@ final class MyPageViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureCustomNavigationBar()
         bindViewModel()
     }
 
@@ -37,7 +36,7 @@ final class MyPageViewController: BaseViewController {
         output.showServiceTerms
             .bind { [weak self] in
                 guard let self = self else { return }
-                self.presentDetail(title: "서비스 이용약관", content: TermsContent.service)
+                self.presentDetail(title: "서비스 이용약관", content: TermsContent.service.content)
             }
             .disposed(by: disposeBag)
 

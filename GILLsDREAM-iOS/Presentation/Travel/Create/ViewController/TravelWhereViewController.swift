@@ -83,7 +83,7 @@ final class TravelWhereViewController: TravelViewController {
             .withLatestFrom(currentPageRelay)
             .map { page in
                 let type: PlaceType = page == 0 ? .travel : .stay
-                return Place(name: "길순이네 카페", imageURL: UIImage.imgDefaultProfile, type: type)
+                return Place(name: "길순이네 카페", imageURL: "UIImage.imgDefaultProfile", type: type)
             }
             .bind(to: placeAddedSubject)
             .disposed(by: disposeBag)

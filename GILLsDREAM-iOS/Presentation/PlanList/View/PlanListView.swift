@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 
 final class PlanListView: UIView {
+    private let titleLabel = UILabel()
     lazy var myPlanCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: setUpCollectionViewFlowLayout())
         return collectionView
@@ -40,10 +41,17 @@ final class PlanListView: UIView {
     }
     
     private func setUpHierarchy() {
-        self.addSubview(myPlanCollectionView)
+        [
+            titleLabel,
+            myPlanCollectionView
+        ].forEach { self.addSubview($0) }
     }
     
     private func setUpUI() {
+        titleLabel.do {
+            $0.attributedText = "여행목록".pretendardAttributedString(style: .body0)
+        }
+        
         myPlanCollectionView.do {
             $0.backgroundColor = .clear
             $0.register(PlanListCollectionViewCell.self,
@@ -53,8 +61,15 @@ final class PlanListView: UIView {
     }
     
     private func setUpLayout() {
+        titleLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(60)
+            $0.centerX.equalToSuperview()
+        }
+    
         myPlanCollectionView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.top.equalTo(titleLabel.snp.bottom).offset(10)
+            $0.horizontalEdges.equalToSuperview()
+            $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
         }
     }
 }
