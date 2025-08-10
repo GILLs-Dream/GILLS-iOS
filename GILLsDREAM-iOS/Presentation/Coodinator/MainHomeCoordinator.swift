@@ -80,7 +80,7 @@ final class MainHomeCoordinator: Coordinator {
     }
     
     private func showTravelResultVC() {
-        let vc = TravelRequestViewController() // TODO: TravelResultVC 구현 후 변경
-        self.navigationController.setViewControllers([vc], animated: false)
+        let vc = TravelResultViewController(flowViewModel: flowViewModel)
+        navigationController.setViewControllers([vc], animated: false)
     }
 }
