@@ -15,14 +15,10 @@ class BaseViewController: UIViewController {
         super.viewDidLoad()
         configureCustomNavigationBar()
         
-        backgroundView.frame = view.bounds
-        backgroundView.contentMode = .scaleAspectFill
-        backgroundView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
-        dimView.frame = view.bounds
         dimView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
-        dimView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
+        [ backgroundView, dimView ].forEach {
+            $0.frame = view.bounds
+            $0.autoresizingMask = [.flexibleWidth, .flexibleHeight] }
         [ backgroundView, dimView ].forEach { view.addSubview($0) }
         [ dimView, backgroundView ].forEach { view.sendSubviewToBack($0) }
     }
