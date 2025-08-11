@@ -29,7 +29,7 @@ final class MainHomeCoordinator: Coordinator {
         }
         navigationController.setViewControllers([vc], animated: false)
     }
-
+    
     private func showTravelRequestVC() {
         let vc = TravelRequestViewController()
         vc.onNext = { [weak self] in
@@ -92,10 +92,14 @@ final class MainHomeCoordinator: Coordinator {
     
     
     private func showTravelSaveVC() {
-        let vc = MainHomeViewController() //TravelSaveViewController() // TODO: 구현
+        let vc = TravelSaveViewController()
+        vc.onComplete = { [weak self] in
+            guard let self = self else { return }
+            self.finish()
+        }
         navigationController.pushViewController(vc, animated: true)
     }
-
+    
     private func showMapModal(with items: [DayPlaceItem]) {
         // TODO: 구현
     }
