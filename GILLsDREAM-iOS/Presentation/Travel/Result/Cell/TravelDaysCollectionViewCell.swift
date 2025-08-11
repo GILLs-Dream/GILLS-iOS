@@ -9,8 +9,10 @@ import UIKit
 import SnapKit
 
 final class TravelDaysCollectionViewCell: UICollectionViewCell {
+    //MARK: Properties
     static let identifier = "TravelDaysCollectionViewCell"
     
+    //MARK: Views
     private let dayButton = UIButton()
     
     override init(frame: CGRect) {
