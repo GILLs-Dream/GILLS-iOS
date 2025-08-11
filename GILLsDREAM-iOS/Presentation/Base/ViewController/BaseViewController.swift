@@ -9,14 +9,18 @@ import UIKit
 
 class BaseViewController: UIViewController {
     private let backgroundView = BackgroundView()
+    private let dimView = UIView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureCustomNavigationBar()
-        backgroundView.frame = view.bounds
-        backgroundView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.addSubview(backgroundView)
-        view.sendSubviewToBack(backgroundView)
+        
+        dimView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        [ backgroundView, dimView ].forEach {
+            $0.frame = view.bounds
+            $0.autoresizingMask = [.flexibleWidth, .flexibleHeight] }
+        [ backgroundView, dimView ].forEach { view.addSubview($0) }
+        [ dimView, backgroundView ].forEach { view.sendSubviewToBack($0) }
     }
     
     func shouldDismissWhenTapped(on view: UIView?) -> Bool {

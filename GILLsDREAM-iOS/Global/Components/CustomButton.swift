@@ -47,6 +47,7 @@ final class CustomButton: UIButton {
     
     func updateTitle(_ title: String) {
         self.title = title
+        setupUI()
     }
 }
 

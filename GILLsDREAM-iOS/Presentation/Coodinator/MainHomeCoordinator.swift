@@ -29,7 +29,7 @@ final class MainHomeCoordinator: Coordinator {
         }
         navigationController.setViewControllers([vc], animated: false)
     }
-
+    
     private func showTravelRequestVC() {
         let vc = TravelRequestViewController()
         vc.onNext = { [weak self] in
@@ -80,7 +80,27 @@ final class MainHomeCoordinator: Coordinator {
     }
     
     private func showTravelResultVC() {
-        let vc = TravelRequestViewController() // TODO: TravelResultVC 구현 후 변경
-        self.navigationController.setViewControllers([vc], animated: false)
+        let vc = TravelResultViewController(flowViewModel: flowViewModel)
+        vc.onSave = { [weak self] in
+            self?.showTravelSaveVC()
+        }
+        vc.onMap = { [weak self] items in
+            self?.showMapModal(with: items)
+        }
+        navigationController.setViewControllers([vc], animated: false)
+    }
+    
+    
+    private func showTravelSaveVC() {
+        let vc = TravelSaveViewController()
+        vc.onComplete = { [weak self] in
+            guard let self = self else { return }
+            self.finish()
+        }
+        navigationController.pushViewController(vc, animated: true)
+    }
+    
+    private func showMapModal(with items: [DayPlaceItem]) {
+        // TODO: 구현
     }
 }
