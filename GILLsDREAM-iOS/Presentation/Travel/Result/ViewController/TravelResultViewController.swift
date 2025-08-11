@@ -94,13 +94,6 @@ final class TravelResultViewController: TravelViewController {
             .drive(rootView.travelDaysCollectionView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
         
-        output.selectedIndex
-            .drive(onNext: { [weak self] index in
-                self?.currentSelectedIndex = index
-                self?.rootView.travelDaysCollectionView.reloadData()
-            })
-            .disposed(by: disposeBag)
-        
         let tableDataSource = RxTableViewSectionedReloadDataSource<TimelineSection>(
             configureCell: { [weak self] _, tableView, indexPath, item in
                 guard
@@ -144,7 +137,7 @@ final class TravelResultViewController: TravelViewController {
         timelineItemsRelay.accept(mockTravelData.first ?? [])
         
         rootView.travelDayResultView.transportationDetailLabel.attributedText = "*해당 계획은 \(self.transportation) 기준으로 생성되었습니다.".pretendardAttributedString(style: .body3)
-        
+        rootView.summaryView.attributedText = summaryText.pretendardAttributedString(style: .body1)
         rootView.primaryButton.rx.tap
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }

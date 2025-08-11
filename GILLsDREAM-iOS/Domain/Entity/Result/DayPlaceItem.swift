@@ -5,38 +5,37 @@
 //  Created by 오연서 on 8/11/25.
 //
 
-import UIKit
 import RxDataSources
 
 struct DayPlaceItem {
     let title: String
-    let thumbnail: UIImage?
+    let thumbnail: String?
     let distanceToNextKm: Double? // 다음 장소까지의 거리(km), 마지막 item이면 nil
     let timeToNextMin: Int? // 다음 장소까지의 시간(min), 마지막 item이면 nil
 }
 
 // mock 데이터
 let mockDay1PlaceItem: [DayPlaceItem] = [
-    .init(title: "동궁과 월지", thumbnail: UIImage(named:"p1"), distanceToNextKm: 3.1, timeToNextMin: 10),
-    .init(title: "느좋카",     thumbnail: UIImage(named:"p2"), distanceToNextKm: 0.1, timeToNextMin: 10),
-    .init(title: "강릉 동문해변",  thumbnail: UIImage(named:"p3"), distanceToNextKm: 0.1, timeToNextMin: 10),
-    .init(title: "동궁과 월지", thumbnail: UIImage(named:"p1"), distanceToNextKm: 3.1, timeToNextMin: 10),
-    .init(title: "느좋카",     thumbnail: UIImage(named:"p2"), distanceToNextKm: 0.1, timeToNextMin: 10),
-    .init(title: "강릉 동문해변",  thumbnail: UIImage(named:"p3"), distanceToNextKm: 0.1, timeToNextMin: 10),
-    .init(title: "동궁과 월지", thumbnail: UIImage(named:"p1"), distanceToNextKm: 3.1, timeToNextMin: 10),
-    .init(title: "느좋카",     thumbnail: UIImage(named:"p2"), distanceToNextKm: 0.1, timeToNextMin: 10),
-    .init(title: "강릉 동문해변",  thumbnail: UIImage(named:"p3"), distanceToNextKm: 0.1, timeToNextMin: 10),
-    .init(title: "강릉 동문해변",  thumbnail: UIImage(named:"p4"), distanceToNextKm: nil, timeToNextMin: nil) // 마지막
+    .init(title: "동궁과 월지", thumbnail: "", distanceToNextKm: 3.1, timeToNextMin: 10),
+    .init(title: "느좋카",     thumbnail: "", distanceToNextKm: 0.1, timeToNextMin: 10),
+    .init(title: "강릉 동문해변",  thumbnail: "", distanceToNextKm: 0.1, timeToNextMin: 10),
+    .init(title: "동궁과 월지", thumbnail: "", distanceToNextKm: 3.1, timeToNextMin: 10),
+    .init(title: "느좋카",     thumbnail: "", distanceToNextKm: 0.1, timeToNextMin: 10),
+    .init(title: "강릉 동문해변",  thumbnail: "", distanceToNextKm: 0.1, timeToNextMin: 10),
+    .init(title: "동궁과 월지", thumbnail: "", distanceToNextKm: 3.1, timeToNextMin: 10),
+    .init(title: "느좋카",     thumbnail: "", distanceToNextKm: 0.1, timeToNextMin: 10),
+    .init(title: "강릉 동문해변",  thumbnail: "", distanceToNextKm: 0.1, timeToNextMin: 10),
+    .init(title: "강릉 동문해변",  thumbnail: "", distanceToNextKm: nil, timeToNextMin: nil) // 마지막
 ]
 
 let mockDay2PlaceItem: [DayPlaceItem] = [
-    .init(title: "프로토콜", thumbnail: UIImage(named:"p1"), distanceToNextKm: 3.1, timeToNextMin: 10),
-    .init(title: "홍대기숙사",  thumbnail: UIImage(named:"p4"), distanceToNextKm: nil, timeToNextMin: nil) // 마지막
+    .init(title: "프로토콜", thumbnail: "", distanceToNextKm: 3.1, timeToNextMin: 10),
+    .init(title: "홍대기숙사",  thumbnail: "", distanceToNextKm: nil, timeToNextMin: nil) // 마지막
 ]
 
 let mockDay3PlaceItem: [DayPlaceItem] = [
-    .init(title: "성심당", thumbnail: UIImage(named:"p1"), distanceToNextKm: 3.1, timeToNextMin: 10),
-    .init(title: "상심당",  thumbnail: UIImage(named:"p4"), distanceToNextKm: nil, timeToNextMin: nil) // 마지막
+    .init(title: "성심당", thumbnail: "", distanceToNextKm: 3.1, timeToNextMin: 10),
+    .init(title: "상심당",  thumbnail: "", distanceToNextKm: nil, timeToNextMin: nil) // 마지막
 ]
 
 let mockTravelData: [[DayPlaceItem]] = [

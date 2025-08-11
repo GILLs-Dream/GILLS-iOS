@@ -45,7 +45,7 @@ final class TravelSaveViewModel: ViewModelType {
             .bind(to: selectedImageRelay)
             .disposed(by: disposeBag)
 
-        // 닉네임 입력
+        // 여행이름 입력
         input.travelNameInput
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .bind(to: travelNameRelay)

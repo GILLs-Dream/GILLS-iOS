@@ -69,7 +69,7 @@ final class TravelResultView: UIView {
         }
         
         summaryView.do {
-            $0.attributedText = summaryText.pretendardAttributedString(style: .body1)
+            $0.attributedText = "요약 정보를 준비 중입니다.".pretendardAttributedString(style: .body1)
             $0.numberOfLines = 0
             $0.isHidden = true
         }

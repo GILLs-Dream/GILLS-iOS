@@ -111,8 +111,6 @@ extension TravelTimelineCell {
         
         // 마지막 셀일 경우 점선 숨김
         dottedLine.isHidden = isLast
-        
-        setNeedsLayout()
         layoutIfNeeded()
     }
 }
