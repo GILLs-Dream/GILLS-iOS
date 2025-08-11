@@ -13,9 +13,7 @@ typealias DaySection = SectionModel<Void, Int>  // 아이템 = 인덱스(Int)
 
 final class TravelResultViewModel {
     struct Input {
-        /// 아이템 인덱스 목록 (예: [0, 1, 2, 3]  // 마지막 3이 '요약' 용)
         let items: Observable<[Int]>
-        /// 사용자 선택 인덱스
         let didSelectIndex: Observable<Int>
     }
     struct Output {

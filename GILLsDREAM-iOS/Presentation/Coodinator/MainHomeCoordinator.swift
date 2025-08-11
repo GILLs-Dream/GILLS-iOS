@@ -81,6 +81,22 @@ final class MainHomeCoordinator: Coordinator {
     
     private func showTravelResultVC() {
         let vc = TravelResultViewController(flowViewModel: flowViewModel)
+        vc.onSave = { [weak self] in
+            self?.showTravelSaveVC()
+        }
+        vc.onMap = { [weak self] items in
+            self?.showMapModal(with: items)
+        }
         navigationController.setViewControllers([vc], animated: false)
+    }
+    
+    
+    private func showTravelSaveVC() {
+        let vc = MainHomeViewController() //TravelSaveViewController() // TODO: 구현
+        navigationController.pushViewController(vc, animated: true)
+    }
+
+    private func showMapModal(with items: [DayPlaceItem]) {
+        // TODO: 구현
     }
 }

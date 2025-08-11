@@ -21,9 +21,11 @@ final class TravelResultView: UIView {
         layout.minimumLineSpacing = 10
         layout.sectionInset = .zero
         layout.estimatedItemSize = .zero
-        return UICollectionView(frame: .zero, collectionViewLayout: layout)
-    }()
-    let contentContainerView = UIView()
+        return UICollectionView(frame: .zero, collectionViewLayout: layout)}()
+    let containerView = UIView()
+    let travelDayResultView = TravelDayResultView()
+    let summaryView = UILabel()
+    let primaryButton = CustomButton(title: "지도로 확인하기")
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -44,8 +46,14 @@ final class TravelResultView: UIView {
         [
             titleLabel,
             travelDaysCollectionView,
-            contentContainerView
+            containerView,
+            primaryButton
         ].forEach { addSubview($0) }
+        
+        [
+            travelDayResultView,
+            summaryView,
+        ].forEach { containerView.addSubview($0) }
     }
 
     private func setUpUI() {
@@ -58,6 +66,12 @@ final class TravelResultView: UIView {
             $0.isScrollEnabled = false
             $0.register(TravelDaysCollectionViewCell.self,
                         forCellWithReuseIdentifier: TravelDaysCollectionViewCell.identifier)
+        }
+        
+        summaryView.do {
+            $0.attributedText = summaryText.pretendardAttributedString(style: .body1)
+            $0.numberOfLines = 0
+            $0.isHidden = true
         }
     }
 
@@ -74,14 +88,47 @@ final class TravelResultView: UIView {
             self.daysHeightConstraint = $0.height.equalTo(28).constraint
         }
         
-        contentContainerView.snp.makeConstraints {
+        primaryButton.snp.makeConstraints {
+            $0.height.equalTo(51)
+            $0.horizontalEdges.equalToSuperview().inset(43)
+            $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
+        }
+        
+        containerView.snp.makeConstraints {
             $0.top.equalTo(travelDaysCollectionView.snp.bottom).offset(16)
-            $0.horizontalEdges.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview().inset(24)
+            $0.bottom.equalTo(primaryButton.snp.top).offset(-16)
+        }
+        
+        travelDayResultView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+        summaryView.snp.makeConstraints {
+            $0.top.horizontalEdges.equalToSuperview()
         }
     }
 }
 
 extension TravelResultView {
+    enum ContentMode {
+        case day
+        case summary
+    }
+    
+    func setContentMode(_ mode: ContentMode) {
+        switch mode {
+        case .day:
+            travelDayResultView.isHidden = false
+            summaryView.isHidden = true
+            primaryButton.updateTitle("지도로 확인하기")
+        case .summary:
+            travelDayResultView.isHidden = true
+            summaryView.isHidden = false
+            primaryButton.updateTitle("여행 저장하기")
+        }
+    }
+    
     func updateDaysHeight(_ height: CGFloat) {
         daysHeightConstraint?.update(offset: height)
         layoutIfNeeded()

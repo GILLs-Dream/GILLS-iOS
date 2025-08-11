@@ -21,15 +21,21 @@ final class TravelResultViewController: TravelViewController {
     //MARK: States
     private var currentSelectedIndex = 0
     private let daysCount: Int
+    private let transportation: String
+    private let timelineItemsRelay = BehaviorRelay<[DayPlaceItem]>(value: []) // 테이블 표시용
     
     private let disposeBag = DisposeBag()
     private let rootView = TravelResultView()
     private let viewModel = TravelResultViewModel()
     private let flowViewModel: TravelRequestFlowViewModel
     
+    var onMap: (([DayPlaceItem]) -> Void)?
+    var onSave: (() -> Void)?
+    
     init(flowViewModel: TravelRequestFlowViewModel) {
         self.flowViewModel = flowViewModel
-        self.daysCount = flowViewModel.travelDays.value!
+        self.daysCount = flowViewModel.travelDays.value ?? 1
+        self.transportation = flowViewModel.transportation.value ?? "도보"
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -92,6 +98,59 @@ final class TravelResultViewController: TravelViewController {
             .drive(onNext: { [weak self] index in
                 self?.currentSelectedIndex = index
                 self?.rootView.travelDaysCollectionView.reloadData()
+            })
+            .disposed(by: disposeBag)
+        
+        let tableDataSource = RxTableViewSectionedReloadDataSource<TimelineSection>(
+            configureCell: { [weak self] _, tableView, indexPath, item in
+                guard
+                    let cell = tableView.dequeueReusableCell(
+                        withIdentifier: TravelTimelineCell.identifier,
+                        for: indexPath
+                    ) as? TravelTimelineCell
+                else { return UITableViewCell() }
+
+                let items = self?.timelineItemsRelay.value ?? []
+                let isLast  = (indexPath.row == max(0, items.count - 1))
+                cell.configure(item: item, isLast: isLast)
+                return cell
+            }
+        )
+
+        timelineItemsRelay
+            .map { [TimelineSection(model: (), items: $0)] }
+            .bind(to: rootView.travelDayResultView.travelTimelineTableView.rx.items(dataSource: tableDataSource))
+            .disposed(by: disposeBag)
+
+        output.selectedIndex
+            .drive(onNext: { [weak self] index in
+                guard let self = self else { return }
+                self.currentSelectedIndex = index
+                self.rootView.travelDaysCollectionView.reloadData()
+
+                let isSummary = (index == self.daysCount)
+                self.rootView.setContentMode(isSummary ? .summary : .day)
+
+                if isSummary {
+                    self.timelineItemsRelay.accept([])
+                } else {
+                    // TODO: API 연결
+                    let safeIndex = max(0, min(index, mockTravelData.count - 1))
+                    self.timelineItemsRelay.accept(mockTravelData[safeIndex])
+                }
+            })
+            .disposed(by: disposeBag)
+
+        timelineItemsRelay.accept(mockTravelData.first ?? [])
+        
+        rootView.travelDayResultView.transportationDetailLabel.attributedText = "*해당 계획은 \(self.transportation) 기준으로 생성되었습니다.".pretendardAttributedString(style: .body3)
+        
+        rootView.primaryButton.rx.tap
+            .bind(onNext: { [weak self] in
+                guard let self = self else { return }
+                let isSummary = (self.currentSelectedIndex == self.daysCount)
+                if isSummary { self.onSave?() }
+                else { self.onMap?(self.timelineItemsRelay.value) }
             })
             .disposed(by: disposeBag)
     }
