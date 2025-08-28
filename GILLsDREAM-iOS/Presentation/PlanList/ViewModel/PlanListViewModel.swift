@@ -57,16 +57,3 @@ extension PlanListViewModel {
         planSectionsRelay.accept([PlanSection(items: sorted)])
     }
 }
-
-
-let myPlanDummy = [
-    Plan(id: "1", title: "깔루아 경주여행", dateRange: "2025년 11월 24일 - 11월 25일", isPinned: true, imageURL: nil, sortOrder: 0),
-    Plan(id: "2", title: "길순이 경주여행", dateRange: nil, isPinned: true, imageURL: nil, sortOrder: 1),
-    Plan(id: "3", title: "닐순이 경주여행", dateRange: nil, isPinned: true, imageURL: nil, sortOrder: 2),
-    Plan(id: "4", title: "딜순이 경주여행", dateRange: nil, isPinned: true, imageURL: nil, sortOrder: 3),
-    Plan(id: "5", title: "릴순이 경주여행", dateRange: "2025년 11월 24일 - 11월 25일", isPinned: false, imageURL: nil, sortOrder: 4),
-    Plan(id: "6", title: "밀순이 경주여행", dateRange: "2025년 11월 24일 - 11월 25일", isPinned: false, imageURL: nil, sortOrder: 5),
-    Plan(id: "7", title: "빌순이 경주여행", dateRange: "2025년 11월 24일 - 11월 25일", isPinned: false, imageURL: nil, sortOrder: 6),
-    Plan(id: "8", title: "실순이 경주여행", dateRange: "2025년 11월 24일 - 11월 25일", isPinned: false, imageURL: nil, sortOrder: 7),
-    Plan(id: "9", title: "일순이 경주여행", dateRange: "2025년 11월 24일 - 11월 25일", isPinned: false, imageURL: nil, sortOrder: 8),
-]
