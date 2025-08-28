@@ -17,6 +17,7 @@
 		DC4550402DD1D581004461C2 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = DC45503F2DD1D581004461C2 /* Then */; };
 		DC4550AF2DD1ED4F004461C2 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = DC4550AE2DD1ED4F004461C2 /* .swiftlint.yml */; };
 		DC4DF4AD2E264EE10010C3F0 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = DC4DF4AC2E264EE10010C3F0 /* Lottie */; };
+		DCD660F42E42FE300091A6E6 /* KakaoMapsSDK-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = DCD660F32E42FE300091A6E6 /* KakaoMapsSDK-SPM */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,17 +42,13 @@
 		DCAE8A512DC3946C00A4BEDB /* GILLsDREAM-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "GILLsDREAM-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCAE8A672DC3946E00A4BEDB /* GILLsDREAM-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "GILLsDREAM-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCAE8A712DC3946E00A4BEDB /* GILLsDREAM-iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "GILLsDREAM-iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCFE25562E5D90CD00B3ECF4 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Config.xcconfig; path = "/Users/ohyeonseo/Desktop/GILLsDREAM-iOS/GILLsDREAM-iOS/Data/Base/Config/Config.xcconfig"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		DCAE8A792DC3946E00A4BEDB /* Exceptions for "GILLsDREAM-iOS" folder in "GILLsDREAM-iOS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Data/Base/.gitkeep,
-				Data/DTO/.gitkeep,
-				Data/Repository/.gitkeep,
-				Data/Router/.gitkeep,
-				Domain/RepositoryInterface/.gitkeep,
 				Domain/Usecase/.gitkeep,
 				Global/Components/.gitkeep,
 				Info.plist,
@@ -83,6 +80,7 @@
 				DC4550402DD1D581004461C2 /* Then in Frameworks */,
 				DC45502D2DD1D519004461C2 /* SnapKit in Frameworks */,
 				DC45503D2DD1D576004461C2 /* RxMoya in Frameworks */,
+				DCD660F42E42FE300091A6E6 /* KakaoMapsSDK-SPM in Frameworks */,
 				DC4550362DD1D554004461C2 /* RxCocoa in Frameworks */,
 				DC4550302DD1D52F004461C2 /* RxDataSources in Frameworks */,
 			);
@@ -154,6 +152,7 @@
 				DC45503C2DD1D576004461C2 /* RxMoya */,
 				DC45503F2DD1D581004461C2 /* Then */,
 				DC4DF4AC2E264EE10010C3F0 /* Lottie */,
+				DCD660F32E42FE300091A6E6 /* KakaoMapsSDK-SPM */,
 			);
 			productName = "GILLsDREAM-iOS";
 			productReference = DCAE8A512DC3946C00A4BEDB /* GILLsDREAM-iOS.app */;
@@ -239,6 +238,7 @@
 				DC4550392DD1D576004461C2 /* XCRemoteSwiftPackageReference "Moya" */,
 				DC45503E2DD1D581004461C2 /* XCRemoteSwiftPackageReference "Then" */,
 				DC4DF4AB2E264EE10010C3F0 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				DCD660F22E42FE2F0091A6E6 /* XCRemoteSwiftPackageReference "KakaoMapsSDK-SPM" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DCAE8A522DC3946C00A4BEDB /* Products */;
@@ -341,6 +341,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				BASE_URL = "http://3.39.198.198:8080";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_ARC_EXCEPTIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Y63SPPWMGC;
@@ -368,6 +371,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				BASE_URL = "http://3.39.198.198:8080";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Y63SPPWMGC;
@@ -392,6 +396,7 @@
 		};
 		DCAE8A7D2DC3946E00A4BEDB /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DCFE25562E5D90CD00B3ECF4 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -681,6 +686,14 @@
 				minimumVersion = 4.5.2;
 			};
 		};
+		DCD660F22E42FE2F0091A6E6 /* XCRemoteSwiftPackageReference "KakaoMapsSDK-SPM" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kakao-mapsSDK/KakaoMapsSDK-SPM.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.12.9;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -728,6 +741,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DC4DF4AB2E264EE10010C3F0 /* XCRemoteSwiftPackageReference "lottie-ios" */;
 			productName = Lottie;
+		};
+		DCD660F32E42FE300091A6E6 /* KakaoMapsSDK-SPM */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DCD660F22E42FE2F0091A6E6 /* XCRemoteSwiftPackageReference "KakaoMapsSDK-SPM" */;
+			productName = "KakaoMapsSDK-SPM";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
