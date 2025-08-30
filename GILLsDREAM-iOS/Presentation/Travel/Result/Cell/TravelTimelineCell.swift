@@ -97,7 +97,7 @@ final class TravelTimelineCell: UITableViewCell {
 }
 
 extension TravelTimelineCell {
-    func configure(item: DayPlaceItem, isLast: Bool) {
+    func configure(item: PlaceResult, isLast: Bool) {
         titleLabel.attributedText = item.title.pretendardAttributedString(style: .body0)
         
         let text = "\(item.distanceToNextKm ?? 0)km, 약 \(item.timeToNextMin ?? 0)분"

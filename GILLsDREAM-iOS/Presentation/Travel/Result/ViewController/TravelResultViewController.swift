@@ -22,14 +22,14 @@ final class TravelResultViewController: TravelViewController {
     private var currentSelectedIndex = 0
     private let daysCount: Int
     private let transportation: String
-    private let timelineItemsRelay = BehaviorRelay<[DayPlaceItem]>(value: []) // 테이블 표시용
+    private let timelineItemsRelay = BehaviorRelay<[PlaceResult]>(value: []) // 테이블 표시용
     
     private let disposeBag = DisposeBag()
     private let rootView = TravelResultView()
     private let viewModel = TravelResultViewModel()
     private let flowViewModel: TravelRequestFlowViewModel
     
-    var onMap: (([DayPlaceItem]) -> Void)?
+    var onMap: (([PlaceResult]) -> Void)?
     var onSave: (() -> Void)?
     
     init(flowViewModel: TravelRequestFlowViewModel) {

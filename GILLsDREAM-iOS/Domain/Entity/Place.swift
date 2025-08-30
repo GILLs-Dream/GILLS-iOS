@@ -7,32 +7,30 @@
 
 import Foundation
 
-enum PlaceType {
-    case travel //여행지
-    case stay //숙소
-}
-
 struct Place {
-    let name: String
-    let imageURL: String?
-    var type: PlaceType
-    
-    var visitDate: Date?
-    var checkInDate: Date?
-    var checkOutDate: Date?
-}
-
-extension Place {
-    var dateText: String {
+    let name: String        //장소 이름
+    let imageURL: String?   //장소 이미지
+    var type: PlaceType     //장소 유형
+    var visitDate: Date?    //장소 방문 날짜
+    var checkInDate: Date?  //숙소 체크인 날짜
+    var checkOutDate: Date? //숙소 체크아웃 날짜
+    var dateText: String {  //장소 방문 날짜 반환
         switch type {
         case .travel:
-            return visitDate?.formatted("yyyy/MM/dd") ?? "날짜 미정"
+            return visitDate?.ymdText ?? "날짜 미정"
         case .stay:
             if let checkIn = checkInDate, let checkOut = checkOutDate {
-                return "\(checkIn.formatted("yyyy/MM/dd")) - \(checkOut.formatted("yyyy/MM/dd"))"
+                return "\(checkIn.ymdText) - \(checkOut.ymdText)"
             } else {
                 return "날짜 미정"
             }
         }
+    }
+}
+
+extension Place {
+    enum PlaceType {
+        case travel //여행지
+        case stay   //숙소
     }
 }

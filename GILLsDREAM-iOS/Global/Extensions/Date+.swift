@@ -8,6 +8,18 @@
 import Foundation
 
 extension Date {
+    var ymdText: String {
+        Date.ymdFormatter.string(from: self)
+    }
+    
+    private static let ymdFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = .autoupdatingCurrent
+        f.calendar = .autoupdatingCurrent
+        f.dateFormat = "yyyy/MM/dd"
+        return f
+    }()
+    
     func formatted(_ format: String) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
