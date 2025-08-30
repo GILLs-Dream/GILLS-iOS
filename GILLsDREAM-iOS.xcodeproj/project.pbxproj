@@ -103,12 +103,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DC4885D62E62D42000CB5E87 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				DCFE25562E5D90CD00B3ECF4 /* Config.xcconfig */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		DCAE8A482DC3946C00A4BEDB = {
 			isa = PBXGroup;
 			children = (
 				DC4550AE2DD1ED4F004461C2 /* .swiftlint.yml */,
 				DCAE8A532DC3946C00A4BEDB /* GILLsDREAM-iOS */,
 				DCAE8A522DC3946C00A4BEDB /* Products */,
+				DC4885D62E62D42000CB5E87 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -341,7 +350,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				BASE_URL = "http://3.39.198.198:8080";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_ENABLE_OBJC_ARC_EXCEPTIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -371,7 +379,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				BASE_URL = "http://3.39.198.198:8080";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Y63SPPWMGC;
@@ -396,7 +403,8 @@
 		};
 		DCAE8A7D2DC3946E00A4BEDB /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DCFE25562E5D90CD00B3ECF4 /* Config.xcconfig */;
+			baseConfigurationReferenceAnchor = DCAE8A532DC3946C00A4BEDB /* GILLsDREAM-iOS */;
+			baseConfigurationReferenceRelativePath = Data/Network/Config/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
