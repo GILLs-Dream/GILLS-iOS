@@ -100,7 +100,7 @@ final class MainHomeCoordinator: Coordinator {
         navigationController.pushViewController(vc, animated: true)
     }
     
-    private func showMapModal(with items: [DayPlaceItem]) {
+    private func showMapModal(with items: [PlaceResult]) {
         // TODO: 구현
     }
 }
