@@ -8,6 +8,7 @@
 import Foundation
 
 struct Place {
+    let id: String          //장소 id
     let name: String        //장소 이름
     let imageURL: String?   //장소 이미지
     var type: PlaceType     //장소 유형
