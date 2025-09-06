@@ -116,9 +116,9 @@ final class TravelWhereViewController: TravelViewController {
             .withLatestFrom(currentPageRelay)
             .map { page in
                 if (page == 0) {
-                    return Place(name: "길순이네 카페", imageURL: "UIImage.imgDefaultProfile", type: .travel)
+                    return Place(id: "1", name: "길순이네 카페", imageURL: "UIImage.imgDefaultProfile", type: .travel)
                 } else {
-                    return Place(name: "길순이네 민박", imageURL: "UIImage.imgDefaultProfile", type: .stay)
+                    return Place(id: "1", name: "길순이네 민박", imageURL: "UIImage.imgDefaultProfile", type: .stay)
                 }
             }
             .bind(to: placeAddedSubject)

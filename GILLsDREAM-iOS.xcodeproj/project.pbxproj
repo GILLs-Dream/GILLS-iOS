@@ -49,7 +49,6 @@
 		DCAE8A792DC3946E00A4BEDB /* Exceptions for "GILLsDREAM-iOS" folder in "GILLsDREAM-iOS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Domain/Usecase/.gitkeep,
 				Global/Components/.gitkeep,
 				Info.plist,
 			);

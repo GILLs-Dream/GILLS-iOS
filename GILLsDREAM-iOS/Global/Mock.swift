@@ -7,26 +7,26 @@
 
 // mock 데이터
 let mockDay1PlaceItem: [PlaceResult] = [
-    .init(title: "동궁과 월지", thumbnail: "", distanceToNextKm: 3.1, timeToNextMin: 10),
-    .init(title: "느좋카",     thumbnail: "", distanceToNextKm: 0.1, timeToNextMin: 10),
-    .init(title: "강릉 동문해변",  thumbnail: "", distanceToNextKm: 0.1, timeToNextMin: 10),
-    .init(title: "동궁과 월지", thumbnail: "", distanceToNextKm: 3.1, timeToNextMin: 10),
-    .init(title: "느좋카",     thumbnail: "", distanceToNextKm: 0.1, timeToNextMin: 10),
-    .init(title: "강릉 동문해변",  thumbnail: "", distanceToNextKm: 0.1, timeToNextMin: 10),
-    .init(title: "동궁과 월지", thumbnail: "", distanceToNextKm: 3.1, timeToNextMin: 10),
-    .init(title: "느좋카",     thumbnail: "", distanceToNextKm: 0.1, timeToNextMin: 10),
-    .init(title: "강릉 동문해변",  thumbnail: "", distanceToNextKm: 0.1, timeToNextMin: 10),
-    .init(title: "강릉 동문해변",  thumbnail: "", distanceToNextKm: nil, timeToNextMin: nil) // 마지막
+    .init(id: "1", title: "동궁과 월지", imageURL: "", distanceToNextKm: 3.1, timeToNextMin: 10),
+    .init(id: "1", title: "느좋카",     imageURL: "", distanceToNextKm: 0.1, timeToNextMin: 10),
+    .init(id: "1", title: "강릉 동문해변",  imageURL: "", distanceToNextKm: 0.1, timeToNextMin: 10),
+    .init(id: "1", title: "동궁과 월지", imageURL: "", distanceToNextKm: 3.1, timeToNextMin: 10),
+    .init(id: "1", title: "느좋카",     imageURL: "", distanceToNextKm: 0.1, timeToNextMin: 10),
+    .init(id: "1", title: "강릉 동문해변",  imageURL: "", distanceToNextKm: 0.1, timeToNextMin: 10),
+    .init(id: "1", title: "동궁과 월지", imageURL: "", distanceToNextKm: 3.1, timeToNextMin: 10),
+    .init(id: "1", title: "느좋카",     imageURL: "", distanceToNextKm: 0.1, timeToNextMin: 10),
+    .init(id: "1", title: "강릉 동문해변",  imageURL: "", distanceToNextKm: 0.1, timeToNextMin: 10),
+    .init(id: "1", title: "강릉 동문해변",  imageURL: "", distanceToNextKm: nil, timeToNextMin: nil) // 마지막
 ]
 
 let mockDay2PlaceItem: [PlaceResult] = [
-    .init(title: "프로토콜", thumbnail: "", distanceToNextKm: 3.1, timeToNextMin: 10),
-    .init(title: "홍대기숙사",  thumbnail: "", distanceToNextKm: nil, timeToNextMin: nil) // 마지막
+    .init(id: "1", title: "프로토콜", imageURL: "", distanceToNextKm: 3.1, timeToNextMin: 10),
+    .init(id: "1", title: "홍대기숙사",  imageURL: "", distanceToNextKm: nil, timeToNextMin: nil) // 마지막
 ]
 
 let mockDay3PlaceItem: [PlaceResult] = [
-    .init(title: "성심당", thumbnail: "", distanceToNextKm: 3.1, timeToNextMin: 10),
-    .init(title: "상심당",  thumbnail: "", distanceToNextKm: nil, timeToNextMin: nil) // 마지막
+    .init(id: "1", title: "성심당", imageURL: "", distanceToNextKm: 3.1, timeToNextMin: 10),
+    .init(id: "1", title: "상심당",  imageURL: "", distanceToNextKm: nil, timeToNextMin: nil) // 마지막
 ]
 
 let mockTravelData: [[PlaceResult]] = [

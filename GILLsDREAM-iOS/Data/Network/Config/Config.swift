@@ -20,6 +20,11 @@ enum Config {
         }
         return dict
     }()
+    
+    static let service: String = {
+        let base = Bundle.main.bundleIdentifier ?? "com.gillsdream.ios"
+        return base + ".keychain"
+    }()
 }
 
 extension Config {

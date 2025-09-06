@@ -1,0 +1,18 @@
+//
+//  PlanRepository.swift
+//  GILLsDREAM-iOS
+//
+//  Created by 오연서 on 8/30/25.
+//
+
+import Foundation
+
+protocol PlanRepository {
+    func setMood(_ text: String) async throws -> PlanMood
+    func setVideos(planId: Int, region: String, urls: [String]) async throws -> Bool
+    func setDuration(planId: Int, duration: Int, start: String, finish: String) async throws -> Bool
+    func setStyle(planId: Int, transport: String, categories: [String]) async throws -> Bool
+    func setCompanion(planId: Int, party: Int, companion: String) async throws -> Bool
+    func setDestination(planId: Int, travel: [TravelPlaceRequestDTO], stay: [StayPlaceRequestDTO]) async throws -> Bool
+    func generate(planId: Int) async throws -> Plan
+}
