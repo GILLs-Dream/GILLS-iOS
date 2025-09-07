@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Moya
 
 final class AuthRepositoryImpl: AuthRepository {
     private let provider = Providers.member
