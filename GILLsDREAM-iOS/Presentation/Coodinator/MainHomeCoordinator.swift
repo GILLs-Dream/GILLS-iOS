@@ -31,7 +31,7 @@ final class MainHomeCoordinator: Coordinator {
     }
     
     private func showTravelRequestVC() {
-        let vc = TravelRequestViewController()
+        let vc = TravelRequestViewController(flowViewModel: flowViewModel)
         vc.onNext = { [weak self] in
             self?.showTravelWhenVC()
         }

@@ -10,6 +10,11 @@ import RxSwift
 import RxCocoa
 
 final class TravelRequestFlowViewModel {
+    // MARK: Create
+    var planId: Int?
+    var region: String = ""
+    var moodSummary: String = ""
+    
     // MARK: When
     let travelDays = BehaviorRelay<Int?>(value: nil) //필수
     let startDate = BehaviorRelay<Date?>(value: nil) //선택
