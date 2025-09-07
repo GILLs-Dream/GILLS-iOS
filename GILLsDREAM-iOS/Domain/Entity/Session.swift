@@ -8,8 +8,6 @@
 import Foundation
 
 struct Session: Equatable {
-    let accessToken: String
-    let refreshToken: String
-    let expiresAt: Date
-    var isValid: Bool { Date() < expiresAt }
+    let memberId: Int
+    let email: String
 }

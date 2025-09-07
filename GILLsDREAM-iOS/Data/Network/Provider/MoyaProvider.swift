@@ -87,17 +87,21 @@ public extension MoyaProvider {
 
 extension MoyaProvider where Target: TargetType {
     convenience init(auth: AuthType) {
+        let config = URLSessionConfiguration.default
+        config.httpCookieStorage = HTTPCookieStorage.shared
+        config.httpShouldSetCookies = true
+        config.httpCookieAcceptPolicy = .always
+
         let session: Alamofire.Session = {
             switch auth {
-            case .none: return Alamofire.Session()
-            case .user: return Alamofire.Session(interceptor: UserAuthInterceptor.shared)
+            case .none: return Alamofire.Session(configuration: config)
+            case .user: return Alamofire.Session(configuration: config,
+                                                 interceptor: UserAuthInterceptor.shared)
             }
         }()
         
         #if DEBUG
         let plugins: [PluginType] = [MoyaLoggingPlugin()]
-        #else
-        let plugins: [PluginType] = []
         #endif
 
         self.init(session: session, plugins: plugins)
