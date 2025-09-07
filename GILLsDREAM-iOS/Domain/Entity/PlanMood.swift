@@ -12,5 +12,5 @@ struct PlanMood: Equatable {
 }
 
 struct PlanID: Equatable, Hashable {
-    let value: String
+    let value: Int
 }

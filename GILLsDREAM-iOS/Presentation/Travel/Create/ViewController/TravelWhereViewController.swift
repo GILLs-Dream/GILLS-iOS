@@ -11,7 +11,7 @@ import RxCocoa
 import RxDataSources
 
 final class TravelWhereViewController: TravelViewController {
-    private let rootView = TravelWhereView()
+    private let rootView: TravelWhereView
     private let viewModel = TravelWhereViewModel()
     private let flowViewModel: TravelRequestFlowViewModel
     private let disposeBag = DisposeBag()
@@ -25,6 +25,7 @@ final class TravelWhereViewController: TravelViewController {
     
     init(flowViewModel: TravelRequestFlowViewModel) {
         self.flowViewModel = flowViewModel
+        self.rootView = TravelWhereView(titleText: flowViewModel.moodSummary)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -116,9 +117,9 @@ final class TravelWhereViewController: TravelViewController {
             .withLatestFrom(currentPageRelay)
             .map { page in
                 if (page == 0) {
-                    return Place(id: "1", name: "길순이네 카페", imageURL: "UIImage.imgDefaultProfile", type: .travel)
+                    return Place(id: 1, name: "길순이네 카페", imageURL: "UIImage.imgDefaultProfile", type: .travel)
                 } else {
-                    return Place(id: "1", name: "길순이네 민박", imageURL: "UIImage.imgDefaultProfile", type: .stay)
+                    return Place(id: 1, name: "길순이네 민박", imageURL: "UIImage.imgDefaultProfile", type: .stay)
                 }
             }
             .bind(to: placeAddedSubject)

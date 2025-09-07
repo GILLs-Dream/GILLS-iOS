@@ -6,7 +6,7 @@
 //
 
 struct User: Identifiable, Equatable, Hashable {
-    let id: String
+    let id: Int
     var nickname: String
     var email: String
     var profileImage: String?

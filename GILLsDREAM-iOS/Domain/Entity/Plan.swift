@@ -6,7 +6,7 @@
 //
 
 struct Plan {
-    let id: String
+    let id: Int
     let title: String
     let dateRange: String?
     var isPinned: Bool

@@ -8,7 +8,7 @@
 import Moya
 
 enum MemberTargetType {
-    case kakaoLogin(accessToken: String)
+    case kakaoLogin(code: String)
     case kakaoLogout
     case setting(nickname: String, agreedTerms: Bool)
     case reissue(refreshToken: String)
@@ -39,14 +39,18 @@ extension MemberTargetType: BaseTargetType {
     }
     var task: Task {
         switch self {
-        case .kakaoLogin(let kakaoAT):
-            return .requestJSONEncodable(LoginRequestDTO(provider: .kakao, oauthAccessToken: kakaoAT))
+        case .kakaoLogin(let code):
+            return .requestParameters(parameters: ["code": code, "provider": "kakao"],
+                                      encoding: JSONEncoding.default)
         case .kakaoLogout:
             return .requestPlain
+            
         case let .setting(nickname, agreed):
-            return .requestJSONEncodable(SettingRequestDTO(nickname: nickname, agreedTerms: agreed))
+            return .requestJSONEncodable(SettingRequestDTO(nickname: nickname,
+                                                           agreedTerms: agreed))
         case .reissue(let refresh):
-            return .requestParameters(parameters: ["refreshToken": refresh], encoding: URLEncoding.queryString)
+            return .requestParameters(parameters: ["refreshToken": refresh],
+                                      encoding: URLEncoding.queryString)
         }
     }
 }

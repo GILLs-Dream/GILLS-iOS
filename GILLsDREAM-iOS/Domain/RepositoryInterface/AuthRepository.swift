@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import Moya
 
 protocol AuthRepository {
-    func signIn(code: String) async throws -> Session
-    func refresh(_ refreshToken: String) async throws -> Session
-    func signOut() async throws
+    func kakaoLogin(code: String) async throws -> Session
+//    func signIn(code: String) async throws -> Session
+//    func refresh(_ refreshToken: String) async throws -> Session
+//    func signOut() async throws
 }

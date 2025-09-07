@@ -6,7 +6,7 @@
 //
 
 struct PlaceResult {
-    let id: String
+    let id: Int
     let title: String
     let imageURL: String?
     let distanceToNextKm: Double? // 다음 장소까지의 거리(km), 마지막 item이면 nil

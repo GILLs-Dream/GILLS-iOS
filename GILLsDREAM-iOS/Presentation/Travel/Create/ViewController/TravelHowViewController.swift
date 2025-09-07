@@ -10,7 +10,7 @@ import RxSwift
 import RxCocoa
 
 final class TravelHowViewController: TravelViewController {
-    private let rootView = TravelHowView()
+    private let rootView: TravelHowView
     private let viewModel = TravelHowViewModel()
     private let flowViewModel: TravelRequestFlowViewModel
     private let disposeBag = DisposeBag()
@@ -19,6 +19,7 @@ final class TravelHowViewController: TravelViewController {
     
     init(flowViewModel: TravelRequestFlowViewModel) {
         self.flowViewModel = flowViewModel
+        self.rootView = TravelHowView(titleText: flowViewModel.moodSummary)
         super.init(nibName: nil, bundle: nil)
     }
     

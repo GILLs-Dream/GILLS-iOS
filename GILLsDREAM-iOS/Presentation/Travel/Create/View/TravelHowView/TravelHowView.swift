@@ -19,9 +19,9 @@ final class TravelHowView: UIView {
     lazy var doneButton = CustomButton(title: "완료")
     let lottieView = CustomLottieView(text: "길동이가 열심히\n여행을 생성 중이에요!")
 
-    override init(frame: CGRect) {
+    init(titleText: String) {
         self.headerView = TravelHeaderView(titleText: titleText)
-        super.init(frame: frame)
+        super.init(frame: .zero)
         setUpFoundation()
         setUpHierarchy()
         setUpUI()
@@ -75,7 +75,7 @@ final class TravelHowView: UIView {
     private func setUpLayout() {
         headerView.snp.makeConstraints {
             $0.top.equalTo(self.safeAreaLayoutGuide).offset(15)
-            $0.leading.equalToSuperview().offset(24)
+            $0.horizontalEdges.equalToSuperview().inset(24)
         }
 
         titleLabel.snp.makeConstraints {
