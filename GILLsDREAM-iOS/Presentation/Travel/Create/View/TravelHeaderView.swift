@@ -55,9 +55,12 @@ final class TravelHeaderView: UIView {
 
     private func setUpUI(titleText: String) {
         titleLabel.do {
-            $0.numberOfLines = 3
+            $0.numberOfLines = 0
+            $0.lineBreakMode = .byWordWrapping
             $0.attributedText = titleText.pretendardAttributedString(style: .title1)
             $0.textAlignment = .left
+            $0.setContentHuggingPriority(.required, for: .vertical)
+            $0.setContentCompressionResistancePriority(.required, for: .vertical)
         }
 
         stackView.do {
@@ -70,7 +73,7 @@ final class TravelHeaderView: UIView {
 
     private func setUpLayout() {
         titleLabel.snp.makeConstraints {
-            $0.top.leading.equalToSuperview()
+            $0.top.horizontalEdges.equalToSuperview()
         }
 
         stackView.snp.makeConstraints {
@@ -109,5 +112,13 @@ final class TravelHeaderView: UIView {
                 label.textColor = isSelected ? .black : .white
             }
         }
+    }
+}
+
+extension TravelHeaderView {
+    func updateTitle(_ text: String) {
+        titleLabel.attributedText = text.pretendardAttributedString(style: .title1)
+        setNeedsLayout()
+        layoutIfNeeded()
     }
 }

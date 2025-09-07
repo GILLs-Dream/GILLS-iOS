@@ -19,9 +19,9 @@ final class TravelWhoView: UIView {
     lazy var previousButton = CustomButton(title: "이전")
     lazy var nextButton = CustomButton()
     
-    override init(frame: CGRect) {
+    init(titleText: String) {
         self.headerView = TravelHeaderView(titleText: titleText)
-        super.init(frame: frame)
+        super.init(frame: .zero)
         setUpFoundation()
         setUpHierarchy()
         setUpUI()
@@ -60,7 +60,7 @@ final class TravelWhoView: UIView {
     private func setUpLayout() {
         headerView.snp.makeConstraints {
             $0.top.equalTo(self.safeAreaLayoutGuide).offset(15)
-            $0.leading.equalToSuperview().offset(24)
+            $0.horizontalEdges.equalToSuperview().inset(24)
         }
         
         titleLabel.snp.makeConstraints {

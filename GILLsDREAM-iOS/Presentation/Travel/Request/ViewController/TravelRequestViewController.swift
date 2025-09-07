@@ -16,14 +16,24 @@ enum TravelRequestStep {
 }
 
 final class TravelRequestViewController: BaseViewController {
-    
     private let rootView = TravelRequestView()
     private let viewModel = TravelRequestViewModel()
+    private let flowViewModel: TravelRequestFlowViewModel
     private let disposeBag = DisposeBag()
+    private var storedMood: PlanMood?
     var onNext: (() -> Void)?
     
     override func loadView() {
         self.view = rootView
+    }
+    
+    init(flowViewModel: TravelRequestFlowViewModel) {
+        self.flowViewModel = flowViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @MainActor required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
@@ -48,9 +58,7 @@ final class TravelRequestViewController: BaseViewController {
         let input = TravelRequestViewModel.Input(
             textInput: rootView.requestTextView.rx.text.orEmpty.asObservable(),
             sendButtonTapped: rootView.sendButton.rx.tap
-                .do(onNext: { [weak self] in
-                    self?.view.endEditing(true)
-                })
+                .do(onNext: { [weak self] in self?.view.endEditing(true) })
                 .delay(.milliseconds(100), scheduler: MainScheduler.instance)
                 .asObservable()
         )
@@ -61,34 +69,37 @@ final class TravelRequestViewController: BaseViewController {
             .drive(rootView.sendButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
-        output.navigateToNext
-            .asObservable()
-            .observe(on: MainScheduler.instance)
-            .do(onNext: { [weak self] in
-                guard let self = self else { return }
-                self.view.endEditing(true) // 키보드 내리기
-                self.rootView.lottieView.startAnimating()
+        output.moodResult
+            .emit(onNext: { [weak self] mood in
+                guard let self else { return }
+                self.flowViewModel.planId = mood.id.value
+                self.flowViewModel.moodSummary = mood.moodSummary
             })
-            .delay(.milliseconds(3000), scheduler: MainScheduler.instance)
-            .bind(onNext: { [weak self] in
-                guard let self = self else { return }
+            .disposed(by: disposeBag)
+        
+        output.navigateToNext
+            .do(onNext: { [weak self] in
+                self?.view.endEditing(true)
+                self?.rootView.lottieView.startAnimating()
+            })
+            .delay(.milliseconds(3000))
+            .drive(onNext: { [weak self] in
+                guard let self else { return }
                 self.rootView.lottieView.stopAnimating()
                 self.onNext?()
             })
             .disposed(by: disposeBag)
         
-        viewModel.currentStep
-            .asDriver()
-            .drive(onNext: { [weak self] step in
-                guard let self = self else { return }
-
+        Driver.combineLatest(output.currentStep, output.latestRegionText)
+            .drive(onNext: { [weak self] step, region in
+                guard let self else { return }
                 switch step {
                 case .region:
                     self.rootView.update(for: .region)
                 case .mood:
                     self.rootView.requestTextView.text = ""
                     self.rootView.requestPlaceHolder.isHidden = false
-                    self.rootView.update(for: .mood, with: self.viewModel.region)
+                    self.rootView.update(for: .mood, with: region)
                 case .video:
                     self.rootView.requestTextView.text = ""
                     self.rootView.requestPlaceHolder.isHidden = false

@@ -7,8 +7,6 @@
 
 import UIKit
 
-let titleText = "무더위의 여름에\n트로피컬한 분위기의 저렴이\n강릉 여행을 즐기고 싶어."
-
 final class TravelWhenView: UIView {
     // MARK: Views
     let headerView: TravelHeaderView
@@ -22,9 +20,9 @@ final class TravelWhenView: UIView {
     lazy var pendingButton = UIButton()
     lazy var nextButton = CustomButton()
     
-    override init(frame: CGRect) {
+    init(titleText: String) {
         self.headerView = TravelHeaderView(titleText: titleText)
-        super.init(frame: frame)
+        super.init(frame: .zero)
         setUpFoundation()
         setUpHierarchy()
         setUpUI()
@@ -71,7 +69,7 @@ final class TravelWhenView: UIView {
     private func setUpLayout() {
         headerView.snp.makeConstraints {
             $0.top.equalTo(self.safeAreaLayoutGuide).offset(15)
-            $0.leading.equalToSuperview().offset(24)
+            $0.horizontalEdges.equalToSuperview().inset(24)
         }
         
         titleLabel.snp.makeConstraints {

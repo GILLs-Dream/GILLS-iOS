@@ -49,7 +49,7 @@ final class NetworkProvider<APIType: BaseTargetType> {
                             }
 
                         default:
-                            if let apiErr = try? self.decoder.decode(ApiErrorResponse.self, from: res.data) {
+                            if let apiErr = try? self.decoder.decode(ErrorResponse.self, from: res.data) {
                                 let err = ErrorResponse(code: apiErr.code ?? "",
                                                         message: apiErr.message ?? "Unknown error")
                                 cont.resume(throwing: NetworkError.server(err, status: res.statusCode))
