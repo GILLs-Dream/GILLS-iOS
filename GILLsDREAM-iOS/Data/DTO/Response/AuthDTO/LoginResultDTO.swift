@@ -6,11 +6,6 @@
 //
 
 struct LoginResultDTO: Decodable {
-    let userId: String
-    let nickname: String
-    let profileImageURL: String?
-    let provider: SocialProvider
-    let accessToken: String
-    let refreshToken: String
-    let expiresAt: String 
+    let memberId: Int
+    let email: String
 }

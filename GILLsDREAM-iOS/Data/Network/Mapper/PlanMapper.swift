@@ -10,18 +10,18 @@ import Foundation
 enum PlanMapper {
     static func toPlanMood(from dto: MoodResultDTO) -> PlanMood {
         PlanMood(
-            id: .init(value: String(dto.planId)),
+            id: .init(value: dto.planId),
             moodSummary: dto.moodSummary,
             moodTypes: dto.moodTypeList
         )
     }
     
     static func toPlanID(from dto: PlanIdResultDTO) -> PlanID {
-        .init(value: String(dto.planId))
+        .init(value: dto.planId)
     }
     
     static func toMinimalPlan(from dto: PlanIdResultDTO) -> Plan {
-        Plan(id: String(dto.planId),
+        Plan(id: dto.planId,
              title: "",
              dateRange: nil,
              isPinned: false,
