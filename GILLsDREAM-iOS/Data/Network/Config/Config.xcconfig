@@ -1,9 +1,0 @@
-//
-//  Config.xcconfig
-//  GILLsDREAM-iOS
-//
-//  Created by 오연서 on 8/30/25.
-//
-
-BASE_URL = "http://3.39.198.198:8080"
-APP_KEY  = 8e29a733c42758b942094ebd33594b3b
