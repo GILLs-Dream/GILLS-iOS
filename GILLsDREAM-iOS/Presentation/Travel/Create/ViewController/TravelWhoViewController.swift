@@ -11,7 +11,7 @@ import RxCocoa
 
 final class TravelWhoViewController: TravelViewController {
     private let rootView: TravelWhoView
-    private let viewModel = TravelWhoViewModel()
+    private let viewModel: TravelWhoViewModel
     private let flowViewModel: TravelRequestFlowViewModel
     private let disposeBag = DisposeBag()
     var onPrev: (() -> Void)?
@@ -20,6 +20,7 @@ final class TravelWhoViewController: TravelViewController {
     init(flowViewModel: TravelRequestFlowViewModel) {
         self.flowViewModel = flowViewModel
         self.rootView = TravelWhoView(titleText: flowViewModel.moodSummary)
+        self.viewModel = TravelWhoViewModel(planId: flowViewModel.planId ?? -1)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -68,9 +69,13 @@ final class TravelWhoViewController: TravelViewController {
 
         let output = viewModel.transform(input: input)
 
+        output.errorMessage
+            .emit(onNext: { msg in ToastManager.shared.show(message: msg) })
+            .disposed(by: disposeBag)
+
         output.navigateToPrev
             .drive(onNext: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.flowViewModel.peopleCount.accept(self.viewModel.peopleCount)
                 self.flowViewModel.peopleDetail.accept(self.viewModel.peopleDetail)
                 self.onPrev?()
@@ -79,14 +84,10 @@ final class TravelWhoViewController: TravelViewController {
         
         output.navigateToNext
             .drive(onNext: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.flowViewModel.peopleCount.accept(self.viewModel.peopleCount)
                 self.flowViewModel.peopleDetail.accept(self.viewModel.peopleDetail)
-                if self.flowViewModel.isWhoValid {
-                    self.onNext?()
-                } else {
-                    ToastManager.shared.show(message: "필수 정보를 입력하지 않았습니다.")
-                }
+                self.onNext?()
             })
             .disposed(by: disposeBag)
     }
