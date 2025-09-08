@@ -16,12 +16,12 @@ final class CategoryOptionView: UIView {
         ]
     }
     
-    private lazy var sightseeingButton = CustomButton(title: "관광")
-    private lazy var cultureButton = CustomButton(title: "문화")
-    private lazy var eventButton = CustomButton(title: "행사")
-    private lazy var leisureButton = CustomButton(title: "레포츠")
-    private lazy var shoppingButton = CustomButton(title: "쇼핑")
-    private lazy var foodButton = CustomButton(title: "음식")
+    private lazy var sightseeingButton = CustomButton(title: "음식")
+    private lazy var cultureButton = CustomButton(title: "자연")
+    private lazy var eventButton = CustomButton(title: "쇼핑")
+    private lazy var leisureButton = CustomButton(title: "문화")
+    private lazy var shoppingButton = CustomButton(title: "액티비티")
+    private lazy var foodButton = CustomButton(title: "힐링")
 
     private lazy var row1 = UIStackView(arrangedSubviews: [sightseeingButton, cultureButton])
     private lazy var row2 = UIStackView(arrangedSubviews: [eventButton, leisureButton])

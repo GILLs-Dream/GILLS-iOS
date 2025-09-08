@@ -10,6 +10,14 @@ import RxSwift
 import RxCocoa
 
 final class TravelHowViewModel {
+    private let usecase: PlanUsecase
+    private let planId: Int
+    
+    init(planId: Int, usecase: PlanUsecase = PlanUsecaseImpl(repository: PlanRepositoryImpl())) {
+        self.planId = planId
+        self.usecase = usecase
+    }
+
     struct Input {
         let transportTapped: Observable<CustomSelectableButton>
         let categoryTapped: Observable<CustomButton>
@@ -23,6 +31,8 @@ final class TravelHowViewModel {
         let isNextEnabled: Driver<Bool>
         let navigateToPrev: Driver<Void>
         let navigateToNext: Driver<Void>
+        let isLoading: Driver<Bool>
+        let errorMessage: Signal<String>
     }
 
     private let disposeBag = DisposeBag()
@@ -31,6 +41,8 @@ final class TravelHowViewModel {
     let selectedCategoriesRelay = BehaviorRelay<[CustomButton]>(value: [])
     private let navigateToPrevRelay = PublishRelay<Void>()
     private let navigateToNextRelay = PublishRelay<Void>()
+    private let isLoadingRelay = BehaviorRelay<Bool>(value: false)
+    private let errorRelay = PublishRelay<String>()
 
     func transform(input: Input) -> Output {
         input.transportTapped
@@ -58,7 +70,44 @@ final class TravelHowViewModel {
             .disposed(by: disposeBag)
 
         input.doneButtonTapped
-            .bind(to: navigateToNextRelay)
+            .withLatestFrom(Observable.combineLatest(selectedTransportRelay, selectedCategoriesRelay))
+            .flatMapLatest { [weak self] (transportBtn, categoryBtns) -> Observable<Void> in
+                guard let self = self else { return .empty() }
+                guard let transport = transportBtn?.title(for: .normal),
+                      categoryBtns.isEmpty == false,
+                      self.planId > 0 else {
+                    self.errorRelay.accept("교통수단과 카테고리를 선택해 주세요.")
+                    return .empty()
+                }
+
+                let categories = categoryBtns.compactMap { $0.title(for: .normal) }
+
+                return RxAsync.run { [weak self] () async throws -> Void in
+                    guard let self = self else { return }
+                    await MainActor.run { self.isLoadingRelay.accept(true) }
+                    defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
+
+                    let ok = try await self.usecase.setStyle(
+                        planId: self.planId,
+                        transport: transport,
+                        categories: categories
+                    )
+                    if ok == false {
+                        throw NSError(domain: "plan", code: -1,
+                                      userInfo: [NSLocalizedDescriptionKey: "여행 스타일 저장에 실패했어요."])
+                    }
+
+                    await MainActor.run {
+                        self.navigateToNextRelay.accept(())
+                    }
+                }
+                .asObservable()
+                .catch { [weak self] error in
+                    self?.errorRelay.accept(error.displayMessage)
+                    return .empty()
+                }
+            }
+            .subscribe()
             .disposed(by: disposeBag)
 
         let isNextEnabled = Observable
@@ -70,7 +119,9 @@ final class TravelHowViewModel {
             selectedCategories: selectedCategoriesRelay.asDriver(onErrorJustReturn: []),
             isNextEnabled: isNextEnabled.asDriver(onErrorJustReturn: false),
             navigateToPrev: navigateToPrevRelay.asDriver(onErrorDriveWith: .empty()),
-            navigateToNext: navigateToNextRelay.asDriver(onErrorDriveWith: .empty())
+            navigateToNext: navigateToNextRelay.asDriver(onErrorDriveWith: .empty()),
+            isLoading: isLoadingRelay.asDriver(),
+            errorMessage: errorRelay.asSignal()
         )
     }
 }

@@ -11,7 +11,7 @@ import RxCocoa
 
 final class TravelHowViewController: TravelViewController {
     private let rootView: TravelHowView
-    private let viewModel = TravelHowViewModel()
+    private let viewModel: TravelHowViewModel
     private let flowViewModel: TravelRequestFlowViewModel
     private let disposeBag = DisposeBag()
     var onPrev: (() -> Void)?
@@ -20,6 +20,7 @@ final class TravelHowViewController: TravelViewController {
     init(flowViewModel: TravelRequestFlowViewModel) {
         self.flowViewModel = flowViewModel
         self.rootView = TravelHowView(titleText: flowViewModel.moodSummary)
+        self.viewModel = TravelHowViewModel(planId: flowViewModel.planId ?? -1)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -93,11 +94,16 @@ final class TravelHowViewController: TravelViewController {
             })
             .disposed(by: disposeBag)
         
+        output.errorMessage
+            .emit(onNext: { ToastManager.shared.show(message: $0) })
+            .disposed(by: disposeBag)
+
         output.navigateToPrev
             .drive(onNext: { [weak self] in
-                self?.flowViewModel.transportation.accept(self?.viewModel.transportation)
-                self?.flowViewModel.categories.accept(self?.viewModel.categories)
-                self?.onPrev?()
+                guard let self = self else { return }
+                self.flowViewModel.transportation.accept(self.viewModel.transportation)
+                self.flowViewModel.categories.accept(self.viewModel.categories)
+                self.onPrev?()
             })
             .disposed(by: disposeBag)
 
