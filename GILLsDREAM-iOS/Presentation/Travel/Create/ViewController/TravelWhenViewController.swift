@@ -11,7 +11,7 @@ import RxCocoa
 
 final class TravelWhenViewController: TravelViewController {
     private let rootView: TravelWhenView
-    private let viewModel = TravelWhenViewModel()
+    private let viewModel: TravelWhenViewModel
     private let flowViewModel: TravelRequestFlowViewModel
     private let disposeBag = DisposeBag()
     var onNext: (() -> Void)?
@@ -19,6 +19,7 @@ final class TravelWhenViewController: TravelViewController {
     init(flowViewModel: TravelRequestFlowViewModel) {
         self.flowViewModel = flowViewModel
         self.rootView = TravelWhenView(titleText: flowViewModel.moodSummary)
+        self.viewModel = TravelWhenViewModel(planId: flowViewModel.planId ?? -1)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -112,18 +113,25 @@ final class TravelWhenViewController: TravelViewController {
             })
             .disposed(by: disposeBag)
         
+        output.isLoading
+            .drive(onNext: { [weak self] loading in
+                guard let self else { return }
+                self.rootView.nextButton.isEnabled = !loading
+            })
+            .disposed(by: disposeBag)
+
+        output.errorMessage
+            .emit(onNext: { ToastManager.shared.show(message: $0) })
+            .disposed(by: disposeBag)
+
         output.navigateToNext
             .drive(onNext: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.flowViewModel.travelDays.accept(self.viewModel.travelDays)
                 self.flowViewModel.startDate.accept(self.viewModel.startDate)
                 self.flowViewModel.endDate.accept(self.viewModel.endDate)
                 self.flowViewModel.datePending.accept(self.viewModel.datePending)
-                if self.flowViewModel.isWhenValid {
-                    self.onNext?()
-                } else {
-                    ToastManager.shared.show(message: "필수 정보를 입력하지 않았습니다.")
-                }
+                self.onNext?()
             })
             .disposed(by: disposeBag)
     }
