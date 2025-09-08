@@ -24,8 +24,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window?.rootViewController = navigationController
         self.window?.makeKeyAndVisible()
         
-        self.appCoordinator = AppCoordinator(navigationController)
-        self.appCoordinator?.start()
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.appCoordinator = AppCoordinator(navigationController)
+                self.appCoordinator?.start()
+            }
+        }
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
