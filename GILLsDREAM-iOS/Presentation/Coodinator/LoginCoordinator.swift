@@ -28,11 +28,7 @@ final class LoginCoordinator: Coordinator {
     
     private func showInitialVC(_ didSignUp: Bool) {
         let vc = InitialViewController()
-        vc.onKakaoLogin = { [weak self] in
-            if (didSignUp) { self?.finish() }
-            self?.startLogin()
-        }
-        vc.onAppleLogin = { [weak self] in
+        vc.onLogin = { [weak self] in
             if (didSignUp) { self?.finish() }
             self?.startLogin()
         }

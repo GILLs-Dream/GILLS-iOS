@@ -9,33 +9,21 @@ import Foundation
 import KakaoSDKAuth
 import KakaoSDKUser
 
-protocol KakaoAuthServiceType {
-    func fetchAuthCode() async throws -> String
-}
+enum KakaoLoginError: Error { case noToken }
 
-final class KakaoAuthService: KakaoAuthServiceType {
+final class KakaoAuthService {
     @MainActor
-    func fetchAuthCode() async throws -> String {
+    func fetchAccessToken() async throws -> String {
         try await withCheckedThrowingContinuation { cont in
-            // 공통 완료 핸들러: 모든 경로에서 반드시 resume
-            let done: (String?, Error?) -> Void = { code, error in
-                if let code {
-                    cont.resume(returning: code)
-                } else {
-                    cont.resume(throwing: error ?? NSError(domain: "kakao", code: -1))
-                }
+            let finish: (OAuthToken?, Error?) -> Void = { token, err in
+                if let t = token?.accessToken { cont.resume(returning: t) }
+                else { cont.resume(throwing: err ?? KakaoLoginError.noToken) }
             }
-            
-            if (UserApi.isKakaoTalkLoginAvailable()) {
-                UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
-                    if let error = error {
-                        print(error)
-                    }
-                    else {
-                        print("loginWithKakaoTalk() success.")
-                        _ = oauthToken
-                    }
-                }
+
+            if UserApi.isKakaoTalkLoginAvailable() {
+                UserApi.shared.loginWithKakaoTalk(completion: finish)
+            } else {
+                UserApi.shared.loginWithKakaoAccount(completion: finish)
             }
         }
     }

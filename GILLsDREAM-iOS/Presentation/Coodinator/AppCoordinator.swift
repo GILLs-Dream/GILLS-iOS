@@ -21,7 +21,7 @@ final class AppCoordinator: Coordinator {
         if isValidToken() {
             showTabBarFlow()
         } else {
-            showTabBarFlow() //showLoginFlow()
+            showLoginFlow()
         }
     }
     

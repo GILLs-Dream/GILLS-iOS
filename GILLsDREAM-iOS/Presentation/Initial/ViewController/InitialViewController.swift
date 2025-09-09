@@ -7,13 +7,11 @@
 
 import UIKit
 import RxSwift
+import RxCocoa
 
 final class InitialViewController: UIViewController {
-    
-    // MARK: Properties
-    var onKakaoLogin: (() -> Void)?
-    var onAppleLogin: (() -> Void)?
-    
+    var onLogin: (() -> Void)?
+
     private let disposeBag = DisposeBag()
     private let rootView = InitialView()
     private let viewModel = InitialViewModel()
@@ -36,15 +34,23 @@ final class InitialViewController: UIViewController {
 
         let output = viewModel.transform(input: input)
 
-        output.navigateToKakaoSignUp
-            .drive(onNext: { [weak self] in
-                self?.onKakaoLogin?()
+        output.loginSucceeded
+            .emit(onNext: { [weak self] in
+                self?.onLogin?()
             })
             .disposed(by: disposeBag)
 
-        output.navigateToAppleSignUp
-            .drive(onNext: { [weak self] in
-                self?.onAppleLogin?()
+        output.isLoading
+            .drive(onNext: { [weak self] loading in
+                guard let self else { return }
+                self.rootView.kakaoButton.isEnabled = !loading
+                self.rootView.appleButton.isEnabled = !loading
+            })
+            .disposed(by: disposeBag)
+
+        output.errorMessage
+            .emit(onNext: { message in
+                ToastManager.shared.show(message: message)
             })
             .disposed(by: disposeBag)
     }
