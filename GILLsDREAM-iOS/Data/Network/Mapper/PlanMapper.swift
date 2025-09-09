@@ -34,4 +34,25 @@ enum PlanMapper {
     static func toPlanMoods(from list: [MoodResultDTO]) -> [PlanMood] {
         list.map { toPlanMood(from: $0) }
     }
+    
+    static func toPlan(from dto: PlanListItemDTO) -> Plan {
+        let dateRange: String? = {
+            if !dto.startedAt.isEmpty && !dto.finishedAt.isEmpty {
+                return "\(dto.startedAt) ~ \(dto.finishedAt)"
+            } else {
+                return nil
+            }
+        }()
+
+        return Plan(
+            id: dto.planId,
+            title: dto.title,
+            dateRange: dateRange,
+            isPinned: false,
+            imageURL: dto.thumbnailUrl,
+            sortOrder: dto.planId, // TODO: 고정 로직 적용
+            places: [],
+            summary: ""
+        )
+    }
 }

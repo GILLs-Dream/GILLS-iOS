@@ -101,4 +101,19 @@ final class PlanRepositoryImpl: PlanRepository {
         // 현재 서버가 planId만 내려주는 스펙 → 최소 Plan으로 매핑
         return PlanMapper.toMinimalPlan(from: dto)
     }
+    
+    func fetchPlanList() async throws -> [Plan] {
+        let res: ApiResponse<PlanListRequestDTO> = try await provider.request(
+            api: .list,
+            dto: PlanListRequestDTO.self
+        )
+        guard let envelope = res.result else {
+            let err = DecodingError.valueNotFound(
+                PlanListRequestDTO.self,
+                .init(codingPath: [], debugDescription: "result is nil for PlanListRequestDTO")
+            )
+            throw NetworkError.decoding(err)
+        }
+        return envelope.planList.map(PlanMapper.toPlan(from:))
+    }
 }

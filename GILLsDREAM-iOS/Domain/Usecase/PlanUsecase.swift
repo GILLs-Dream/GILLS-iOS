@@ -15,6 +15,7 @@ protocol PlanUsecase {
     func setDestination(planId: Int, travel: [TravelPlaceRequestDTO], stay: [StayPlaceRequestDTO]) async throws -> Bool
     func setStyle(planId: Int, transport: String, categories: [String]) async throws -> Bool
     func generate(planId: Int) async throws -> Plan
+    func fetchMyPlans() async throws -> [Plan]
 }
 
 final class PlanUsecaseImpl: PlanUsecase {
@@ -52,5 +53,9 @@ final class PlanUsecaseImpl: PlanUsecase {
 
     public func generate(planId: Int) async throws -> Plan {
         try await repository.generate(planId: planId)
+    }
+    
+    public func fetchMyPlans() async throws -> [Plan] {
+        try await repository.fetchPlanList()
     }
 }

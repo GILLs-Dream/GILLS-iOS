@@ -15,4 +15,5 @@ protocol PlanRepository {
     func setCompanion(planId: Int, party: Int, companion: String) async throws -> Bool
     func setDestination(planId: Int, travel: [TravelPlaceRequestDTO], stay: [StayPlaceRequestDTO]) async throws -> Bool
     func generate(planId: Int) async throws -> Plan
+    func fetchPlanList() async throws -> [Plan]
 }

@@ -36,6 +36,12 @@ final class PlanListViewController: BaseViewController {
             .drive(rootView.myPlanCollectionView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
 
+        output.errorMessage
+            .emit(onNext: { message in
+                ToastManager.shared.show(message: message)
+            })
+            .disposed(by: disposeBag)
+        
         output.selectedPlan
             .emit(onNext: { [weak self] plan in
                 // TODO: 상세 페이지 이동

@@ -16,6 +16,7 @@ enum PlanTargetType {
     case style(planId: Int, transport: String, categories: [String])
     case companion(planId: Int, party: Int, companion: String)
     case destination(planId: Int, travelPlaces: [TravelPlaceRequestDTO], stayPlaces: [StayPlaceRequestDTO])
+    case list
 }
 
 extension PlanTargetType: BaseTargetType {
@@ -35,6 +36,8 @@ extension PlanTargetType: BaseTargetType {
             return "/plan/template/\(id)/companion"
         case .destination(let id, _, _):
             return "/plan/template/\(id)/destination"
+        case .list:
+            return "/plan/template"
         }
     }
     
@@ -44,6 +47,8 @@ extension PlanTargetType: BaseTargetType {
             return .post
         case .videos, .duration, .style, .companion:
             return .patch
+        case .list:
+            return .get
         }
     }
     
@@ -69,6 +74,9 @@ extension PlanTargetType: BaseTargetType {
             
         case .destination(_, let travel, let stay):
             return .requestJSONEncodable(DestinationRequestDTO(travelPlaceDtoList: travel, stayPlaceDtoList: stay))
+            
+        case .list:
+            return .requestPlain
         }
     }
 }
