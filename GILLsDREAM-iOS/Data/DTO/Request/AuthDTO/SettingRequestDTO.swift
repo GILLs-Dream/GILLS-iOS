@@ -5,7 +5,10 @@
 //  Created by 오연서 on 9/1/25.
 //
 
-struct SettingRequestDTO: Encodable {
+import UIKit
+
+struct SettingRequestDTO {
     let nickname: String
-    let agreedTerms: Bool
+    let profileImg: UIImage?
+    let marketingAgreement: Bool
 }

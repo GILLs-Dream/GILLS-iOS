@@ -32,7 +32,7 @@ final class SignUpCoordinator: Coordinator {
     }
 
     private func showTosVC() {
-        let vc = TosViewController()
+        let vc = TosViewController(flowViewModel: SignupFlowViewModel())
         vc.onDetail = { [weak self] termsContent in
             guard let self = self else { return }
             self.showTosDetailVC(termsContent: termsContent)

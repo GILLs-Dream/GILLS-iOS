@@ -131,12 +131,12 @@ final class ProfileView: UIView {
             $0.height.equalTo(52)
         }
         
-        duplicateCheckButton.snp.makeConstraints {
-            $0.centerY.equalTo(nicknameTextField)
-            $0.trailing.equalTo(nicknameTextField).inset(12)
-            $0.verticalEdges.equalTo(nicknameTextField).inset(11)
-            $0.width.equalTo(74)
-        }
+//        duplicateCheckButton.snp.makeConstraints {
+//            $0.centerY.equalTo(nicknameTextField)
+//            $0.trailing.equalTo(nicknameTextField).inset(12)
+//            $0.verticalEdges.equalTo(nicknameTextField).inset(11)
+//            $0.width.equalTo(74)
+//        }
         
         errorLabel.snp.makeConstraints {
             $0.top.equalTo(nicknameTextField.snp.bottom).offset(10)

@@ -60,19 +60,33 @@ class ProfileViewController: UIViewController {
             .drive(rootView.lengthLabel.rx.text)
             .disposed(by: disposeBag)
         
-        output.duplicateResult
-            .drive(onNext: { [weak self] isAvailable in
-                guard let self = self else { return }
-                self.rootView.errorLabel.isHidden = isAvailable
-                self.rootView.completeLabel.isHidden = !isAvailable
-                self.rootView.updateNextButtonTheme(isAvailable: isAvailable)
+//        output.duplicateResult
+//            .drive(onNext: { [weak self] isAvailable in
+//                guard let self = self else { return }
+//                self.rootView.errorLabel.isHidden = isAvailable
+//                self.rootView.completeLabel.isHidden = !isAvailable
+//                self.rootView.updateNextButtonTheme(isAvailable: isAvailable)
+//            })
+//            .disposed(by: disposeBag)
+        
+        output.isNextEnabled
+            .drive(onNext: { [weak self] enabled in
+                self?.rootView.nextButton.isEnabled = enabled
+                self?.rootView.updateNextButtonTheme(isAvailable: enabled)
             })
             .disposed(by: disposeBag)
+
         
         output.navigateToNext
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
                 self.onNext?()
+            })
+            .disposed(by: disposeBag)
+        
+        output.errorMessage
+            .emit(onNext: { message in
+                ToastManager.shared.show(message: message)
             })
             .disposed(by: disposeBag)
     }
