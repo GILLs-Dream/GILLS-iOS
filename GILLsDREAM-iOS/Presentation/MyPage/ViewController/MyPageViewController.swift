@@ -25,49 +25,66 @@ final class MyPageViewController: BaseViewController {
         bindViewModel()
     }
 
+    private let confirmLogoutRelay = PublishRelay<Void>()
+    private let confirmWithdrawRelay = PublishRelay<Void>()
+    
     private func bindViewModel() {
         let input = MyPageViewModel.Input(
             serviceTapped: rootView.serviceButton.rx.tap.asObservable(),
             withdrawTapped: rootView.withdrawButton.rx.tap.asObservable(),
-            logoutTapped: rootView.logoutButton.rx.tap.asObservable()
+            logoutTapped: rootView.logoutButton.rx.tap.asObservable(),
+            confirmLogout: confirmLogoutRelay.asObservable(),
+            confirmWithdraw: confirmWithdrawRelay.asObservable()
         )
 
         let output = viewModel.transform(input: input)
 
         output.showServiceTerms
-            .bind { [weak self] in
-                guard let self = self else { return }
+            .emit(onNext: { [weak self] in
+                guard let self else { return }
                 self.presentDetail(title: "서비스 이용약관", content: TermsContent.service.content)
-            }
+            })
             .disposed(by: disposeBag)
-
-        output.showWithdrawModal
-            .bind { [weak self] in
-                guard let self = self else { return }
-                self.presentConfirmModal(
-                    title: "정말로 길동이의 꿈을\n탈퇴하시겠습니까?",
-                    confirmTitle: "탈퇴",
-                    confirmAction: {
-                        UserDefaultsManager.shared.isOnboarding = false
-                        // TODO: 회원탈퇴 API 연결
-                        self.onLogout?()
-                    }
-                )
-            }
-            .disposed(by: disposeBag)
-
+        
+        // 로그아웃 모달
         output.showLogoutModal
-            .bind { [weak self] in
-                guard let self = self else { return }
-                self.presentConfirmModal(
+            .emit(onNext: { [weak self] in
+                self?.presentConfirmModal(
                     title: "로그아웃 하시겠습니까?",
                     confirmTitle: "로그아웃",
-                    confirmAction: {
-                        // TODO: 로그아웃 API 연결
-                        self.onLogout?()
-                    }
+                    confirmAction: { self?.confirmLogoutRelay.accept(()) }
                 )
-            }
+            })
+            .disposed(by: disposeBag)
+        
+        // 탈퇴 모달
+        output.showWithdrawModal
+            .emit(onNext: { [weak self] in
+                self?.presentConfirmModal(
+                    title: "정말 탈퇴하시겠습니까?",
+                    confirmTitle: "탈퇴",
+                    confirmAction: { self?.confirmWithdrawRelay.accept(()) }
+                )
+            })
+            .disposed(by: disposeBag)
+        
+        // 성공 시 상위로 알려서 플로우 전환
+        output.logoutSucceeded
+            .emit(onNext: { [weak self] in
+                ToastManager.shared.show(message: "로그아웃되었습니다.")
+                self?.onLogout?()
+            })
+            .disposed(by: disposeBag)
+        
+        output.withdrawSucceeded
+            .emit(onNext: { [weak self] in
+                ToastManager.shared.show(message: "탈퇴가 완료되었습니다.")
+                self?.onLogout?()
+            })
+            .disposed(by: disposeBag)
+        
+        output.errorMessage
+            .emit(onNext: { ToastManager.shared.show(message: $0) })
             .disposed(by: disposeBag)
     }
     

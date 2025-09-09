@@ -16,7 +16,8 @@ enum AuthType {
 
 // MARK: 공용 Providers
 struct Providers {
-    static let member = MoyaProvider<MemberTargetType>(auth: .none)
+    static let memberPublic = MoyaProvider<MemberTargetType>(auth: .none)
+    static let memberUser = MoyaProvider<MemberTargetType>(auth: .user)
     static let plan   = MoyaProvider<PlanTargetType>(auth: .user)
 }
 
@@ -29,7 +30,11 @@ final class UserAuthInterceptor: RequestInterceptor {
                for session: Alamofire.Session,
                completion: @escaping (Result<URLRequest, Error>) -> Void) {
         var req = urlRequest
-        if let token = KeychainManager.shared.accessToken {
+        let token = KeychainManager.shared.accessToken
+        print("🔐 [AuthInterceptor] URL=\(req.url?.absoluteString ?? "-")")
+        print("🔐 [AuthInterceptor] token prefix=\(token?.prefix(10) ?? "nil")")
+
+        if let token, token.isEmpty == false {
             req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
         completion(.success(req))

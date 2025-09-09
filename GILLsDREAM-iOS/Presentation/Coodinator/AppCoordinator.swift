@@ -18,15 +18,18 @@ final class AppCoordinator: Coordinator {
     }
     
     func start() {
-        if isValidToken() {
-            showTabBarFlow()
-        } else {
+        if !UserDefaultsManager.shared.isLogin {
             showLoginFlow()
+            return
         }
-    }
-    
-    private func isValidToken() -> Bool {
-        return UserDefaultsManager.shared.isLogin
+        if !UserDefaultsManager.shared.isOnboarding {
+            let signUp = SignUpCoordinator(navigationController)
+            signUp.finishDelegate = self
+            childCoordinators.append(signUp)
+            signUp.start()
+            return
+        }
+        showTabBarFlow()
     }
 
     func showLoginFlow() {

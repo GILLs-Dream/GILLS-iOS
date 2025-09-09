@@ -22,7 +22,7 @@ extension MemberTargetType: BaseTargetType {
         case .kakaoLogin:
             return "/v1/member/oauth/kakao/login"
         case .logout:
-            return "/v1/member/oauth/logout"
+            return "/v1/member/logout"
         case .setting:
             return "/v1/member/setting"
         case .reissue:
@@ -69,7 +69,7 @@ extension MemberTargetType: BaseTargetType {
             return .uploadMultipart(parts)
             
         case .reissue(let refresh):
-            return .requestParameters(parameters: ["refreshToken": refresh],
+            return .requestParameters(parameters: ["refresh_token": refresh],
                                       encoding: URLEncoding.queryString)
         }
     }
@@ -77,9 +77,17 @@ extension MemberTargetType: BaseTargetType {
     var headers: [String: String]? {
         switch self {
         case .setting:
-            return nil
+            return ["Content-Type": "multipart/form-data"]
+            
+        case .reissue(let refresh):
+            return ["X-Refresh-Token": refresh]
+            
         default:
-            return ["Content-Type": "application/json"]
+            var base: [String: String] = ["Content-Type": "application/json"]
+            if let token = KeychainManager.shared.accessToken {
+                base["Authorization"] = "Bearer \(token)"
+            }
+            return base
         }
     }
 }

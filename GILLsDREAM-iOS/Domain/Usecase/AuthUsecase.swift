@@ -11,6 +11,7 @@ protocol AuthUsecase {
     func loginWithKakao(accessToken: String) async throws
     func logout() async throws
     func updateSetting(nickname: String, profileImg: UIImage?, agreed: Bool) async throws -> SettingResponseDTO
+    func refreshAccessTokenIfNeeded() async throws -> String
     func deleteAccount() async throws
 }
 
@@ -38,6 +39,15 @@ final class AuthUsecaseImpl: AuthUsecase {
                                                   marketingAgreement: agreed)
         UserDefaultsManager.shared.isOnboarding = true
         return result
+    }
+    
+    func refreshAccessTokenIfNeeded() async throws -> String {
+        guard let refresh = KeychainManager.shared.refreshToken else { throw NetworkError.unauthorized }
+        let dto = try await repo.reissue(access: KeychainManager.shared.accessToken,
+                                         refresh: refresh)
+        KeychainManager.shared.accessToken  = dto.accessToken
+        KeychainManager.shared.refreshToken = dto.refreshToken
+        return dto.accessToken
     }
 
     func deleteAccount() async throws {

@@ -12,6 +12,7 @@ public enum NetworkError: Error {
     case transport(URLError)
     case decoding(DecodingError)
     case unknown(Error)
+    case unauthorized
 
     public var message: String {
         switch self {
@@ -23,6 +24,8 @@ public enum NetworkError: Error {
             return "응답 처리 중 문제가 발생했어요."
         case .unknown:            
             return "알 수 없는 오류가 발생했어요."
+        case .unauthorized:
+            return "토큰 만료"
         }
     }
 }
