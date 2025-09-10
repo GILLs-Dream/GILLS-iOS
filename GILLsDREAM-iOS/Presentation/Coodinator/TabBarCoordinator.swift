@@ -22,7 +22,8 @@ final class TabBarCoordinator: NSObject, Coordinator {
     }
     
     func start() {
-        let tabs: [AppTab] = [.map, .plane, .list, .mypage]
+        //TODO: map 구현 후 변경 [.map, .plane, .list, .mypage]
+        let tabs: [AppTab] = [.list, .plane, .mypage]
         let controllers: [UINavigationController] = tabs.map { getTabController(for: $0) }
         prepareTabBarController(with: controllers)
     }

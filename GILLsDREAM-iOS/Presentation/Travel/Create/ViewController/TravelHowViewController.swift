@@ -57,7 +57,8 @@ final class TravelHowViewController: TravelViewController {
     }
     
     private func bindViewModel() {
-        rootView.headerView.currentStep = 3
+        //TODO: Map 구현 후 변경
+        rootView.headerView.currentStep = 2 //3
         
         let transportTapStream = Observable.merge(rootView.transportOptionView.transportButtons.map { button in
             button.rx.tap.map { button }
