@@ -98,10 +98,10 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
             $0.leading.equalTo(pinImageView).offset(1)
         }
         
-        detailButton.snp.makeConstraints {
-            $0.trailing.centerY.equalToSuperview()
-            $0.size.equalTo(20)
-        }
+//        detailButton.snp.makeConstraints {
+//            $0.trailing.centerY.equalToSuperview()
+//            $0.size.equalTo(20)
+//        }
     }
     
     private func setUpMenu(isPinned: Bool) {

@@ -18,15 +18,11 @@ final class AppCoordinator: Coordinator {
     }
     
     func start() {
-        if isValidToken() {
-            showTabBarFlow()
-        } else {
-            showTabBarFlow() //showLoginFlow()
+        if !UserDefaultsManager.shared.isLogin || !UserDefaultsManager.shared.isOnboarding {
+            showLoginFlow()
+            return
         }
-    }
-    
-    private func isValidToken() -> Bool {
-        return UserDefaultsManager.shared.isLogin
+        showTabBarFlow()
     }
 
     func showLoginFlow() {

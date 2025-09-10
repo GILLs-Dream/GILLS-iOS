@@ -23,12 +23,14 @@ final class KeychainManager {
         // 이미 있으면 삭제 후 새로 저장
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: Config.service,
             kSecAttrAccount as String: key
         ]
         SecItemDelete(query as CFDictionary)
 
         let newItem: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: Config.service,
             kSecAttrAccount as String: key,
             kSecValueData as String: data
         ]

@@ -13,9 +13,22 @@ class TosViewController: UIViewController {
     // MARK: Properties
     private let disposeBag = DisposeBag()
     private let rootView = TosView()
-    private let viewModel = TosViewModel()
     var onDetail: ((TermsContent) -> Void)?
-    var onComplete: (() -> Void)?
+    var onCompleteSuccess: (() -> Void)?
+    var onCompleteFailed: (() -> Void)?
+    
+    private let flowViewModel: SignupFlowViewModel
+    private let viewModel: TosViewModel
+    
+    init(flowViewModel: SignupFlowViewModel) {
+        self.flowViewModel = flowViewModel
+        self.viewModel = TosViewModel(flowmodel: flowViewModel)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: Life Cycle
     override func loadView() {
@@ -76,9 +89,18 @@ class TosViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
-        output.navigateToNext
-            .drive(onNext: { [weak self] in
-                self?.onComplete?()
+        output.errorMessage
+            .emit(onNext: { ToastManager.shared.show(message: $0) })
+            .disposed(by: disposeBag)
+        
+        output.completeSucceeded
+            .emit(onNext: { [weak self] in self?.onCompleteSuccess?() })
+            .disposed(by: disposeBag)
+
+        output.completeFailed
+            .emit(onNext: { [weak self] msg in
+                ToastManager.shared.show(message: msg)
+                self?.onCompleteFailed?()
             })
             .disposed(by: disposeBag)
     }

@@ -49,7 +49,9 @@ final class MainHomeCoordinator: Coordinator {
     private func showTravelWhoVC() {
         let vc = TravelWhoViewController(flowViewModel: flowViewModel)
         vc.onNext = { [weak self] in
-            self?.showTravelWhereVC()
+            self?.showTravelHowVC()
+            //TODO: Map 구현 후 변경
+            //self?.showTravelWhereVC()
         }
         vc.onPrev = { [weak self] in
             self?.navigationController.popViewController(animated: false)

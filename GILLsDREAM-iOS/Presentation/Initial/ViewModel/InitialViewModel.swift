@@ -10,10 +10,10 @@ import RxCocoa
 
 final class InitialViewModel: ViewModelType {
     private let kakaoAuth = KakaoAuthService()
-    private let authRepository: AuthRepository
+    private let usecase: AuthUsecase
 
-    init(authRepository: AuthRepository = AuthRepositoryImpl()) {
-        self.authRepository = authRepository
+    init(usecase: AuthUsecase = AuthUsecaseImpl()) {
+        self.usecase = usecase
     }
     
     struct Input {
@@ -22,52 +22,43 @@ final class InitialViewModel: ViewModelType {
     }
 
     struct Output {
-        let navigateToKakaoSignUp: Driver<Void>
-        let navigateToAppleSignUp: Driver<Void>
+        let loginSucceeded: Signal<Void>
         let isLoading: Driver<Bool>
         let errorMessage: Signal<String>
     }
 
     var disposeBag = DisposeBag()
-    private let navigateToKakaoSignUpRelay = PublishRelay<Void>()
-    private let navigateToAppleSignUpRelay = PublishRelay<Void>()
     private let isLoadingRelay = BehaviorRelay<Bool>(value: false)
+    private let successRelay = PublishRelay<Void>()
     private let errorRelay = PublishRelay<String>()
     
     func transform(input: Input) -> Output {
         input.kakaoButtonTapped
-            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)  // 중복 탭 방지
-            .flatMapLatest { [weak self] _ -> Observable<Session> in
+            .flatMapLatest { [weak self] _ -> Observable<Void> in
                 guard let self else { return .empty() }
-                self.isLoadingRelay.accept(true)
+                return RxAsync.run {
+                    await MainActor.run { self.isLoadingRelay.accept(true) }
+                    defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
 
-                // Kakao SDK 토큰 -> 서버 로그인
-                let single: Single<Session> = RxAsync.run {
-                    let code = try await self.kakaoAuth.fetchAuthCode()
-                    return try await self.authRepository.kakaoLogin(code: code)
+                    let kakaoAccess = try await self.kakaoAuth.fetchAccessToken()
+                    try await self.usecase.loginWithKakao(accessToken: kakaoAccess) // JWT 저장
+                    await MainActor.run { self.successRelay.accept(()) }
                 }
-
-                return single
-                    .do(onSuccess: { [weak self] _ in
-                        self?.navigateToKakaoSignUpRelay.accept(())
-                    }, onError: { [weak self] error in
-                        self?.errorRelay.accept((error as? NetworkError)?.message ?? "")
-                    }, onDispose: { [weak self] in
-                        self?.isLoadingRelay.accept(false)
-                    })
-                    .asObservable()
-                    .catch { _ in Observable<Session>.empty() }
+                .asObservable()
+                .catch { [weak self] error in
+                    self?.errorRelay.accept(error.displayMessage)
+                    return .empty()
+                }
             }
             .subscribe()
             .disposed(by: disposeBag)
 
         input.appleButtonTapped
-            .bind(to: navigateToAppleSignUpRelay)
+            .bind(to: successRelay)
             .disposed(by: disposeBag)
 
         return Output(
-            navigateToKakaoSignUp: navigateToKakaoSignUpRelay.asDriver(onErrorDriveWith: .empty()),
-            navigateToAppleSignUp: navigateToAppleSignUpRelay.asDriver(onErrorDriveWith: .empty()),
+            loginSucceeded: successRelay.asSignal(),
             isLoading: isLoadingRelay.asDriver(),
             errorMessage: errorRelay.asSignal()
         )

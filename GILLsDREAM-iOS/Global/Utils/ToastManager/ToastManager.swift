@@ -20,7 +20,7 @@ final class ToastManager {
         
         toastView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.bottom.equalTo(window.safeAreaLayoutGuide.snp.bottom).inset(40)
+            $0.bottom.equalTo(window.safeAreaLayoutGuide.snp.bottom).inset(120)
             $0.leading.greaterThanOrEqualTo(window).offset(24)
             $0.trailing.lessThanOrEqualTo(window).inset(24)
         }

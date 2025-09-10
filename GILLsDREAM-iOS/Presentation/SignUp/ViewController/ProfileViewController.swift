@@ -14,11 +14,19 @@ class ProfileViewController: UIViewController {
     // MARK: Properties
     private let disposeBag = DisposeBag()
     private let rootView = ProfileView()
-    private let viewModel = ProfileViewModel()
+    private let viewModel: ProfileViewModel
     private let nicknameMaxLength = 10
     private var isEnable: Bool = true
     var onNext: (() -> Void)?
     
+    init(flowViewModel: SignupFlowViewModel) {
+        self.viewModel = ProfileViewModel(flowViewModel: flowViewModel)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: Life Cycle
     override func loadView() {
@@ -60,19 +68,33 @@ class ProfileViewController: UIViewController {
             .drive(rootView.lengthLabel.rx.text)
             .disposed(by: disposeBag)
         
-        output.duplicateResult
-            .drive(onNext: { [weak self] isAvailable in
-                guard let self = self else { return }
-                self.rootView.errorLabel.isHidden = isAvailable
-                self.rootView.completeLabel.isHidden = !isAvailable
-                self.rootView.updateNextButtonTheme(isAvailable: isAvailable)
+//        output.duplicateResult
+//            .drive(onNext: { [weak self] isAvailable in
+//                guard let self = self else { return }
+//                self.rootView.errorLabel.isHidden = isAvailable
+//                self.rootView.completeLabel.isHidden = !isAvailable
+//                self.rootView.updateNextButtonTheme(isAvailable: isAvailable)
+//            })
+//            .disposed(by: disposeBag)
+        
+        output.isNextEnabled
+            .drive(onNext: { [weak self] enabled in
+                self?.rootView.nextButton.isEnabled = enabled
+                self?.rootView.updateNextButtonTheme(isAvailable: enabled)
             })
             .disposed(by: disposeBag)
+
         
         output.navigateToNext
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
                 self.onNext?()
+            })
+            .disposed(by: disposeBag)
+        
+        output.errorMessage
+            .emit(onNext: { message in
+                ToastManager.shared.show(message: message)
             })
             .disposed(by: disposeBag)
     }

@@ -6,51 +6,106 @@
 //
 
 import Moya
+import UIKit
 
 enum MemberTargetType {
-    case kakaoLogin(code: String)
-    case kakaoLogout
-    case setting(nickname: String, agreedTerms: Bool)
+    case kakaoLogin(accessToken: String)
+    case logout
+    case setting(nickname: String, marketingAgreement: Bool, image: UIImage?)
     case reissue(refreshToken: String)
+    case delete
 }
 
 extension MemberTargetType: BaseTargetType {
     var path: String {
         switch self {
         case .kakaoLogin:
-            return "/member/oauth/kakao/login"
-        case .kakaoLogout: 
-            return "/member/oauth/kakao/logout"
-        case .setting:     
-            return "/member/setting"
-        case .reissue:     
-            return "/member/reissue"
+            return "/v1/member/oauth/kakao/login"
+        case .logout:
+            return "/v1/member/logout"
+        case .setting:
+            return "/v1/member/setting"
+        case .reissue:
+            return "/v1/member/reissue"
+        case .delete:
+            return "/v1/member/delete"
         }
     }
+    
     var method: Moya.Method {
         switch self {
-        case .kakaoLogin, .kakaoLogout:
+        case .kakaoLogin, .logout:
             return .post
         case .setting:
             return .patch
         case .reissue:
             return .get
+        case .delete:
+            return .delete
         }
     }
+    
     var task: Task {
         switch self {
-        case .kakaoLogin(let code):
-            return .requestParameters(parameters: ["code": code, "provider": "kakao"],
-                                      encoding: JSONEncoding.default)
-        case .kakaoLogout:
+        case .kakaoLogin(let accessToken):
+            return .requestParameters(parameters: ["accessToken": accessToken],
+                                      encoding: URLEncoding.queryString)
+        case .logout, .delete:
             return .requestPlain
             
-        case let .setting(nickname, agreed):
-            return .requestJSONEncodable(SettingRequestDTO(nickname: nickname,
-                                                           agreedTerms: agreed))
+        case let .setting(nickname, marketingAgreement, image):
+          var parts: [MultipartFormData] = []
+
+          struct ProfilePayload: Encodable {
+            let nickname: String
+            let marketingAgreement: Bool
+          }
+          let payload = ProfilePayload(nickname: nickname, marketingAgreement: marketingAgreement)
+          let jsonData = try! JSONEncoder().encode(payload)
+
+          parts.append(
+            MultipartFormData(
+              provider: .data(jsonData),
+              name: "profile",
+              mimeType: "application/json"
+            )
+          )
+
+          // (선택) 이미지
+          if let image, let data = image.jpegData(compressionQuality: 0.8) {
+            parts.append(
+              MultipartFormData(
+                provider: .data(data),
+                name: "image",
+                fileName: "profile.jpg",
+                mimeType: "image/jpeg"
+              )
+            )
+          }
+
+          return .uploadMultipart(parts)
+            
         case .reissue(let refresh):
-            return .requestParameters(parameters: ["refreshToken": refresh],
+            return .requestParameters(parameters: ["refresh_token": refresh],
                                       encoding: URLEncoding.queryString)
+        }
+    }
+    
+    var headers: [String: String]? {
+        switch self {
+        case .kakaoLogin:
+            return ["Content-Type": "application/json"]
+            
+        case .reissue(let refresh):
+            return ["X-Refresh-Token": refresh]
+            
+        default:
+            return nil
+//            var base: [String: String] = ["Content-Type": "application/json"]
+//            if let token = KeychainManager.shared.accessToken {
+//                base["Authorization"] = "Bearer \(token)"
+//            }
+//            return base
         }
     }
 }

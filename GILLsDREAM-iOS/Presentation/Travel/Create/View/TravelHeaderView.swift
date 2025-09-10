@@ -11,7 +11,8 @@ import SnapKit
 final class TravelHeaderView: UIView {
 
     // MARK: Properties
-    private let titles = ["얼마나?", "누구와?", "어디로?", "어떻게?"]
+    //TODO: Map 구현 후 변경
+    private let titles = ["얼마나?", "누구와?", "어떻게?"] //, "어디로?", "어떻게?"]
     private var stepViews: [UIView] = []
 
     var currentStep: Int = 0 {

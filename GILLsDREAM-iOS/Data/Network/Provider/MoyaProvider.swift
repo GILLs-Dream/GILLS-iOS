@@ -40,14 +40,9 @@ public extension MoyaProvider {
             
             switch res.statusCode {
             case 200..<300:
-                // 빈 바디 허용 (T == EmptyResponse)
-                if T.self == EmptyResponse.self {
-                    return EmptyResponse() as! T
-                }
+                if T.self == EmptyResponse.self { return EmptyResponse() as! T }
                 guard res.data.isEmpty == false else {
-                    // 빈 바디인데 T가 EmptyResponse가 아니면 디코딩 에러로 처리
-                    let ctx = DecodingError.Context(codingPath: [],
-                                                    debugDescription: "Empty body for \(T.self)")
+                    let ctx = DecodingError.Context(codingPath: [], debugDescription: "Empty body for \(T.self)")
                     throw NetworkError.decoding(.dataCorrupted(ctx))
                 }
                 do {
@@ -58,22 +53,26 @@ public extension MoyaProvider {
                     throw NetworkError.unknown(error)
                 }
                 
-            default: // 서버에러 바디 매핑
+            default:
+                // 서버 에러 바디 시도 파싱
                 if let apiErr = try? decoder.decode(ErrorResponse.self, from: res.data) {
+                    if apiErr.code == "MEMBER NOT FOUND" {
+                        NotificationCenter.default.post(
+                            name: .appAuthMemberNotFound,
+                            object: nil
+                        )
+                        throw AppAuthError.memberNotFound
+                    }
                     throw NetworkError.server(apiErr, status: res.statusCode)
                 } else {
-                    let fallback = ErrorResponse(
-                        code: "HTTP_\(res.statusCode)",
-                        message: String(data: res.data, encoding: .utf8) ?? "HTTP \(res.statusCode)"
-                    )
+                    let fallbackMsg = String(data: res.data, encoding: .utf8) ?? "HTTP \(res.statusCode)"
+                    let fallback = ErrorResponse(code: "HTTP_\(res.statusCode)", message: fallbackMsg)
                     throw NetworkError.server(fallback, status: res.statusCode)
                 }
             }
-        }
-        catch let cancelErr as CancellationError { // task 취소
+        } catch let cancelErr as CancellationError {
             throw cancelErr
-        }
-        catch let moyaErr as MoyaError { // 전송에러 매핑
+        } catch let moyaErr as MoyaError {
             if case let .underlying(underlying, _) = moyaErr,
                let urlErr = underlying as? URLError {
                 throw NetworkError.transport(urlErr)
@@ -91,7 +90,7 @@ extension MoyaProvider where Target: TargetType {
         config.httpCookieStorage = HTTPCookieStorage.shared
         config.httpShouldSetCookies = true
         config.httpCookieAcceptPolicy = .always
-
+        
         let session: Alamofire.Session = {
             switch auth {
             case .none: return Alamofire.Session(configuration: config)
@@ -100,10 +99,12 @@ extension MoyaProvider where Target: TargetType {
             }
         }()
         
-        #if DEBUG
-        let plugins: [PluginType] = [MoyaLoggingPlugin()]
-        #endif
-
+        let plugins: [PluginType]
+#if DEBUG
+        plugins = [MoyaLoggingPlugin()]
+#else
+        plugins = []
+#endif
         self.init(session: session, plugins: plugins)
     }
 }
