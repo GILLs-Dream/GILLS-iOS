@@ -36,12 +36,6 @@ final class UserAuthInterceptor: RequestInterceptor {
                completion: @escaping (Result<URLRequest, Error>) -> Void) {
         var req = urlRequest
         let token = KeychainManager.shared.accessToken
-        print("🔐 [AuthInterceptor] URL=\(req.url?.absoluteString ?? "-")")
-        print("🔐 [AuthInterceptor] token prefix=\(token?.prefix(10) ?? "nil")")
-        
-        if let token, token.isEmpty == false {
-            req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
         completion(.success(req))
     }
     
