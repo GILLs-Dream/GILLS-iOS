@@ -54,19 +54,36 @@ extension MemberTargetType: BaseTargetType {
             return .requestPlain
             
         case let .setting(nickname, marketingAgreement, image):
-            var parts: [MultipartFormData] = []
-            // text
-            parts.append(.init(provider: .data(Data(nickname.utf8)), name: "nickname"))
-            parts.append(.init(provider: .data(Data(String(marketingAgreement).utf8)), name: "marketingAgreement"))
+          var parts: [MultipartFormData] = []
 
-            // img
-            if let image, let data = image.jpegData(compressionQuality: 0.9) {
-                parts.append(.init(provider: .data(data),
-                                   name: "profileImg",
-                                   fileName: "profile.jpg",
-                                   mimeType: "image/jpeg"))
-            }
-            return .uploadMultipart(parts)
+          struct ProfilePayload: Encodable {
+            let nickname: String
+            let marketingAgreement: Bool
+          }
+          let payload = ProfilePayload(nickname: nickname, marketingAgreement: marketingAgreement)
+          let jsonData = try! JSONEncoder().encode(payload)
+
+          parts.append(
+            MultipartFormData(
+              provider: .data(jsonData),
+              name: "profile",
+              mimeType: "application/json"
+            )
+          )
+
+          // (선택) 이미지
+          if let image, let data = image.jpegData(compressionQuality: 0.8) {
+            parts.append(
+              MultipartFormData(
+                provider: .data(data),
+                name: "image",
+                fileName: "profile.jpg",
+                mimeType: "image/jpeg"
+              )
+            )
+          }
+
+          return .uploadMultipart(parts)
             
         case .reissue(let refresh):
             return .requestParameters(parameters: ["refresh_token": refresh],
@@ -76,18 +93,19 @@ extension MemberTargetType: BaseTargetType {
     
     var headers: [String: String]? {
         switch self {
-        case .setting:
-            return ["Content-Type": "multipart/form-data"]
+        case .kakaoLogin:
+            return ["Content-Type": "application/json"]
             
         case .reissue(let refresh):
             return ["X-Refresh-Token": refresh]
             
         default:
-            var base: [String: String] = ["Content-Type": "application/json"]
-            if let token = KeychainManager.shared.accessToken {
-                base["Authorization"] = "Bearer \(token)"
-            }
-            return base
+            return nil
+//            var base: [String: String] = ["Content-Type": "application/json"]
+//            if let token = KeychainManager.shared.accessToken {
+//                base["Authorization"] = "Bearer \(token)"
+//            }
+//            return base
         }
     }
 }

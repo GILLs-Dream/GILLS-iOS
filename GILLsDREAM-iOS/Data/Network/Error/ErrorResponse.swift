@@ -41,3 +41,7 @@ extension Error {
         (self as? NetworkError)?.message ?? self.localizedDescription
     }
 }
+
+enum AppAuthError: Error {
+    case memberNotFound
+}

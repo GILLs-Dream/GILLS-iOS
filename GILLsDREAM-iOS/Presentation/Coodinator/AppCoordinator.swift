@@ -18,15 +18,8 @@ final class AppCoordinator: Coordinator {
     }
     
     func start() {
-        if !UserDefaultsManager.shared.isLogin {
+        if !UserDefaultsManager.shared.isLogin || !UserDefaultsManager.shared.isOnboarding {
             showLoginFlow()
-            return
-        }
-        if !UserDefaultsManager.shared.isOnboarding {
-            let signUp = SignUpCoordinator(navigationController)
-            signUp.finishDelegate = self
-            childCoordinators.append(signUp)
-            signUp.start()
             return
         }
         showTabBarFlow()

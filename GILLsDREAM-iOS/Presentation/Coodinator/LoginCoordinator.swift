@@ -18,28 +18,23 @@ final class LoginCoordinator: Coordinator {
     }
     
     func start() {
-        let didSignUp = didSignUp()
-        showInitialVC(didSignUp)
+        showInitialVC()
     }
     
-    private func didSignUp() -> Bool {
-        return UserDefaultsManager.shared.isOnboarding
-    }
-    
-    private func showInitialVC(_ didSignUp: Bool) {
+    private func showInitialVC() {
         let vc = InitialViewController()
         vc.onLogin = { [weak self] in
             guard let self else { return }
             if UserDefaultsManager.shared.isOnboarding {
                 self.finish()
             } else {
-                self.startLogin()
+                self.startSignup()
             }
         }
-        navigationController.pushViewController(vc, animated: true)
+        navigationController.setViewControllers([vc], animated: false)
     }
     
-    func startLogin() {
+    private func startSignup() {
         let signUpCoordinator = SignUpCoordinator(navigationController)
         signUpCoordinator.finishDelegate = self.finishDelegate
         childCoordinators.append(signUpCoordinator)

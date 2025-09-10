@@ -10,6 +10,11 @@ import RxSwift
 import RxCocoa
 
 final class ProfileViewModel: ViewModelType {
+    private let flowViewModel: SignupFlowViewModel
+    
+    init(flowViewModel: SignupFlowViewModel) {
+        self.flowViewModel = flowViewModel
+    }
 
     struct Input {
         let profileImageButtonTapped: Observable<Void>
@@ -31,6 +36,7 @@ final class ProfileViewModel: ViewModelType {
     private let selectedImageRelay = PublishRelay<UIImage>()
     private let nicknameRelay = BehaviorRelay<String>(value: "")
     private let isNicknameAvailableRelay = PublishRelay<Bool?>()
+    private let isNextEnabledRelay = BehaviorRelay<Bool>(value: false)
     private let navigateToNextRelay = PublishRelay<Void>()
     private let errorRelay = PublishRelay<String>()
     private let imagePickerService = ImagePickerService()
@@ -50,6 +56,7 @@ final class ProfileViewModel: ViewModelType {
 
         // 입력 제한
         input.nicknameInput
+            .do(onNext: { [weak self] in self?.isNextEnabledRelay.accept(!$0.trimmingCharacters(in: .whitespaces).isEmpty) })
             .bind(to: nicknameRelay)
             .disposed(by: disposeBag)
 
@@ -64,18 +71,24 @@ final class ProfileViewModel: ViewModelType {
 //            .disposed(by: disposeBag)
         
         // 다음 버튼 탭 처리
-        let isNextEnabledObs = nicknameRelay.map { !$0.isEmpty }.distinctUntilChanged()
+        let isNextEnabledObs = nicknameRelay
+            .map { !$0.isEmpty }
+            .distinctUntilChanged()
 
         input.nextButtonTapped
-            .withLatestFrom(isNextEnabledObs)
-            .subscribe(onNext: { [weak self] enabled in
+            .withLatestFrom(Observable.combineLatest(nicknameRelay.asObservable(),
+                                                     selectedImageRelay.asObservable().map { Optional($0) }.startWith(nil),
+                                                     isNextEnabledRelay.asObservable()))
+            .subscribe(onNext: { [weak self] nickname, image, enabled in
                 guard let self else { return }
-                if enabled {
-                    self.navigateToNextRelay.accept(())
-                } else {
+                guard enabled else {
                     self.errorRelay.accept("닉네임을 입력해 주세요.")
+                    return
                 }
-            })
+                    self.navigateToNextRelay.accept(())
+                    self.flowViewModel.nickname = nickname.trimmingCharacters(in: .whitespaces)
+                    self.flowViewModel.profileImage = image
+                })
             .disposed(by: disposeBag)
 
         return Output(

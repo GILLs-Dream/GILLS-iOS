@@ -14,11 +14,19 @@ class ProfileViewController: UIViewController {
     // MARK: Properties
     private let disposeBag = DisposeBag()
     private let rootView = ProfileView()
-    private let viewModel = ProfileViewModel()
+    private let viewModel: ProfileViewModel
     private let nicknameMaxLength = 10
     private var isEnable: Bool = true
     var onNext: (() -> Void)?
     
+    init(flowViewModel: SignupFlowViewModel) {
+        self.viewModel = ProfileViewModel(flowViewModel: flowViewModel)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: Life Cycle
     override func loadView() {

@@ -11,7 +11,7 @@ import RxCocoa
 final class TosViewModel: ViewModelType {
     private let usecase: AuthUsecase
     private let flow: SignupFlowViewModel
-
+    
     init(flowmodel: SignupFlowViewModel,
          usecase: AuthUsecase = AuthUsecaseImpl()) {
         self.flow = flowmodel
@@ -25,7 +25,7 @@ final class TosViewModel: ViewModelType {
         let marketingTapped: Observable<Void>
         let nextButtonTapped: Observable<Void>
     }
-
+    
     struct Output {
         let allChecked: Driver<Bool>
         let serviceChecked: Driver<Bool>
@@ -35,10 +35,12 @@ final class TosViewModel: ViewModelType {
         let navigateToNext: Driver<Void>
         let isLoading: Driver<Bool>
         let errorMessage: Signal<String>
+        let completeSucceeded: Signal<Void>
+        let completeFailed: Signal<String>
     }
-
+    
     var disposeBag = DisposeBag()
-
+    
     private let allRelay = BehaviorRelay<Bool>(value: false)
     private let serviceRelay = BehaviorRelay<Bool>(value: false)
     private let personalRelay = BehaviorRelay<Bool>(value: false)
@@ -46,7 +48,9 @@ final class TosViewModel: ViewModelType {
     private let navigateToNextRelay = PublishRelay<Void>()
     private let isLoadingRelay = BehaviorRelay<Bool>(value: false)
     private let errorRelay = PublishRelay<String>()
-
+    private let successRelay = PublishRelay<Void>()
+    private let failureRelay = PublishRelay<String>()
+    
     func transform(input: Input) -> Output {
         // 전체 동의 눌렀을 때 모두 toggle
         input.allAgreeTapped
@@ -60,7 +64,7 @@ final class TosViewModel: ViewModelType {
             })
             .subscribe()
             .disposed(by: disposeBag)
-
+        
         // 개별 항목 누르면 toggle
         input.serviceTapped
             .withLatestFrom(serviceRelay)
@@ -71,7 +75,7 @@ final class TosViewModel: ViewModelType {
             })
             .subscribe()
             .disposed(by: disposeBag)
-
+        
         input.personalTapped
             .withLatestFrom(personalRelay)
             .map { !$0 }
@@ -81,7 +85,7 @@ final class TosViewModel: ViewModelType {
             })
             .subscribe()
             .disposed(by: disposeBag)
-
+        
         input.marketingTapped
             .withLatestFrom(marketingRelay)
             .map { !$0 }
@@ -92,39 +96,37 @@ final class TosViewModel: ViewModelType {
             .subscribe()
             .disposed(by: disposeBag)
         
+        marketingRelay
+            .skip(1)
+            .subscribe(onNext: { [weak self] agreed in
+                self?.flow.marketingAgreement = agreed
+            })
+            .disposed(by: disposeBag)
+        
         input.nextButtonTapped
             .flatMapLatest { [weak self] _ -> Observable<Void> in
                 guard let self else { return .empty() }
                 return RxAsync.run {
-                    await MainActor.run { self.isLoadingRelay.accept(true) }
-                    defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
-
-                    self.flow.marketingAgreement = self.marketingRelay.value
-                    self.navigateToNextRelay.accept(()) // TODO: 연결되면 삭제
-                    //TODO: 백엔드 api 수정 후 연결
-//                    try await self.usecase.updateSetting(
-//                        nickname: self.flow.nickname,
-//                        profileImg: self.flow.profileImage,
-//                        agreed: self.flow.marketingAgreement
-//                    )
-//                    await MainActor.run { self.navigateToNextRelay.accept(()) }
+                    do {
+                        _ = try await self.usecase.updateSetting(nickname: self.flow.nickname,
+                                                                 profileImg: self.flow.profileImage,
+                                                                 agreed: self.flow.marketingAgreement)
+                        await MainActor.run { self.successRelay.accept(()) }
+                    } catch {
+                        await MainActor.run { self.failureRelay.accept(error.displayMessage) }
+                    }
                 }
-                
                 .asObservable()
-                .catch { [weak self] error in
-                    self?.errorRelay.accept(error.displayMessage)
-                    return .empty()
-                }
             }
             .subscribe()
             .disposed(by: disposeBag)
-
+        
         let isNextEnabled = Observable
             .combineLatest(allRelay, serviceRelay, personalRelay)
             .map { all, service, personal in
                 all || (service && personal)
             }
-
+        
         return Output(
             allChecked: allRelay.asDriver(onErrorJustReturn: false),
             serviceChecked: serviceRelay.asDriver(onErrorJustReturn: false),
@@ -133,10 +135,12 @@ final class TosViewModel: ViewModelType {
             isNextButtonEnabled: isNextEnabled.asDriver(onErrorJustReturn: false),
             navigateToNext: navigateToNextRelay.asDriver(onErrorDriveWith: .empty()),
             isLoading: isLoadingRelay.asDriver(),
-            errorMessage: errorRelay.asSignal()
+            errorMessage: errorRelay.asSignal(),
+            completeSucceeded: successRelay.asSignal(),
+            completeFailed: failureRelay.asSignal()
         )
     }
-
+    
     private func syncAllAgree() {
         let allChecked = serviceRelay.value && personalRelay.value && marketingRelay.value
         allRelay.accept(allChecked)

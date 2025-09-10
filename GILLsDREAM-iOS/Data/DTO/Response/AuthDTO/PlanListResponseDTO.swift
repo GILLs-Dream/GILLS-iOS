@@ -5,7 +5,7 @@
 //  Created by 오연서 on 9/9/25.
 //
 
-struct PlanListRequestDTO: Decodable {
+struct PlanListResponseDTO: Decodable {
     let planList: [PlanListItemDTO]
 }
 

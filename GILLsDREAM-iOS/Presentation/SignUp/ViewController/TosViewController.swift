@@ -14,7 +14,9 @@ class TosViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private let rootView = TosView()
     var onDetail: ((TermsContent) -> Void)?
-    var onComplete: (() -> Void)?
+    var onCompleteSuccess: (() -> Void)?
+    var onCompleteFailed: (() -> Void)?
+    
     private let flowViewModel: SignupFlowViewModel
     private let viewModel: TosViewModel
     
@@ -90,10 +92,15 @@ class TosViewController: UIViewController {
         output.errorMessage
             .emit(onNext: { ToastManager.shared.show(message: $0) })
             .disposed(by: disposeBag)
+        
+        output.completeSucceeded
+            .emit(onNext: { [weak self] in self?.onCompleteSuccess?() })
+            .disposed(by: disposeBag)
 
-        output.navigateToNext
-            .drive(onNext: { [weak self] in
-                self?.onComplete?()
+        output.completeFailed
+            .emit(onNext: { [weak self] msg in
+                ToastManager.shared.show(message: msg)
+                self?.onCompleteFailed?()
             })
             .disposed(by: disposeBag)
     }

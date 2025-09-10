@@ -23,21 +23,21 @@ extension PlanTargetType: BaseTargetType {
     var path: String {
         switch self {
         case .mood:
-            return "/plan/template/mood"
+            return "/v1/plan/template/mood"
         case .videos(let id, _, _):
-            return "/plan/template/\(id)/videos"
+            return "/v1/plan/template/\(id)/videos"
         case .generate(let id):
-            return "/plan/template/\(id)/generate"
+            return "/v1/plan/template/\(id)/generate"
         case .duration(let id, _, _, _):
-            return "/plan/template/\(id)/duration"
+            return "/v1/plan/template/\(id)/duration"
         case .style(let id, _, _):
-            return "/plan/template/\(id)/style"
+            return "/v1/plan/template/\(id)/style"
         case .companion(let id, _, _):
-            return "/plan/template/\(id)/companion"
+            return "/v1/plan/template/\(id)/companion"
         case .destination(let id, _, _):
-            return "/plan/template/\(id)/destination"
+            return "/v1/plan/template/\(id)/destination"
         case .list:
-            return "/plan/template"
+            return "/v1/plan/template"
         }
     }
     
@@ -78,5 +78,13 @@ extension PlanTargetType: BaseTargetType {
         case .list:
             return .requestPlain
         }
+    }
+    
+    var headers: [String: String]? {
+        var base: [String: String] = ["Content-Type": "application/json"]
+        if let token = KeychainManager.shared.accessToken {
+            base["Authorization"] = "Bearer \(token)"
+        }
+        return base
     }
 }

@@ -7,112 +7,55 @@
 
 import Foundation
 import Moya
+
 final class PlanRepositoryImpl: PlanRepository {
-    private let provider: NetworkProvider<PlanTargetType>
-
-    init(provider: NetworkProvider<PlanTargetType> = .init()) {
-        self.provider = provider
-    }
-
+    private let provider = Providers.plan
+    
     func setMood(_ text: String) async throws -> PlanMood {
-        let res: ApiResponse<MoodResultDTO> = try await provider.request(
-            api: .mood(inputText: text),
-            dto: MoodResultDTO.self
-        )
-
-        guard let dto = res.result else {
-            let err = DecodingError.valueNotFound(
-                MoodResultDTO.self,
-                .init(codingPath: [], debugDescription: "ApiResponse.result is nil for MoodResultDTO")
-            )
-            throw NetworkError.decoding(err)
+        let api: ApiResponse<MoodResultDTO> = try await provider.requestDecodable(.mood(inputText: text), as: ApiResponse<MoodResultDTO>.self)
+        guard api.isSuccess, let dto = api.result else {
+            throw NetworkError.server(.init(code: api.code, message: api.message), status: 200)
         }
-
         return PlanMapper.toPlanMood(from: dto)
     }
-
+    
     func setVideos(planId: Int, region: String, urls: [String]) async throws -> Bool {
-        let res: ApiResponse<VideosResultDTO> = try await provider.request(
-            api: .videos(planId: planId,
-                         region: region,
-                         videoURLs: urls),
-            dto: VideosResultDTO.self
-        )
-        return res.isSuccess
+        let api: ApiResponse<VideosResultDTO> = try await provider.requestDecodable(.videos(planId: planId, region: region, videoURLs: urls), as: ApiResponse<VideosResultDTO>.self)
+        return api.isSuccess
     }
-
+    
     func setDuration(planId: Int, duration: Int, start: String, finish: String) async throws -> Bool {
-        let res: ApiResponse<PlanIdResultDTO> = try await provider.request(
-            api: .duration(planId: planId,
-                           duration: duration,
-                           startDate: start,
-                           finishedDate: finish),
-            dto: PlanIdResultDTO.self
-        )
-        return res.isSuccess
+        let api: ApiResponse<PlanIdResultDTO> = try await provider.requestDecodable(.duration(planId: planId, duration: duration, startDate: start, finishedDate: finish), as: ApiResponse<PlanIdResultDTO>.self)
+        return api.isSuccess
     }
-
+    
     func setStyle(planId: Int, transport: String, categories: [String]) async throws -> Bool {
-        let res: ApiResponse<PlanIdResultDTO> = try await provider.request(
-            api: .style(planId: planId,
-                        transport: transport,
-                        categories: categories),
-            dto: PlanIdResultDTO.self
-        )
-        return res.isSuccess
+        let api: ApiResponse<PlanIdResultDTO> = try await provider.requestDecodable(.style(planId: planId, transport: transport, categories: categories), as: ApiResponse<PlanIdResultDTO>.self)
+        return api.isSuccess
     }
 
     func setCompanion(planId: Int, party: Int, companion: String) async throws -> Bool {
-        let res: ApiResponse<PlanIdResultDTO> = try await provider.request(
-            api: .companion(planId: planId,
-                            party: party,
-                            companion: companion),
-            dto: PlanIdResultDTO.self
-        )
-        return res.isSuccess
+        let api: ApiResponse<PlanIdResultDTO> = try await provider.requestDecodable(.companion(planId: planId, party: party, companion: companion), as: ApiResponse<PlanIdResultDTO>.self)
+        return api.isSuccess
     }
 
-    func setDestination(planId: Int,
-                        travel: [TravelPlaceRequestDTO],
-                        stay: [StayPlaceRequestDTO]) async throws -> Bool {
-        let res: ApiResponse<PlanIdResultDTO> = try await provider.request(
-            api: .destination(planId: planId,
-                              travelPlaces: travel,
-                              stayPlaces: stay),
-            dto: PlanIdResultDTO.self
-        )
-        return res.isSuccess
+    func setDestination(planId: Int, travel: [TravelPlaceRequestDTO], stay: [StayPlaceRequestDTO]) async throws -> Bool {
+        let api: ApiResponse<PlanIdResultDTO> = try await provider.requestDecodable(.destination(planId: planId, travelPlaces: travel, stayPlaces: stay), as: ApiResponse<PlanIdResultDTO>.self)
+        return api.isSuccess
     }
     
     func generate(planId: Int) async throws -> Plan {
-        let res: ApiResponse<PlanIdResultDTO> = try await provider.request(
-            api: .generate(planId: planId),
-            dto: PlanIdResultDTO.self
-        )
-
-        guard let dto = res.result else {
-            let err = DecodingError.valueNotFound(
-                PlanIdResultDTO.self,
-                .init(codingPath: [], debugDescription: "ApiResponse.result is nil for PlanIdResultDTO")
-            )
-            throw NetworkError.decoding(err)
+        let api: ApiResponse<PlanIdResultDTO> = try await provider.requestDecodable(.generate(planId: planId), as: ApiResponse<PlanIdResultDTO>.self)
+        guard api.isSuccess, let dto = api.result else {
+            throw NetworkError.server(.init(code: api.code, message: api.message), status: 200)
         }
-
-        // 현재 서버가 planId만 내려주는 스펙 → 최소 Plan으로 매핑
         return PlanMapper.toMinimalPlan(from: dto)
     }
-    
+
     func fetchPlanList() async throws -> [Plan] {
-        let res: ApiResponse<PlanListRequestDTO> = try await provider.request(
-            api: .list,
-            dto: PlanListRequestDTO.self
-        )
-        guard let envelope = res.result else {
-            let err = DecodingError.valueNotFound(
-                PlanListRequestDTO.self,
-                .init(codingPath: [], debugDescription: "result is nil for PlanListRequestDTO")
-            )
-            throw NetworkError.decoding(err)
+        let api: ApiResponse<PlanListResponseDTO> = try await provider.requestDecodable(.list, as: ApiResponse<PlanListResponseDTO>.self)
+        guard api.isSuccess, let envelope = api.result else {
+            throw NetworkError.server(.init(code: api.code, message: api.message), status: 200)
         }
         return envelope.planList.map(PlanMapper.toPlan(from:))
     }
