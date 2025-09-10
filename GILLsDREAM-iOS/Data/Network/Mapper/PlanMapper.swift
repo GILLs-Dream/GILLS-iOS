@@ -49,7 +49,7 @@ enum PlanMapper {
             title: dto.title,
             dateRange: dateRange,
             isPinned: false,
-            imageURL: dto.thumbnailUrl,
+            imageURL: dto.mainImg,
             sortOrder: dto.planId, // TODO: 고정 로직 적용
             places: [],
             summary: ""

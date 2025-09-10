@@ -100,12 +100,11 @@ extension MemberTargetType: BaseTargetType {
             return ["X-Refresh-Token": refresh]
             
         default:
-            return nil
-//            var base: [String: String] = ["Content-Type": "application/json"]
-//            if let token = KeychainManager.shared.accessToken {
-//                base["Authorization"] = "Bearer \(token)"
-//            }
-//            return base
+            var base: [String: String] = ["Content-Type": "application/json"]
+            if let token = KeychainManager.shared.accessToken {
+                base["Authorization"] = "Bearer \(token)"
+            }
+            return base
         }
     }
 }
