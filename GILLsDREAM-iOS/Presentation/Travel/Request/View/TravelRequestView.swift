@@ -65,6 +65,7 @@ final class TravelRequestView: UIView {
         
         extraLabel.do {
             $0.attributedText = "분위기가 구체적일수록 좋아요!".pretendardAttributedString(style: .body2)
+            $0.numberOfLines = 2
         }
         
         underlineView.do {
@@ -169,7 +170,7 @@ extension TravelRequestView {
             requestPlaceHolder.attributedText = "참고하고 싶은 여행영상이 있나요?".pretendardAttributedString(style: .subtitle6)
             extraLabel.isHidden = false
             underlineView.isHidden = true
-            extraLabel.text = "*영상 길이 최대 5분"
+            extraLabel.text = "*영상 길이 최대 5분.\n*참고하고 싶은 영상이 없다면 다음 버튼을 눌러주세요."
             extraLabel.snp.remakeConstraints {
                 $0.top.equalTo(exampleLabel.snp.bottom).offset(5)
                 $0.leading.equalTo(titleLabel)

@@ -65,6 +65,21 @@ final class TravelRequestViewController: BaseViewController {
         
         let output = viewModel.transform(input: input)
         
+        output.isLoading
+            .drive(onNext: { [weak self] isLoading in
+                guard let self else { return }
+                if isLoading {
+                    self.rootView.lottieView.startAnimating()
+                    self.rootView.sendButton.isEnabled = false
+                    self.view.isUserInteractionEnabled = false
+                } else {
+                    self.rootView.lottieView.stopAnimating()
+                    self.rootView.sendButton.isEnabled = true
+                    self.view.isUserInteractionEnabled = true
+                }
+            })
+            .disposed(by: disposeBag)
+        
         output.isSendEnabled
             .drive(rootView.sendButton.rx.isEnabled)
             .disposed(by: disposeBag)
@@ -78,15 +93,8 @@ final class TravelRequestViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         output.navigateToNext
-            .do(onNext: { [weak self] in
-                self?.view.endEditing(true)
-                self?.rootView.lottieView.startAnimating()
-            })
-            .delay(.milliseconds(3000))
             .drive(onNext: { [weak self] in
-                guard let self else { return }
-                self.rootView.lottieView.stopAnimating()
-                self.onNext?()
+                self?.onNext?()
             })
             .disposed(by: disposeBag)
         

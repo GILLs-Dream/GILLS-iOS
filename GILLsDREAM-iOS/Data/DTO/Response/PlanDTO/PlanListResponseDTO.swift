@@ -1,5 +1,5 @@
 //
-//  PlanListRequestDTO.swift
+//  PlanListResponseDTO.swift
 //  GILLsDREAM-iOS
 //
 //  Created by 오연서 on 9/9/25.
@@ -14,5 +14,5 @@ struct PlanListItemDTO: Decodable {
     let title: String
     let startedAt: String
     let finishedAt: String
-    let thumbnailUrl: String
+    let mainImg: String
 }

@@ -18,20 +18,24 @@ final class AppCoordinator: Coordinator {
     }
     
     func start() {
-        if !UserDefaultsManager.shared.isLogin || !UserDefaultsManager.shared.isOnboarding {
+        let hasToken = KeychainManager.shared.accessToken != nil
+        let isLogin = UserDefaultsManager.shared.isLogin
+        let isOnboarded = UserDefaultsManager.shared.isOnboarding
+        
+        if !hasToken || !isLogin || !isOnboarded {
             showLoginFlow()
             return
         }
         showTabBarFlow()
     }
-
+    
     func showLoginFlow() {
         let loginCoordinator = LoginCoordinator(navigationController)
         loginCoordinator.finishDelegate = self
         childCoordinators.append(loginCoordinator)
         loginCoordinator.start()
     }
-
+    
     func showTabBarFlow() {
         let tabCoordinator = TabBarCoordinator(navigationController)
         tabCoordinator.finishDelegate = self
@@ -44,7 +48,7 @@ final class AppCoordinator: Coordinator {
 extension AppCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {
         childCoordinators.removeAll { $0 === childCoordinator }
-
+        
         switch childCoordinator.type {
         case .login:
             if UserDefaultsManager.shared.isOnboarding {

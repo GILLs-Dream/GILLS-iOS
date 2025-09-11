@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import RxSwift
+import Kingfisher
 
 final class PlanListCollectionViewCell: UICollectionViewCell {
     static let identifier = "PlanListCollectionViewCell"
@@ -62,6 +63,7 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
         planImageView.do {
             $0.layer.cornerRadius = 10
             $0.image = .imgDefaultGillSquare
+            $0.clipsToBounds = true
             $0.contentMode = .scaleAspectFill
         }
         
@@ -78,7 +80,8 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
     
     private func setUpLayout() {
         planImageView.snp.makeConstraints {
-            $0.verticalEdges.leading.equalToSuperview()
+            $0.verticalEdges.equalToSuperview()
+            $0.leading.equalToSuperview().offset(13)
             $0.size.equalTo(86)
         }
         
@@ -90,12 +93,12 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
         
         planTitle.snp.makeConstraints {
             $0.top.equalTo(pinImageView.snp.bottom).offset(2)
-            $0.leading.equalTo(pinImageView)
+            $0.leading.equalTo(pinImageView).offset(3)
         }
         
         planDate.snp.makeConstraints {
             $0.top.equalTo(planTitle.snp.bottom).offset(2)
-            $0.leading.equalTo(pinImageView).offset(1)
+            $0.leading.equalTo(pinImageView).offset(7)
         }
         
 //        detailButton.snp.makeConstraints {
@@ -134,9 +137,27 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
 extension PlanListCollectionViewCell {
     func configure(with model: Plan) {
         planTitle.attributedText = model.title.pretendardAttributedString(style: .subtitle5)
-        planDate.attributedText = model.dateRange?.pretendardAttributedString(style: .body3) ?? "날짜 미정".pretendardAttributedString(style: .body3)
+        planDate.attributedText = model.dateRange?.pretendardAttributedString(style: .body3) ??
+            "날짜 미정".pretendardAttributedString(style: .body3)
         pinImageView.isHidden = !model.isPinned
-        //planImageView.image = model.imageURL ?? UIImage.imgDefaultGillSquare
-        setUpMenu(isPinned: model.isPinned)
+        //setUpMenu(isPinned: model.isPinned)
+
+        if let imageURL = model.imageURL, !imageURL.isEmpty,
+           let url = URL(string: imageURL) {
+            planImageView.do {
+                $0.contentMode = .scaleAspectFill
+                $0.layer.cornerRadius = self.planImageView.bounds.height / 2
+                $0.clipsToBounds = true
+                $0.layer.cornerRadius = 10
+                $0.kf.setImage(
+                    with: url,
+                    placeholder: UIImage(named: "icAccount"),
+                    options: [.transition(.fade(0.2))]
+                )
+            }
+        } else {
+            planImageView.image = .imgDefaultGillSquare
+        }
+        
     }
 }

@@ -10,7 +10,7 @@ import RxCocoa
 
 final class PlanListViewModel {
     private let usecase: PlanUsecase
-
+    
     init(usecase: PlanUsecase = PlanUsecaseImpl(repository: PlanRepositoryImpl())) {
         self.usecase = usecase
     }
@@ -24,24 +24,27 @@ final class PlanListViewModel {
         let planSections: Driver<[PlanSection]>
         let selectedPlan: Signal<Plan>
         let errorMessage: Signal<String>
+        let isLoading: Driver<Bool>
     }
     
     private let planSectionsRelay = BehaviorRelay<[PlanSection]>(value: [])
+    private let isLoadingRelay = BehaviorRelay<Bool>(value: false)
     private let errorRelay = PublishRelay<String>()
     private let disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
         input.viewDidLoad
-            .flatMapLatest { _ in
-                RxAsync.run { [weak self] () async throws -> [Plan] in
-                    guard let self else { return [] }
+            .flatMapLatest { [weak self] _ in
+                guard let self else { return Observable<[Plan]>.just([]) }
+                return RxAsync.run {
+                    await MainActor.run { self.isLoadingRelay.accept(true) } // 로딩 on
+                    defer { Task { @MainActor in self.isLoadingRelay.accept(false) } } // 로딩 off
                     return try await self.usecase.fetchMyPlans()
                 }
                 .asObservable()
                 .catch { [weak self] error in
-                    guard let self = self else { return .empty() }
-                    self.errorRelay.accept("서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.")
-                    return .empty()
+                    self?.errorRelay.accept("서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.")
+                    return .just([])
                 }
             }
             .map { [PlanSection(items: $0)] }
@@ -51,7 +54,8 @@ final class PlanListViewModel {
         return Output(
             planSections: planSectionsRelay.asDriver(),
             selectedPlan: input.itemSelected.asSignal(onErrorSignalWith: .empty()),
-            errorMessage: errorRelay.asSignal()
+            errorMessage: errorRelay.asSignal(),
+            isLoading: isLoadingRelay.asDriver()
         )
     }
 }
@@ -60,11 +64,11 @@ extension PlanListViewModel {
     // MARK: Toggle Pinned
     func togglePin(for plan: Plan) {
         var current = planSectionsRelay.value.flatMap { $0.items }
-
+        
         guard let index = current.firstIndex(where: { $0.id == plan.id }) else { return }
         let updatedPlan = plan.toggledPinned()
         current[index] = updatedPlan
-
+        
         // 정렬 기준: 고정 -> sortOrder 순
         let sorted = current.sorted {
             if $0.isPinned != $1.isPinned {

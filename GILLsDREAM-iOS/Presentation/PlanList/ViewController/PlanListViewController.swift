@@ -14,6 +14,7 @@ final class PlanListViewController: BaseViewController {
     private let rootView = PlanListView()
     private let viewModel = PlanListViewModel()
     private let disposeBag = DisposeBag()
+    private let refreshControl = UIRefreshControl()
 
     override func loadView() {
         self.view = rootView
@@ -22,12 +23,29 @@ final class PlanListViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bindViewModel()
+        makeRefreshControl()
+    }
+    
+    private func makeRefreshControl() {
+        refreshControl.tintColor = .white
+        rootView.myPlanCollectionView.refreshControl = refreshControl
+        rootView.myPlanCollectionView.alwaysBounceVertical = true
     }
 
     private func bindViewModel() {
+        // 최초 1회 로드
+        let firstAppear = rx.methodInvoked(#selector(UIViewController.viewDidAppear(_:)))
+            .map { _ in () }
+            .take(1)
+
+        // 당겨서 새로고침 트리거
+        let pullToRefresh = refreshControl.rx.controlEvent(.valueChanged)
+            .map { () }
+
+        // 최초 1회 + 당겨서 새로고침 둘 다 fetch 트리거로 사용
         let input = PlanListViewModel.Input(
-            viewDidLoad: Observable.just(()),
-            itemSelected: rootView.myPlanCollectionView.rx.modelSelected(Plan.self).asObservable(),
+            viewDidLoad: Observable.merge(firstAppear, pullToRefresh),
+            itemSelected: rootView.myPlanCollectionView.rx.modelSelected(Plan.self).asObservable()
         )
 
         let output = viewModel.transform(input: input)
@@ -36,6 +54,22 @@ final class PlanListViewController: BaseViewController {
             .drive(rootView.myPlanCollectionView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
 
+        output.planSections
+            .drive(onNext: { [weak self] sections in
+                guard let self else { return }
+                let plans = sections.flatMap { $0.items }
+                self.rootView.noPlanLabel.isHidden = !plans.isEmpty
+            })
+            .disposed(by: disposeBag)
+        
+        output.isLoading
+            .drive(onNext: { [weak self] isLoading in
+                if !isLoading {
+                    self?.refreshControl.endRefreshing()
+                }
+            })
+            .disposed(by: disposeBag)
+        
         output.errorMessage
             .emit(onNext: { message in
                 ToastManager.shared.show(message: message)

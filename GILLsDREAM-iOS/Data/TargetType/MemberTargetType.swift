@@ -11,8 +11,9 @@ import UIKit
 enum MemberTargetType {
     case kakaoLogin(accessToken: String)
     case logout
-    case setting(nickname: String, marketingAgreement: Bool, image: UIImage?)
+    case setting(nickname: String, marketingAgreement: Bool, imageData: Data?)
     case reissue(refreshToken: String)
+    case info
     case delete
 }
 
@@ -27,6 +28,8 @@ extension MemberTargetType: BaseTargetType {
             return "/v1/member/setting"
         case .reissue:
             return "/v1/member/reissue"
+        case .info:
+            return "/v1/member/info"
         case .delete:
             return "/v1/member/delete"
         }
@@ -38,7 +41,7 @@ extension MemberTargetType: BaseTargetType {
             return .post
         case .setting:
             return .patch
-        case .reissue:
+        case .reissue, .info:
             return .get
         case .delete:
             return .delete
@@ -50,40 +53,44 @@ extension MemberTargetType: BaseTargetType {
         case .kakaoLogin(let accessToken):
             return .requestParameters(parameters: ["accessToken": accessToken],
                                       encoding: URLEncoding.queryString)
-        case .logout, .delete:
+        case .logout, .info, .delete:
             return .requestPlain
             
-        case let .setting(nickname, marketingAgreement, image):
-          var parts: [MultipartFormData] = []
+        case let .setting(nickname, marketingAgreement, imageData):
+            var parts: [MultipartFormData] = []
 
-          struct ProfilePayload: Encodable {
-            let nickname: String
-            let marketingAgreement: Bool
-          }
-          let payload = ProfilePayload(nickname: nickname, marketingAgreement: marketingAgreement)
-          let jsonData = try! JSONEncoder().encode(payload)
+            // profile part
+            struct ProfilePayload: Encodable {
+                let nickname: String
+                let marketingAgreement: Bool
+            }
+            
+            let payload = ProfilePayload(nickname: nickname,
+                                         marketingAgreement: marketingAgreement)
+            
+            if let jsonData = try? JSONEncoder().encode(payload) {
+                parts.append(
+                    MultipartFormData(
+                        provider: .data(jsonData),
+                        name: "profile",
+                        fileName: "profile.json",
+                        mimeType: "application/json"
+                    )
+                )
+            }
 
-          parts.append(
-            MultipartFormData(
-              provider: .data(jsonData),
-              name: "profile",
-              mimeType: "application/json"
-            )
-          )
-
-          // (선택) 이미지
-          if let image, let data = image.jpegData(compressionQuality: 0.8) {
-            parts.append(
-              MultipartFormData(
-                provider: .data(data),
-                name: "image",
-                fileName: "profile.jpg",
-                mimeType: "image/jpeg"
-              )
-            )
-          }
-
-          return .uploadMultipart(parts)
+            // image part
+            if let data = imageData {
+                parts.append(
+                    MultipartFormData(
+                        provider: .data(data),
+                        name: "image",
+                        fileName: "profile.jpg",
+                        mimeType: "image/jpeg"
+                    )
+                )
+            }
+            return .uploadMultipart(parts)
             
         case .reissue(let refresh):
             return .requestParameters(parameters: ["refresh_token": refresh],
@@ -100,12 +107,11 @@ extension MemberTargetType: BaseTargetType {
             return ["X-Refresh-Token": refresh]
             
         default:
-            return nil
-//            var base: [String: String] = ["Content-Type": "application/json"]
-//            if let token = KeychainManager.shared.accessToken {
-//                base["Authorization"] = "Bearer \(token)"
-//            }
-//            return base
+            var base: [String: String] = ["Content-Type": "application/json"]
+            if let token = KeychainManager.shared.accessToken {
+                base["Authorization"] = "Bearer \(token)"
+            }
+            return base
         }
     }
 }

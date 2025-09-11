@@ -94,9 +94,8 @@ final class TravelRequestViewModel {
                         await MainActor.run { self.isLoadingRelay.accept(true) }
                         defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
 
-                        //TODO: 현재 파이썬 서버 연결 에러
 //                        let ok = try await self.usecase.setVideos(
-//                            planId: self.planId,
+//                            planId: self.planId ?? 0,
 //                            region: self.region,
 //                            urls: [self.videoURL]
 //                        )
@@ -119,10 +118,14 @@ final class TravelRequestViewModel {
             .disposed(by: disposeBag)
 
         return Output(
-            isSendEnabled: travelTextRelay
-                .map { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-                .distinctUntilChanged()
-                .asDriver(onErrorJustReturn: false),
+            isSendEnabled: Observable
+                        .combineLatest(travelTextRelay, currentStepRelay)
+                        .map { text, step in
+                            if step == .video { return true }
+                            return !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                        }
+                        .distinctUntilChanged()
+                        .asDriver(onErrorJustReturn: false),
             navigateToNext: navigateToNextRelay.asDriver(onErrorDriveWith: .empty()),
             isLoading: isLoadingRelay.asDriver(),
             errorMessage: errorRelay.asSignal(),
