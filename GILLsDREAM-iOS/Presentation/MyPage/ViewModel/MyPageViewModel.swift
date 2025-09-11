@@ -25,6 +25,7 @@ final class MyPageViewModel {
     }
     
     struct Output {
+        let profile: Driver<String>
         let nickname: Driver<String>
         let email: Driver<String>
         let showServiceTerms: Signal<Void>
@@ -44,6 +45,7 @@ final class MyPageViewModel {
     private let logoutOKRelay = PublishRelay<Void>()
     private let withdrawOKRelay = PublishRelay<Void>()
     private let errorRelay = PublishRelay<String>()
+    private let profileRelay = BehaviorRelay<String>(value: "")
     private let nicknameRelay = BehaviorRelay<String>(value: "")
     private let emailRelay = BehaviorRelay<String>(value: "")
     
@@ -60,8 +62,10 @@ final class MyPageViewModel {
                     defer { Task { @MainActor in self.loadingRelay.accept(false) } }
                     let me = try await self.usecase.getInfo()
                     await MainActor.run {
+                        self.profileRelay.accept(me.profile ?? "")
                         self.nicknameRelay.accept(me.nickname)
                         self.emailRelay.accept(me.email)
+                        print("👉 profile url =", me.profile ?? "nil")
                     }
                 }
                 .asObservable()
@@ -110,6 +114,7 @@ final class MyPageViewModel {
             .subscribe().disposed(by: disposeBag)
 
         return Output(
+            profile: profileRelay.asDriver(),
             nickname: nicknameRelay.asDriver(),
             email: emailRelay.asDriver(),
             showServiceTerms: showServiceRelay.asSignal(),

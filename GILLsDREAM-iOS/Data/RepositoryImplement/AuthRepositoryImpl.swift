@@ -22,13 +22,15 @@ final class AuthRepositoryImpl: AuthRepository {
         _ = try await userProvider.asyncRequest(.logout)
     }
     
-    func updateSetting(nickname: String, profileImg: UIImage?, marketingAgreement: Bool) async throws -> SettingResponseDTO {
-        let res: ApiResponse<SettingResponseDTO> = try await userProvider.requestDecodable(
-            .setting(nickname: nickname, marketingAgreement: marketingAgreement, image: profileImg),
-            as: ApiResponse<SettingResponseDTO>.self
+    func updateSetting(nickname: String, marketingAgreement: Bool, imageData: Data?) async throws -> SettingResponseDTO {
+        let res = try await userProvider.asyncRequest(
+            .setting(nickname: nickname,
+                     marketingAgreement: marketingAgreement,
+                     imageData: imageData)
         )
-        guard res.isSuccess, let dto = res.result else {
-            throw NetworkError.server(.init(code: res.code, message: res.message), status: 400)
+        let api = try JSONDecoder().decode(ApiResponse<SettingResponseDTO>.self, from: res.data)
+        guard api.isSuccess, let dto = api.result else {
+            throw NetworkError.server(.init(code: api.code, message: api.message), status: res.statusCode)
         }
         return dto
     }

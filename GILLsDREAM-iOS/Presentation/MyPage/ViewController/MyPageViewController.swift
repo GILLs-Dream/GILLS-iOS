@@ -40,6 +40,12 @@ final class MyPageViewController: BaseViewController {
 
         let output = viewModel.transform(input: input)
 
+        output.profile
+            .drive(onNext: { [weak self] profile in
+                self?.rootView.apply(profileImg: profile)
+            })
+            .disposed(by: disposeBag)
+        
         output.nickname
             .drive(onNext: { [weak self] name in
                 self?.rootView.apply(nickname: name)

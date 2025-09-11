@@ -7,6 +7,9 @@
 
 enum AuthMapper {
     static func toMemberInfo(_ dto: InfoResponseDTO) ->  MemberInfo {
-        .init(id: dto.memberId, email: dto.email, nickname: dto.nickname)
+        .init(id: dto.memberId,
+              email: dto.email,
+              nickname: dto.nickname
+              , profile: dto.img)
     }
 }

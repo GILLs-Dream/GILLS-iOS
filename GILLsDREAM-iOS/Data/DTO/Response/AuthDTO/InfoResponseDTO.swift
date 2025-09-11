@@ -9,4 +9,5 @@ struct InfoResponseDTO: Decodable {
     let memberId: Int
     let nickname: String
     let email: String
+    let img: String?
 }

@@ -8,4 +8,5 @@
 struct SettingResponseDTO: Decodable {
     let memberId: Int
     let nickname: String
+    let imgUrl: String?
 }

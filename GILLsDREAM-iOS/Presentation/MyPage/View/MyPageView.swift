@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 final class MyPageView: UIView {
     
@@ -70,6 +71,7 @@ final class MyPageView: UIView {
         profileImageView.do {
             $0.image = .imgDefaultProfile
             $0.layer.cornerRadius = 38
+            $0.clipsToBounds = true
         }
         
         divideLine.do {
@@ -132,10 +134,28 @@ final class MyPageView: UIView {
 }
 
 extension MyPageView {
+    func apply(profileImg: String) {
+        guard let url = URL(string: profileImg), !profileImg.isEmpty else {
+            profileImageView.image = .imgDefaultProfile
+            return
+        }
+        
+        profileImageView.do {
+            $0.contentMode = .scaleAspectFill
+            $0.layer.cornerRadius = self.profileImageView.bounds.height / 2
+            $0.kf.setImage(
+                with: url,
+                placeholder: UIImage(named: "icAccount"),
+                options: [.transition(.fade(0.2))]
+            )
+        }
+    }
+    
     func apply(nickname: String) {
         nicknameLabel.attributedText = "\(nickname)님"
             .pretendardAttributedString(style: .subtitle2)
     }
+    
     func apply(email: String) {
         emailLabel.attributedText = email.pretendardAttributedString(style: .body2)
     }

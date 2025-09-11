@@ -108,8 +108,9 @@ final class TosViewModel: ViewModelType {
                 guard let self else { return .empty() }
                 return RxAsync.run {
                     do {
+                        let data = self.flow.profileImage?.jpegDataSmart()
                         _ = try await self.usecase.updateSetting(nickname: self.flow.nickname,
-                                                                 profileImg: self.flow.profileImage,
+                                                                 profileImgData: data,
                                                                  agreed: self.flow.marketingAgreement)
                         await MainActor.run { self.successRelay.accept(()) }
                     } catch {

@@ -11,7 +11,7 @@ import UIKit
 enum MemberTargetType {
     case kakaoLogin(accessToken: String)
     case logout
-    case setting(nickname: String, marketingAgreement: Bool, image: UIImage?)
+    case setting(nickname: String, marketingAgreement: Bool, imageData: Data?)
     case reissue(refreshToken: String)
     case info
     case delete
@@ -56,37 +56,41 @@ extension MemberTargetType: BaseTargetType {
         case .logout, .info, .delete:
             return .requestPlain
             
-        case let .setting(nickname, marketingAgreement, image):
-          var parts: [MultipartFormData] = []
+        case let .setting(nickname, marketingAgreement, imageData):
+            var parts: [MultipartFormData] = []
 
-          struct ProfilePayload: Encodable {
-            let nickname: String
-            let marketingAgreement: Bool
-          }
-          let payload = ProfilePayload(nickname: nickname, marketingAgreement: marketingAgreement)
-          let jsonData = try! JSONEncoder().encode(payload)
+            // profile part
+            struct ProfilePayload: Encodable {
+                let nickname: String
+                let marketingAgreement: Bool
+            }
+            
+            let payload = ProfilePayload(nickname: nickname,
+                                         marketingAgreement: marketingAgreement)
+            
+            if let jsonData = try? JSONEncoder().encode(payload) {
+                parts.append(
+                    MultipartFormData(
+                        provider: .data(jsonData),
+                        name: "profile",
+                        fileName: "profile.json",
+                        mimeType: "application/json"
+                    )
+                )
+            }
 
-          parts.append(
-            MultipartFormData(
-              provider: .data(jsonData),
-              name: "profile",
-              mimeType: "application/json"
-            )
-          )
-
-          // (선택) 이미지
-          if let image, let data = image.jpegData(compressionQuality: 0.8) {
-            parts.append(
-              MultipartFormData(
-                provider: .data(data),
-                name: "image",
-                fileName: "profile.jpg",
-                mimeType: "image/jpeg"
-              )
-            )
-          }
-
-          return .uploadMultipart(parts)
+            // image part
+            if let data = imageData {
+                parts.append(
+                    MultipartFormData(
+                        provider: .data(data),
+                        name: "image",
+                        fileName: "profile.jpg",
+                        mimeType: "image/jpeg"
+                    )
+                )
+            }
+            return .uploadMultipart(parts)
             
         case .reissue(let refresh):
             return .requestParameters(parameters: ["refresh_token": refresh],

@@ -22,4 +22,5 @@ struct MemberInfo {
     let id: Int
     let email: String
     let nickname: String
+    let profile: String?
 }
