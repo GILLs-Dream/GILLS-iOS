@@ -16,6 +16,7 @@ final class MyPageViewModel {
     }
     
     struct Input {
+        let viewWillAppear: Observable<Void>
         let serviceTapped: Observable<Void>
         let withdrawTapped: Observable<Void>
         let logoutTapped: Observable<Void>
@@ -24,6 +25,8 @@ final class MyPageViewModel {
     }
     
     struct Output {
+        let nickname: Driver<String>
+        let email: Driver<String>
         let showServiceTerms: Signal<Void>
         let showWithdrawModal: Signal<Void>
         let showLogoutModal: Signal<Void>
@@ -41,12 +44,35 @@ final class MyPageViewModel {
     private let logoutOKRelay = PublishRelay<Void>()
     private let withdrawOKRelay = PublishRelay<Void>()
     private let errorRelay = PublishRelay<String>()
-
+    private let nicknameRelay = BehaviorRelay<String>(value: "")
+    private let emailRelay = BehaviorRelay<String>(value: "")
+    
     func transform(input: Input) -> Output {
         input.serviceTapped.bind(to: showServiceRelay).disposed(by: disposeBag)
         input.withdrawTapped.bind(to: showWithdrawRelay).disposed(by: disposeBag)
         input.logoutTapped.bind(to: showLogoutRelay).disposed(by: disposeBag)
-
+        
+        input.viewWillAppear
+            .flatMapLatest { [weak self] _ -> Observable<Void> in
+                guard let self else { return .empty() }
+                return RxAsync.run {
+                    await MainActor.run { self.loadingRelay.accept(true) }
+                    defer { Task { @MainActor in self.loadingRelay.accept(false) } }
+                    let me = try await self.usecase.getInfo()
+                    await MainActor.run {
+                        self.nicknameRelay.accept(me.nickname)
+                        self.emailRelay.accept(me.email)
+                    }
+                }
+                .asObservable()
+                .catch { [weak self] error in
+                    self?.errorRelay.accept(error.displayMessage)
+                    return .empty()
+                }
+            }
+            .subscribe()
+            .disposed(by: disposeBag)
+        
         // 로그아웃
         input.confirmLogout
             .flatMapLatest { [weak self] _ -> Observable<Void> in
@@ -84,6 +110,8 @@ final class MyPageViewModel {
             .subscribe().disposed(by: disposeBag)
 
         return Output(
+            nickname: nicknameRelay.asDriver(),
+            email: emailRelay.asDriver(),
             showServiceTerms: showServiceRelay.asSignal(),
             showWithdrawModal: showWithdrawRelay.asSignal(),
             showLogoutModal: showLogoutRelay.asSignal(),

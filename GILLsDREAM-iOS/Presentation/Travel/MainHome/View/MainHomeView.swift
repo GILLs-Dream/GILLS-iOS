@@ -18,7 +18,7 @@ final class MainHomeView: UIView {
     private var cityTimer: Timer?
     
     // MARK: Views
-    private let topBarView = TopBarView()
+    let topBarView = TopBarView()
     private let textLabel = UILabel()
     private let backgroundImage = UIImageView()
     lazy var travelButton = CustomButton(title: "여행계획 세우기")
@@ -127,3 +127,4 @@ extension UILabel {
         ])
     }
 }
+

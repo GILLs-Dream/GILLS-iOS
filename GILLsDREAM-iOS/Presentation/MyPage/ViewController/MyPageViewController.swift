@@ -30,6 +30,7 @@ final class MyPageViewController: BaseViewController {
     
     private func bindViewModel() {
         let input = MyPageViewModel.Input(
+            viewWillAppear: rx.methodInvoked(#selector(UIViewController.viewWillAppear(_:))).map { _ in () },
             serviceTapped: rootView.serviceButton.rx.tap.asObservable(),
             withdrawTapped: rootView.withdrawButton.rx.tap.asObservable(),
             logoutTapped: rootView.logoutButton.rx.tap.asObservable(),
@@ -39,6 +40,18 @@ final class MyPageViewController: BaseViewController {
 
         let output = viewModel.transform(input: input)
 
+        output.nickname
+            .drive(onNext: { [weak self] name in
+                self?.rootView.apply(nickname: name)
+            })
+            .disposed(by: disposeBag)
+
+        output.email
+            .drive(onNext: { [weak self] email in
+                self?.rootView.apply(email: email)
+            })
+            .disposed(by: disposeBag)
+        
         output.showServiceTerms
             .emit(onNext: { [weak self] in
                 guard let self else { return }

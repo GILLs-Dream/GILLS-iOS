@@ -13,6 +13,7 @@ enum MemberTargetType {
     case logout
     case setting(nickname: String, marketingAgreement: Bool, image: UIImage?)
     case reissue(refreshToken: String)
+    case info
     case delete
 }
 
@@ -27,6 +28,8 @@ extension MemberTargetType: BaseTargetType {
             return "/v1/member/setting"
         case .reissue:
             return "/v1/member/reissue"
+        case .info:
+            return "v1/member/info"
         case .delete:
             return "/v1/member/delete"
         }
@@ -38,7 +41,7 @@ extension MemberTargetType: BaseTargetType {
             return .post
         case .setting:
             return .patch
-        case .reissue:
+        case .reissue, .info:
             return .get
         case .delete:
             return .delete
@@ -50,7 +53,7 @@ extension MemberTargetType: BaseTargetType {
         case .kakaoLogin(let accessToken):
             return .requestParameters(parameters: ["accessToken": accessToken],
                                       encoding: URLEncoding.queryString)
-        case .logout, .delete:
+        case .logout, .info, .delete:
             return .requestPlain
             
         case let .setting(nickname, marketingAgreement, image):

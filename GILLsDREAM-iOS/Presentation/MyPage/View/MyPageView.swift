@@ -72,14 +72,6 @@ final class MyPageView: UIView {
             $0.layer.cornerRadius = 38
         }
         
-        nicknameLabel.do {
-            $0.attributedText = "안녕하세요, \(userNickname)님!".pretendardAttributedString(style: .subtitle2)
-        }
-        
-        emailLabel.do {
-            $0.attributedText = "\(userEmail)".pretendardAttributedString(style: .body2)
-        }
-        
         divideLine.do {
             $0.backgroundColor = .white
         }
@@ -136,5 +128,15 @@ final class MyPageView: UIView {
             $0.top.equalTo(divideLine.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview().inset(24)
         }
+    }
+}
+
+extension MyPageView {
+    func apply(nickname: String) {
+        nicknameLabel.attributedText = "\(nickname)님"
+            .pretendardAttributedString(style: .subtitle2)
+    }
+    func apply(email: String) {
+        emailLabel.attributedText = email.pretendardAttributedString(style: .body2)
     }
 }

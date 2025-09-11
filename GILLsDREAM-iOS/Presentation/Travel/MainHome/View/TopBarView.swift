@@ -12,7 +12,7 @@ import Then
 final class TopBarView: UIView {
     
     // MARK: Views
-    private let welcomeLabel = UILabel()
+    let welcomeLabel = UILabel()
     private let alarmButton = UIButton()
     private let alarmView = UIView()
     private let alarmLabel = UILabel()
@@ -49,10 +49,6 @@ final class TopBarView: UIView {
     
     // MARK: setUpUI
     private func setUpUI() {
-        welcomeLabel.do {
-            $0.attributedText = "안녕하세요, SAM님!".pretendardAttributedString(style: .body1)
-        }
-        
         alarmButton.do {
             $0.setImage(.icAlarm, for: .normal)
             $0.imageView?.contentMode = .scaleAspectFit
@@ -102,5 +98,12 @@ final class TopBarView: UIView {
 //        alarmLabel.snp.makeConstraints {
 //            $0.center.equalTo(alarmView)
 //        }
+    }
+}
+
+extension TopBarView {
+    func apply(nickname: String) {
+        welcomeLabel.attributedText = "안녕하세요, \(nickname)님!"
+            .pretendardAttributedString(style: .body1)
     }
 }

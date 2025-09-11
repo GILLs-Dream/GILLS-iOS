@@ -29,10 +29,17 @@ class MainHomeViewController: BaseViewController {
     //MARK: View Model
     private func bindViewModel() {
         let input = MainHomeViewModel.Input(
+            viewWillAppear: rx.methodInvoked(#selector(UIViewController.viewWillAppear(_:))).map { _ in () },
             buttonTapped: rootView.travelButton.rx.tap.asObservable()
         )
         
         let output = viewModel.transform(input: input)
+        
+        output.nickname
+            .drive(onNext: { [weak self] name in
+                self?.rootView.topBarView.apply(nickname: name)
+            })
+            .disposed(by: disposeBag)
         
         output.navigateToRequest
             .drive(onNext: { [weak self] in

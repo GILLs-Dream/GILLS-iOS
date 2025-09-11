@@ -12,6 +12,7 @@ protocol AuthUsecase {
     func logout() async throws
     func updateSetting(nickname: String, profileImg: UIImage?, agreed: Bool) async throws -> SettingResponseDTO
     func refreshAccessTokenIfNeeded() async throws -> String
+    func getInfo() async throws -> MemberInfo
     func deleteAccount() async throws
 }
 
@@ -42,12 +43,18 @@ final class AuthUsecaseImpl: AuthUsecase {
     }
     
     func refreshAccessTokenIfNeeded() async throws -> String {
-        guard let refresh = KeychainManager.shared.refreshToken else { throw NetworkError.unauthorized }
-        let dto = try await repo.reissue(access: KeychainManager.shared.accessToken,
-                                         refresh: refresh)
+        guard let refresh = KeychainManager.shared.refreshToken else {
+            throw NetworkError.unauthorized
+        }
+        let dto = try await repo.reissue(access: KeychainManager.shared.accessToken, refresh: refresh)
         KeychainManager.shared.accessToken  = dto.accessToken
         KeychainManager.shared.refreshToken = dto.refreshToken
         return dto.accessToken
+    }
+    
+    func getInfo() async throws -> MemberInfo {
+        let dto = try await repo.fetchMemberInfo()
+        return AuthMapper.toMemberInfo(dto)
     }
 
     func deleteAccount() async throws {

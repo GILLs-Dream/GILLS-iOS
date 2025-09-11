@@ -17,3 +17,9 @@ struct User: Identifiable, Equatable, Hashable {
 public enum SocialProvider: String, Codable {
     case apple, kakao
 }
+
+struct MemberInfo {
+    let id: Int
+    let email: String
+    let nickname: String
+}

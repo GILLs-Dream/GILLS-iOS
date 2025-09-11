@@ -33,13 +33,18 @@ final class AuthRepositoryImpl: AuthRepository {
         return dto
     }
     
-    func reissue(access: String?, refresh: String) async throws -> ReissueResultDTO {
-        let res = try await userProvider.asyncRequest(.reissue(refreshToken: refresh))
-        let api = try JSONDecoder().decode(ApiResponse<ReissueResultDTO>.self, from: res.data)
+    func fetchMemberInfo() async throws -> InfoResponseDTO {
+        let res = try await userProvider.asyncRequest(.info)
+        let api = try JSONDecoder().decode(ApiResponse<InfoResponseDTO>.self, from: res.data)
         guard api.isSuccess, let dto = api.result else {
-            throw NetworkError.server(.init(code: api.code, message: api.message), status: res.statusCode)
+            throw NetworkError.server(.init(code: api.code, message: api.message), status: 400)
         }
         return dto
+    }
+    
+    func reissue(access: String?, refresh: String) async throws -> ReissueResponseDTO {
+        let res = try await publicProvider.asyncRequest(.reissue(refreshToken: refresh))
+        return try JSONDecoder().decode(ReissueResponseDTO.self, from: res.data)
     }
     
     func deleteAccount() async throws {

@@ -12,6 +12,7 @@ protocol AuthRepository {
     func exchangeKakaoToken(_ kakaoAccess: String) async throws -> (access: String, refresh: String)
     func logout() async throws
     func updateSetting(nickname: String, profileImg: UIImage?, marketingAgreement: Bool) async throws -> SettingResponseDTO
-    func reissue(access: String?, refresh: String) async throws -> ReissueResultDTO
+    func reissue(access: String?, refresh: String) async throws -> ReissueResponseDTO
+    func fetchMemberInfo() async throws -> InfoResponseDTO
     func deleteAccount() async throws
 }

@@ -9,27 +9,57 @@ import RxSwift
 import RxCocoa
 
 final class MainHomeViewModel: ViewModelType {
+    private let usecase: AuthUsecase
+    
+    init(usecase: AuthUsecase = AuthUsecaseImpl()) {
+        self.usecase = usecase
+    }
+
     struct Input {
+        let viewWillAppear: Observable<Void>
         let buttonTapped: Observable<Void>
     }
 
     struct Output {
+        let nickname: Driver<String>
         let navigateToRequest: Driver<Void>
     }
 
     var disposeBag = DisposeBag()
-
+    private let loadingRelay = BehaviorRelay<Bool>(value: false)
+    private let nicknameRelay = BehaviorRelay<String>(value: "")
+    private let errorRelay = PublishRelay<String>()
     private let navigateRelay = PublishRelay<Void>()
     private let alarmCountRelay = BehaviorRelay<Int>(value: 0)
 
     func transform(input: Input) -> Output {
+        input.viewWillAppear
+            .flatMapLatest { [weak self] _ -> Observable<Void> in
+                guard let self else { return .empty() }
+                return RxAsync.run {
+                    await MainActor.run { self.loadingRelay.accept(true) }
+                    defer { Task { @MainActor in self.loadingRelay.accept(false) } }
+                    let me = try await self.usecase.getInfo()
+                    await MainActor.run {
+                        self.nicknameRelay.accept(me.nickname)
+                    }
+                }
+                .asObservable()
+                .catch { [weak self] error in
+                    self?.errorRelay.accept(error.displayMessage)
+                    return .empty()
+                }
+            }
+            .subscribe()
+            .disposed(by: disposeBag)
+        
         input.buttonTapped
             .bind(to: navigateRelay)
             .disposed(by: disposeBag)
 
         return Output(
-            navigateToRequest: navigateRelay
-                .asDriver(onErrorDriveWith: .empty())
+            nickname: nicknameRelay.asDriver(),
+            navigateToRequest: navigateRelay.asDriver(onErrorDriveWith: .empty())
         )
     }
 }
