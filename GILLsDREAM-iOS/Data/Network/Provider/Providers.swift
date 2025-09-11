@@ -35,7 +35,9 @@ final class UserAuthInterceptor: RequestInterceptor {
                for session: Alamofire.Session,
                completion: @escaping (Result<URLRequest, Error>) -> Void) {
         var req = urlRequest
-        let token = KeychainManager.shared.accessToken
+        if let token = KeychainManager.shared.accessToken {
+            req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
         completion(.success(req))
     }
     

@@ -14,33 +14,13 @@ public struct EmptyResponse: Decodable { }
 public extension MoyaProvider {
     /// Moya callback → async/await 변환
     func asyncRequest(_ target: Target) async throws -> Response {
-        do {
-            return try await withCheckedThrowingContinuation { continuation in
-                self.request(target) { result in
-                    switch result {
-                    case .success(let response):
-                        continuation.resume(returning: response)
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                    }
+        try await withCheckedThrowingContinuation { cont in
+            self.request(target) { result in
+                switch result {
+                case .success(let res): cont.resume(returning: res)
+                case .failure(let err): cont.resume(throwing: err)
                 }
             }
-        } catch let error as MoyaError {
-            // 401 처리: access token 재발급 후 재요청
-            if case .statusCode(let response) = error, response.statusCode == 401 {
-                let newAccessToken = try await AuthUsecaseImpl().refreshAccessTokenIfNeeded()
-                // 같은 target 다시 요청
-                return try await withCheckedThrowingContinuation { continuation in
-                    self.request(target) { result in
-                        switch result {
-                        case .success(let response):
-                            continuation.resume(returning: response)
-                        case .failure(let error):
-                            continuation.resume(throwing: error)
-                        }
-                    }
-                }
-            } else { throw error }
         }
     }
     
