@@ -29,7 +29,7 @@ extension MemberTargetType: BaseTargetType {
         case .reissue:
             return "/v1/member/reissue"
         case .info:
-            return "v1/member/info"
+            return "/v1/member/info"
         case .delete:
             return "/v1/member/delete"
         }

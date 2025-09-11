@@ -39,7 +39,7 @@ final class AuthRepositoryImpl: AuthRepository {
         let res = try await userProvider.asyncRequest(.info)
         let api = try JSONDecoder().decode(ApiResponse<InfoResponseDTO>.self, from: res.data)
         guard api.isSuccess, let dto = api.result else {
-            throw NetworkError.server(.init(code: api.code, message: api.message), status: 400)
+            throw NetworkError.server(.init(code: api.code, message: api.message), status: res.statusCode)
         }
         return dto
     }
