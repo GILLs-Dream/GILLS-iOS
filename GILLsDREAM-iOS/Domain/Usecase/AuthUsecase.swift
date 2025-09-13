@@ -49,9 +49,9 @@ final class AuthUsecaseImpl: AuthUsecase {
             throw NetworkError.unauthorized
         }
         let dto = try await repo.reissue(access: KeychainManager.shared.accessToken, refresh: refresh)
-        KeychainManager.shared.accessToken  = dto.accessToken
-        KeychainManager.shared.refreshToken = dto.refreshToken
-        return dto.accessToken
+        KeychainManager.shared.accessToken  = dto.access_token
+        KeychainManager.shared.refreshToken = dto.refresh_token
+        return dto.access_token
     }
     
     func getInfo() async throws -> MemberInfo {
