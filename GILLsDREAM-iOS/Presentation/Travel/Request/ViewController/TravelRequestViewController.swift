@@ -121,18 +121,27 @@ final class TravelRequestViewController: BaseViewController {
 extension TravelRequestViewController: UITextViewDelegate {
     // MARK: UITextViewDelegate
     func textViewDidChange(_ textView: UITextView) {
-        
-        let size = CGSize(width: view.frame.width, height: .infinity)
-        let estimatedSize = rootView.requestTextView.sizeThatFits(size)
-        
-        rootView.requestPlaceHolder.isHidden = !textView.text.isEmpty
-        rootView.requestTextView.constraints.forEach { (constraint) in
-            if estimatedSize.height <= 60 { }
-            else {
-                if constraint.firstAttribute == .height {
-                    constraint.constant = estimatedSize.height
-                }
-            }
-        }
+        rootView.requestPlaceHolder.isHidden = !(textView.text?.isEmpty ?? true)
+        scrollToCaret(in: textView)
+    }
+
+    func textViewDidChangeSelection(_ textView: UITextView) {
+        scrollToCaret(in: textView)
+    }
+
+    private func scrollToCaret(in textView: UITextView) {
+        guard let range = textView.selectedTextRange else { return }
+        // 커서 rect을 약간 키워서 완전히 보이게
+        var rect = textView.caretRect(for: range.end)
+        rect = rect.insetBy(dx: 0, dy: -6)
+        textView.scrollRectToVisible(rect, animated: false)
+    }
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        rootView.requestPlaceHolder.isHidden = true
+    }
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+        rootView.requestPlaceHolder.isHidden = !(textView.text?.isEmpty ?? true) ? true : false
     }
 }
