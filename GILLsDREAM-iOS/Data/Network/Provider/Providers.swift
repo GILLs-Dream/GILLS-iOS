@@ -18,111 +18,141 @@ enum AuthType {
 struct Providers {
     static let memberPublic = MoyaProvider<MemberTargetType>(auth: .none)
     static let memberUser = MoyaProvider<MemberTargetType>(auth: .user)
-    static let plan   = MoyaProvider<PlanTargetType>(auth: .user)
+    static let plan = MoyaProvider<PlanTargetType>(auth: .user)
 }
 
-// MARK: User 토큰 인터셉터
 final class UserAuthInterceptor: RequestInterceptor {
     static let shared = UserAuthInterceptor()
     private init() {}
-    
-    // 동시 만료 대응
-    private let lock = NSLock()
-    private var isRefreshing = false
-    private var pendingCompletions: [(RetryResult) -> Void] = []
     
     func adapt(_ urlRequest: URLRequest,
                for session: Alamofire.Session,
                completion: @escaping (Result<URLRequest, Error>) -> Void) {
         var req = urlRequest
+//        // 1) 만료 임박/만료 판단 (예: 만료까지 60초 미만이면 선발급)
+//        if KeychainManager.shared.isAccessTokenExpired(earlyBy: 60) {
+//            let starter = RefreshCoordinator.shared.enqueue { _ in /* no-op here */ }
+//            if starter {
+//                AuthService.shared.reissue { ok in
+//                    if !ok {
+//                        AuthService.shared.forceLogout()
+//                    }
+//                    // 큐에 쌓인 대기자들 깨우기
+//                    RefreshCoordinator.shared.finish(.doNotRetry)
+//                }
+//            }
+//            // 선발급이 끝날 때까지 큐에 합류해서 기다렸다가 헤더 부착
+//            // finish가 호출되면 아래로 진행
+//        }
+
         if let token = KeychainManager.shared.accessToken {
             req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
+//        print("🟦 [ADAPT] \(req.httpMethod ?? "") \(req.url?.absoluteString ?? "")")
+//        print("🟦 Headers:", req.allHTTPHeaderFields ?? [:])
         completion(.success(req))
     }
     
-    func retry(_ request: Request, for session: Session,
-               dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
-        guard let response = request.task?.response as? HTTPURLResponse else {
+    // 401/403에서만 재발급 -> 원요청 재시도
+    func retry(_ request: Request,
+               for session: Session,
+               dueTo error: Error,
+               completion: @escaping (RetryResult) -> Void) {
+        
+        guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401 else {
+            completion(.doNotRetryWithError(error))
+            return
+        }
+        
+        if request.retryCount >= 2 {        // 최대 2회
+            completion(.doNotRetry); return
+        }
+        print("🟧 [RETRY?] status=\(response.statusCode), url=\(request.request?.url?.absoluteString ?? "")")
+
+        if let path = request.request?.url?.path, path.contains("/member/reissue") {
             completion(.doNotRetry); return
         }
 
-        let status = response.statusCode // 만료 신호 -> 리프레시
-        let isAuthError = (status == 401 || status == 403)
-        guard isAuthError else { completion(.doNotRetry); return }
-
-        guard let refresh = KeychainManager.shared.refreshToken, !refresh.isEmpty else { // 토큰 없으면 로그아웃
-            self.forceLogout(); completion(.doNotRetry); return
+        guard KeychainManager.shared.refreshToken != nil else {
+            completion(.doNotRetry); return
         }
 
-        lock.lock() // 동시 호출 방지 큐잉
-        pendingCompletions.append(completion)
-        let shouldStartRefresh = !isRefreshing
-        isRefreshing = true
-        lock.unlock()
+        // 동시 재발급 방지
+        let starter = RefreshCoordinator.shared.enqueue(completion)
+        guard starter else { return }
 
-        guard shouldStartRefresh else { return } // 이미 다른 요청이 리프레시 중
-
-        refreshTokens(refreshToken: refresh) { [weak self] result in
-            guard let self else { return }
-            self.lock.lock()
-            let completions = self.pendingCompletions
-            self.pendingCompletions.removeAll()
-            self.isRefreshing = false
-            self.lock.unlock()
-
-            switch result {
-            case .success:
-                // 새 토큰으로 모두 재시도
-                completions.forEach { $0(.retry) }
-            case .failure:
-                // 재발급 실패 → 강제 로그아웃
-                self.forceLogout()
-                completions.forEach { $0(.doNotRetry) }
+        AuthService.shared.reissue { ok in
+            if ok {
+                print("🟩 [REISSUE] success → retry")
+                RefreshCoordinator.shared.finish(.retry)
+            } else {
+                print("🟥 [REISSUE] failed → logout & doNotRetry")
+                AuthService.shared.forceLogout()
+                RefreshCoordinator.shared.finish(.doNotRetry)
             }
         }
     }
-    
-    private func refreshTokens(refreshToken: String,
-                               done: @escaping (Result<Void, Error>) -> Void) {
-        let provider = Providers.memberPublic
-        provider.request(.reissue(refreshToken: refreshToken)) { result in
-            switch result {
-            case .success(let res) where (200..<300).contains(res.statusCode):
-                struct ReissueDTO: Decodable {
-                    let access_token: String
-                    let refresh_token: String
-                }
-                do {
-                    let dto = try JSONDecoder().decode(ReissueDTO.self, from: res.data)
-                    KeychainManager.shared.accessToken = dto.access_token
-                    KeychainManager.shared.refreshToken = dto.refresh_token
-                    done(.success(()))
-                } catch {
-                    done(.failure(error))
-                }
+}
 
-            case .success(let res):
-                // 서버가 member not found 등 반환할 수도 있음
-                if let api = try? JSONDecoder().decode(ErrorResponse.self, from: res.data),
-                   api.code == "MEMBER NOT FOUND" {
-                    done(.failure(NSError(domain: "auth", code: 404)))
-                } else {
-                    done(.failure(NSError(domain: "auth", code: res.statusCode)))
-                }
+final class AFEventLogger: EventMonitor {
+    let queue = DispatchQueue(label: "af.event.logger")
 
-            case .failure(let err):
-                done(.failure(err))
-            }
+    func requestDidResume(_ request: Request) {
+        print("🚀 requestDidResume:", request.request?.url?.absoluteString ?? "-")
+    }
+    func request(_ request: Request, didCreateInitialURLRequest urlRequest: URLRequest) {
+        print("🧱 didCreateInitialURLRequest:", urlRequest.url?.absoluteString ?? "-")
+    }
+    func request(_ request: Request, didCreateURLRequest urlRequest: URLRequest) {
+        print("🧱 didCreateURLRequest:", urlRequest.url?.absoluteString ?? "-")
+    }
+    func request(_ request: Request, didCompleteTask task: URLSessionTask, with error: Error?) {
+        print("📍 didCompleteTask error=\(String(describing: error))")
+    }
+    func requestIsRetrying(_ request: Request) {
+        print("🔁 requestIsRetrying:", request.request?.url?.absoluteString ?? "-")
+    }
+}
+final class ResponseKindPlugin: PluginType {
+    func didReceive(_ result: Result<Response, MoyaError>, target: TargetType) {
+        switch result {
+        case .success(let resp):
+            print("🟩 [MOYA SUCCESS] status=\(resp.statusCode), url=\(resp.request?.url?.absoluteString ?? "")")
+        case .failure(let err):
+            print("🟥 [MOYA FAILURE] err=\(err), path=\(target.path)")
         }
     }
+}
+
+// 동시 재발급 1회 보장
+final class RefreshCoordinator {
+    static let shared = RefreshCoordinator()
+    private init() {}
     
-    private func forceLogout() {
-        KeychainManager.shared.accessToken = nil
-        KeychainManager.shared.refreshToken = nil
-        UserDefaultsManager.shared.isLogin = false
-        UserDefaultsManager.shared.isOnboarding = false
-        NotificationCenter.default.post(name: .needReLogin, object: nil)
+    private let queue = DispatchQueue(label: "auth.refresh.queue", qos: .userInitiated)
+    private var isRefreshing = false
+    private var waiters: [(RetryResult) -> Void] = []
+    
+    func enqueue(_ completion: @escaping (RetryResult) -> Void) -> Bool {
+        var shouldStart = false
+        queue.sync {
+            waiters.append(completion)
+            if !isRefreshing {
+                isRefreshing = true
+                shouldStart = true
+            }
+        }
+        return shouldStart
+    }
+    
+    func finish(_ result: RetryResult) {
+        var completions: [(RetryResult) -> Void] = []
+        queue.sync {
+            completions = waiters
+            waiters.removeAll()
+            isRefreshing = false
+        }
+        completions.forEach { $0(result) }
     }
 }
 

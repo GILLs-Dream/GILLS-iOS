@@ -7,4 +7,4 @@
 
 import RxDataSources
 
-typealias TimelineSection = SectionModel<Void, PlaceResult>
+typealias TimelineSection = SectionModel<Void, TimelineItem>

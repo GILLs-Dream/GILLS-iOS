@@ -15,6 +15,7 @@ final class PlanListViewController: BaseViewController {
     private let viewModel = PlanListViewModel()
     private let disposeBag = DisposeBag()
     private let refreshControl = UIRefreshControl()
+    var onSelectPlan: ((Int) -> Void)?
 
     override func loadView() {
         self.view = rootView
@@ -78,8 +79,7 @@ final class PlanListViewController: BaseViewController {
         
         output.selectedPlan
             .emit(onNext: { [weak self] plan in
-                // TODO: 상세 페이지 이동
-                // self?.navigateToDetail(plan: plan)
+                self?.onSelectPlan?(plan.id)
             })
             .disposed(by: disposeBag)
     }

@@ -36,10 +36,12 @@ final class AuthRepositoryImpl: AuthRepository {
     }
     
     func fetchMemberInfo() async throws -> InfoResponseDTO {
-        let res = try await userProvider.asyncRequest(.info)
-        let api = try JSONDecoder().decode(ApiResponse<InfoResponseDTO>.self, from: res.data)
+        let api: ApiResponse<InfoResponseDTO> = try await userProvider.requestDecodableAutoRefresh(
+            .info,
+            as: ApiResponse<InfoResponseDTO>.self
+        )
         guard api.isSuccess, let dto = api.result else {
-            throw NetworkError.server(.init(code: api.code, message: api.message), status: res.statusCode)
+            throw NetworkError.server(.init(code: api.code, message: api.message), status: 200)
         }
         return dto
     }

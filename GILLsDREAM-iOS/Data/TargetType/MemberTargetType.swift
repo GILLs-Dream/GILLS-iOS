@@ -101,17 +101,29 @@ extension MemberTargetType: BaseTargetType {
     var headers: [String: String]? {
         switch self {
         case .kakaoLogin:
-            return ["Content-Type": "application/json"]
-            
+            return ["Content-Type": "application/json", "Accept": "application/json"]
+
         case .reissue(let refresh):
-            return ["X-Refresh-Token": refresh]
-            
+            return ["Accept": "application/json",
+                                       "X-Refresh-Token": refresh]
+
+        case .info:
+            var h: [String: String] = ["Accept": "application/json"]
+            if let token = KeychainManager.shared.accessToken {
+                h["Authorization"] = "Bearer \(token)"
+            }
+            return h
+
         default:
-            var base: [String: String] = ["Content-Type": "application/json"]
+            var base: [String: String] = ["Content-Type": "application/json", "Accept": "application/json"]
             if let token = KeychainManager.shared.accessToken {
                 base["Authorization"] = "Bearer \(token)"
             }
             return base
         }
+    }
+    
+    var validationType: ValidationType {
+        .none
     }
 }

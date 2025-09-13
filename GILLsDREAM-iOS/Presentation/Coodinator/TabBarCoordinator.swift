@@ -14,7 +14,7 @@ final class TabBarCoordinator: NSObject, Coordinator {
     var tabBarController: UITabBarController
     var type: CoordinatorType { .tab }
     private var mainHomeCoordinator: MainHomeCoordinator?
-
+    private weak var listNavController: UINavigationController?
 
     required init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -53,7 +53,15 @@ final class TabBarCoordinator: NSObject, Coordinator {
             return configureTabBar(navController, for: tab)
 
         case .list:
-            rootVC = PlanListViewController()
+            let listVC = PlanListViewController()
+            listVC.onSelectPlan = { [weak self] planId in
+                let vc = TravelResultViewController(planId: planId)
+                vc.shouldHideSaveButton = true
+                self?.listNavController?.setNavigationBarHidden(false, animated: false)
+                self?.listNavController?.pushViewController(vc, animated: false)
+            }
+            rootVC = listVC
+            self.listNavController = navController
 
         case .mypage:
             let myPageVC = MyPageViewController()

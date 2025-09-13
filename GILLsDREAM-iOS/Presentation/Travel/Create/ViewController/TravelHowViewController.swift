@@ -15,12 +15,12 @@ final class TravelHowViewController: TravelViewController {
     private let flowViewModel: TravelRequestFlowViewModel
     private let disposeBag = DisposeBag()
     var onPrev: (() -> Void)?
-    var onComplete: (() -> Void)?
+    var onComplete: ((Int) -> Void)?
     
     init(flowViewModel: TravelRequestFlowViewModel) {
         self.flowViewModel = flowViewModel
         self.rootView = TravelHowView(titleText: flowViewModel.moodSummary)
-        self.viewModel = TravelHowViewModel(planId: flowViewModel.planId ?? -1)
+        self.viewModel = TravelHowViewModel(planId: flowViewModel.planId)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -95,6 +95,21 @@ final class TravelHowViewController: TravelViewController {
             })
             .disposed(by: disposeBag)
         
+        output.isLoading
+            .drive(onNext: { [weak self] isLoading in
+                guard let self else { return }
+                if isLoading {
+                    self.rootView.lottieView.startAnimating()
+                    self.rootView.doneButton.isEnabled = false
+                    self.view.isUserInteractionEnabled = false
+                } else {
+                    self.rootView.lottieView.stopAnimating()
+                    self.rootView.doneButton.isEnabled = true
+                    self.view.isUserInteractionEnabled = true
+                }
+            })
+            .disposed(by: disposeBag)
+        
         output.errorMessage
             .emit(onNext: { ToastManager.shared.show(message: $0) })
             .disposed(by: disposeBag)
@@ -118,7 +133,7 @@ final class TravelHowViewController: TravelViewController {
                     self.rootView.lottieView.startAnimating()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
                         self?.rootView.lottieView.stopAnimating()
-                        self?.onComplete?()
+                        self?.onComplete?(self?.flowViewModel.planId ?? -1)
                     }
                 } else {
                     ToastManager.shared.show(message: "필수 정보를 입력하지 않았습니다.")

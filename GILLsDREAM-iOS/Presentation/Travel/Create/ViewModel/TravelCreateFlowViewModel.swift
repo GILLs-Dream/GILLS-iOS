@@ -11,7 +11,7 @@ import RxCocoa
 
 final class TravelRequestFlowViewModel {
     // MARK: Create
-    var planId: Int?
+    var planId: Int = 0
     var region: String = ""
     var moodSummary: String = ""
     

@@ -14,6 +14,8 @@ protocol PlanRepository {
     func setStyle(planId: Int, transport: String, categories: [String]) async throws -> Bool
     func setCompanion(planId: Int, party: Int, companion: String) async throws -> Bool
     func setDestination(planId: Int, travel: [TravelPlaceRequestDTO], stay: [StayPlaceRequestDTO]) async throws -> Bool
-    func generate(planId: Int) async throws -> Plan
+    func generatePlan(planId: Int) async throws
+    func fetchGeneratedPlan(planId: Int) async throws -> PlanResultResponseDTO
+    func fetchGeneratedPlanSummary(planId: Int) async throws -> PlanSummaryResponseDTO
     func fetchPlanList() async throws -> [Plan]
 }

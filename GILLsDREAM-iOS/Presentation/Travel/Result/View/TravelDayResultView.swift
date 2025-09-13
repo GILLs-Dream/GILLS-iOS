@@ -70,9 +70,10 @@ final class TravelDayResultView: UIView {
             $0.edges.equalToSuperview().inset(16)
         }
         
-        transportationDetailLabel.snp.makeConstraints {
-            $0.top.equalTo(containerView.snp.bottom).offset(5)
-            $0.leading.equalToSuperview().offset(5)
-        }
+        //TODO: Label api 연결
+//        transportationDetailLabel.snp.makeConstraints {
+//            $0.top.equalTo(containerView.snp.bottom).offset(5)
+//            $0.leading.equalToSuperview().offset(5)
+//        }
     }
 }

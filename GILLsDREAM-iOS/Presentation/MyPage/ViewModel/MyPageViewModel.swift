@@ -65,7 +65,6 @@ final class MyPageViewModel {
                         self.profileRelay.accept(me.profile ?? "")
                         self.nicknameRelay.accept(me.nickname)
                         self.emailRelay.accept(me.email)
-                        print("👉 profile url =", me.profile ?? "nil")
                     }
                 }
                 .asObservable()

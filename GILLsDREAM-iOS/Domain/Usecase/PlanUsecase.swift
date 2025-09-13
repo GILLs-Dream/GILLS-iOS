@@ -14,7 +14,9 @@ protocol PlanUsecase {
     func setCompanion(planId: Int, party: Int, companion: String) async throws -> Bool
     func setDestination(planId: Int, travel: [TravelPlaceRequestDTO], stay: [StayPlaceRequestDTO]) async throws -> Bool
     func setStyle(planId: Int, transport: String, categories: [String]) async throws -> Bool
-    func generate(planId: Int) async throws -> Plan
+    func generatePlan(planId: Int) async throws
+    func getGeneratedPlan(planId: Int) async throws -> PlanResult
+    func getGeneratedPlanSummary(planId: Int) async throws -> PlanSummary
     func fetchMyPlans() async throws -> [Plan]
 }
 
@@ -50,12 +52,22 @@ final class PlanUsecaseImpl: PlanUsecase {
     public func setStyle(planId: Int, transport: String, categories: [String]) async throws -> Bool {
         try await repository.setStyle(planId: planId, transport: transport, categories: categories)
     }
-
-    public func generate(planId: Int) async throws -> Plan {
-        try await repository.generate(planId: planId)
-    }
     
     public func fetchMyPlans() async throws -> [Plan] {
         try await repository.fetchPlanList()
+    }
+    
+    func generatePlan(planId: Int) async throws {
+        try await repository.generatePlan(planId: planId)
+    }
+    
+    func getGeneratedPlan(planId: Int) async throws -> PlanResult {
+        let dto = try await repository.fetchGeneratedPlan(planId: planId)
+        return PlanMapper.toPlanResult(from: dto)
+    }
+    
+    func getGeneratedPlanSummary(planId: Int) async throws -> PlanSummary {
+        let dto = try await repository.fetchGeneratedPlanSummary(planId: planId)
+        return PlanMapper.toPlanSummary(from: dto)
     }
 }

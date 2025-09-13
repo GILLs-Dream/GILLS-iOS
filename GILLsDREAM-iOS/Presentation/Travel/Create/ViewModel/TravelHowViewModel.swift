@@ -72,7 +72,10 @@ final class TravelHowViewModel {
         input.doneButtonTapped
             .withLatestFrom(Observable.combineLatest(selectedTransportRelay, selectedCategoriesRelay))
             .flatMapLatest { [weak self] (transportBtn, categoryBtns) -> Observable<Void> in
-                guard let self = self else { return .empty() }
+                guard let self else {
+                    return .empty()
+                }
+
                 guard let transport = transportBtn?.title(for: .normal),
                       categoryBtns.isEmpty == false,
                       self.planId > 0 else {
@@ -83,23 +86,23 @@ final class TravelHowViewModel {
                 let categories = categoryBtns.compactMap { $0.title(for: .normal) }
 
                 return RxAsync.run { [weak self] () async throws -> Void in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     await MainActor.run { self.isLoadingRelay.accept(true) }
                     defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
 
-                    let ok = try await self.usecase.setStyle(
+                    let saved = try await self.usecase.setStyle(
                         planId: self.planId,
                         transport: transport,
                         categories: categories
                     )
-                    if ok == false {
+                    
+                    if saved == false {
                         throw NSError(domain: "plan", code: -1,
                                       userInfo: [NSLocalizedDescriptionKey: "여행 스타일 저장에 실패했어요."])
                     }
 
-                    await MainActor.run {
-                        self.navigateToNextRelay.accept(())
-                    }
+                    try await self.usecase.generatePlan(planId: self.planId)
+                    await MainActor.run { self.navigateToNextRelay.accept(()) }
                 }
                 .asObservable()
                 .catch { [weak self] error in
@@ -125,7 +128,6 @@ final class TravelHowViewModel {
         )
     }
 }
-
 extension TravelHowViewModel {
     // MARK: Output accessors
     var transportation: String? {
