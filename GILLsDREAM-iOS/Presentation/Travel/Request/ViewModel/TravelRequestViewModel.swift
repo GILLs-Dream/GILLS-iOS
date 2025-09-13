@@ -110,8 +110,10 @@ final class TravelRequestViewModel {
                         }
                     }
                     .asObservable()
-                    .catch { [weak self] error in
-                        self?.errorRelay.accept(error.displayMessage)
+                    .catch { error in
+                        DispatchQueue.main.async {
+                            ToastManager.shared.show(message: "올바른 url주소가 아닙니다.다시 시도해주세요.")
+                        }
                         return .empty()
                     }
                 }
