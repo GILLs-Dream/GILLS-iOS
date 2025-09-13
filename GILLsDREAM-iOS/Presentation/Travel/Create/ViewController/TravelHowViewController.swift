@@ -98,12 +98,14 @@ final class TravelHowViewController: TravelViewController {
         output.isLoading
             .drive(onNext: { [weak self] isLoading in
                 guard let self else { return }
+                let hostView = self.tabBarController?.view ?? self.view.window ?? self.view
+                LoadingOverlayView.shared.show(in: hostView!)
                 if isLoading {
-                    self.rootView.lottieView.startAnimating()
+                    LoadingOverlayView.shared.show(in: hostView!)
                     self.rootView.doneButton.isEnabled = false
                     self.view.isUserInteractionEnabled = false
                 } else {
-                    self.rootView.lottieView.stopAnimating()
+                    LoadingOverlayView.shared.hide()
                     self.rootView.doneButton.isEnabled = true
                     self.view.isUserInteractionEnabled = true
                 }
@@ -130,11 +132,7 @@ final class TravelHowViewController: TravelViewController {
                 self.flowViewModel.categories.accept(self.viewModel.categories)
                 
                 if self.flowViewModel.isHowValid {
-                    self.rootView.lottieView.startAnimating()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
-                        self?.rootView.lottieView.stopAnimating()
-                        self?.onComplete?(self?.flowViewModel.planId ?? -1)
-                    }
+                    self.onComplete?(self.flowViewModel.planId)
                 } else {
                     ToastManager.shared.show(message: "필수 정보를 입력하지 않았습니다.")
                 }

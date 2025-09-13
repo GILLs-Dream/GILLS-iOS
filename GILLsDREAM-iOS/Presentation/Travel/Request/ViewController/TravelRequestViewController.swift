@@ -68,12 +68,15 @@ final class TravelRequestViewController: BaseViewController {
         output.isLoading
             .drive(onNext: { [weak self] isLoading in
                 guard let self else { return }
+                let hostView = self.tabBarController?.view ?? self.view.window ?? self.view
                 if isLoading {
-                    self.rootView.lottieView.startAnimating()
+                    // self.rootView.lottieView.startAnimating()
+                    LoadingOverlayView.shared.show(in: hostView!)
                     self.rootView.sendButton.isEnabled = false
                     self.view.isUserInteractionEnabled = false
                 } else {
-                    self.rootView.lottieView.stopAnimating()
+                    // self.rootView.lottieView.stopAnimating()
+                    LoadingOverlayView.shared.hide()
                     self.rootView.sendButton.isEnabled = true
                     self.view.isUserInteractionEnabled = true
                 }
