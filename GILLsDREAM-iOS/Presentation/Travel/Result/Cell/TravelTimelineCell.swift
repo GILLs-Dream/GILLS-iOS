@@ -88,7 +88,7 @@ final class TravelTimelineCell: UITableViewCell {
         dottedLine.snp.makeConstraints {
             $0.top.equalToSuperview().inset(Const.inset)
             $0.width.equalTo(Const.lineWidth)
-            $0.height.equalTo(Const.image)                 // ✅ 점선 높이 = 이미지 높이
+            $0.height.equalTo(Const.image) // 점선 높이 = 이미지 높이
             $0.leading.equalToSuperview().offset(Const.hInset + Const.image/2 - Const.lineWidth/2)
         }
 
@@ -101,7 +101,7 @@ final class TravelTimelineCell: UITableViewCell {
 
         // 이미지
         placeImageView.snp.makeConstraints {
-            $0.top.equalTo(dottedLine.snp.bottom).offset(Const.vGap) // ✅ 점선 아래 배치
+            $0.top.equalTo(dottedLine.snp.bottom).offset(Const.vGap) // 점선 아래 배치
             $0.leading.equalToSuperview().offset(Const.hInset)
             $0.size.equalTo(Const.image)
         }
@@ -115,7 +115,7 @@ final class TravelTimelineCell: UITableViewCell {
 
         // 셀 바닥 고정 → 오토 높이 안정화
         contentView.snp.makeConstraints {
-            $0.bottom.equalTo(placeImageView.snp.bottom).offset(Const.inset) // ✅ 셀 높이 ≈ 2H + vGap + inset*2
+            $0.bottom.equalTo(placeImageView.snp.bottom).offset(Const.inset) // 셀 높이 ≈ 2H + vGap + inset*2
         }
     }
 }
@@ -126,7 +126,7 @@ extension TravelTimelineCell {
     func configureStart(place: PlanPlace) {
         titleLabel.attributedText = place.name.pretendardAttributedString(style: .body0)
         distanceLabel.isHidden = true
-        dottedLine.isHidden = true            // ✅ 첫 셀만 점선 숨김
+        dottedLine.isHidden = true // 첫 셀만 점선 숨김
         setNeedsLayout()
     }
 

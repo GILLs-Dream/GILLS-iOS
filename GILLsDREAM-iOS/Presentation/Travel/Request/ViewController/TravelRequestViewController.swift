@@ -109,7 +109,7 @@ final class TravelRequestViewController: BaseViewController {
                     self.rootView.requestPlaceHolder.isHidden = false
                     self.rootView.update(for: .mood, with: region)
                 case .video:
-                    self.rootView.requestTextView.text = nil
+                    self.rootView.requestTextView.text = ""
                     self.rootView.requestPlaceHolder.isHidden = false
                     self.rootView.update(for: .video)
                 }

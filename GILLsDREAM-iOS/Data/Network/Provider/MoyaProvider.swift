@@ -87,21 +87,23 @@ public extension MoyaProvider {
     
     private func refreshTokensAwait() async throws -> Bool {
         try await withCheckedThrowingContinuation { cont in
-            let starter = RefreshCoordinator.shared.enqueue { _ in }
-            if !starter {
-                DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
-                    cont.resume(returning: KeychainManager.shared.accessToken != nil)
+            let started = RefreshCoordinator.shared.enqueue { result in
+                switch result {
+                case .retry:
+                    cont.resume(returning: true)
+                case .doNotRetry:
+                    cont.resume(returning: false)
+                default:
+                    cont.resume(returning: false)
                 }
-                return
             }
-
+            guard started else { return }
             AuthService.shared.reissue { ok in
                 if ok {
                     RefreshCoordinator.shared.finish(.retry)
-                    cont.resume(returning: true)
                 } else {
+                    AuthService.shared.forceLogout()
                     RefreshCoordinator.shared.finish(.doNotRetry)
-                    cont.resume(returning: false)
                 }
             }
         }
@@ -114,30 +116,30 @@ extension MoyaProvider where Target: TargetType {
         config.httpCookieStorage = HTTPCookieStorage.shared
         config.httpShouldSetCookies = true
         config.httpCookieAcceptPolicy = .always
-
+        
         let chain = Interceptor(adapters: [UserAuthInterceptor.shared],
                                 retriers: [UserAuthInterceptor.shared])
-
+        
         let monitors: [EventMonitor] = [AFEventLogger()]
-
+        
         let session: Alamofire.Session = {
             switch auth {
             case .none:
                 return Alamofire.Session(configuration: config) //,
-                                         //eventMonitors: monitors)
+                //eventMonitors: monitors)
             case .user:
                 return Alamofire.Session(configuration: config,
                                          interceptor: chain) //,
-                                         // eventMonitors: monitors)
+                // eventMonitors: monitors)
             }
         }()
-
+        
         let plugins: [PluginType]
-        #if DEBUG
+#if DEBUG
         plugins = [MoyaLoggingPlugin()] //, ResponseKindPlugin()]
-        #else
+#else
         plugins = []
-        #endif
+#endif
         self.init(session: session, plugins: plugins)
     }
 }

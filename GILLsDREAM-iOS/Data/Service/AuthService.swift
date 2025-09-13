@@ -53,7 +53,6 @@ final class AuthService {
             case .success(let res) where (200..<300).contains(res.statusCode):
                 do {
                     let dec = JSONDecoder()
-                    dec.keyDecodingStrategy = .convertFromSnakeCase
                     let dto = try dec.decode(ReissueResponseDTO.self, from: res.data)
                     KeychainManager.shared.setTokens(access: dto.access_token, refresh: dto.refresh_token)
                     completion(true)

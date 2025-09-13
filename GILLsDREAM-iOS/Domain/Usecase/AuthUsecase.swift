@@ -22,15 +22,14 @@ final class AuthUsecaseImpl: AuthUsecase {
     
     func loginWithKakao(accessToken: String) async throws {
         let tokens = try await repo.exchangeKakaoToken(accessToken)
-        KeychainManager.shared.accessToken = tokens.access
-        KeychainManager.shared.refreshToken = tokens.refresh
+        KeychainManager.shared.setTokens(access: tokens.access,
+                                         refresh: tokens.refresh)
         UserDefaultsManager.shared.isLogin = true
     }
     
     func logout() async throws {
         try await repo.logout()
-        KeychainManager.shared.accessToken = nil
-        KeychainManager.shared.refreshToken = nil
+        KeychainManager.shared.clearTokens()
         UserDefaultsManager.shared.isLogin = false
     }
     
@@ -49,8 +48,8 @@ final class AuthUsecaseImpl: AuthUsecase {
             throw NetworkError.unauthorized
         }
         let dto = try await repo.reissue(access: KeychainManager.shared.accessToken, refresh: refresh)
-        KeychainManager.shared.accessToken  = dto.access_token
-        KeychainManager.shared.refreshToken = dto.refresh_token
+        KeychainManager.shared.setTokens(access: dto.access_token,
+                                         refresh: dto.refresh_token)
         return dto.access_token
     }
     
@@ -61,8 +60,7 @@ final class AuthUsecaseImpl: AuthUsecase {
     
     func deleteAccount() async throws {
         try await repo.deleteAccount()
-        KeychainManager.shared.accessToken = nil
-        KeychainManager.shared.refreshToken = nil
+        KeychainManager.shared.clearTokens()
         UserDefaultsManager.shared.isLogin = false
         UserDefaultsManager.shared.isOnboarding = false
     }
