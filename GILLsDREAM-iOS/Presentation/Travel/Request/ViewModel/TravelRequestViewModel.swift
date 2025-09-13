@@ -94,15 +94,17 @@ final class TravelRequestViewModel {
                         await MainActor.run { self.isLoadingRelay.accept(true) }
                         defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
 
-//                        let ok = try await self.usecase.setVideos(
-//                            planId: self.planId ?? 0,
-//                            region: self.region,
-//                            urls: [self.videoURL]
-//                        )
-//                        if ok == false {
-//                            throw NSError(domain: "plan", code: -2,
-//                                          userInfo: [NSLocalizedDescriptionKey: "영상 등록에 실패했어요."])
-//                        }
+                        let urls = self.videoURL.isEmpty ? [] : [self.videoURL]
+
+                        let ok = try await self.usecase.setVideos(
+                            planId: self.planId ?? 0,
+                            region: self.region,
+                            urls: urls
+                        )
+                        if ok == false {
+                            throw NSError(domain: "plan", code: -2,
+                                          userInfo: [NSLocalizedDescriptionKey: "영상 등록에 실패했어요."])
+                        }
                         await MainActor.run {
                             self.navigateToNextRelay.accept(())
                         }

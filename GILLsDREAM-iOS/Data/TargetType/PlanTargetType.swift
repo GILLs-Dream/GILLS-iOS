@@ -11,11 +11,13 @@ import Moya
 enum PlanTargetType {
     case mood(inputText: String)
     case videos(planId: Int, region: String, videoURLs: [String])
-    case generate(planId: Int)
     case duration(planId: Int, duration: Int, startDate: String, finishedDate: String)
     case style(planId: Int, transport: String, categories: [String])
     case companion(planId: Int, party: Int, companion: String)
     case destination(planId: Int, travelPlaces: [TravelPlaceRequestDTO], stayPlaces: [StayPlaceRequestDTO])
+    case generate(planId: Int)
+    case fetchGeneratedPlan(planId: Int)
+    case fetchGeneratedPlanSummary(planId: Int)
     case list
 }
 
@@ -26,8 +28,6 @@ extension PlanTargetType: BaseTargetType {
             return "/v1/plan/template/mood"
         case .videos(let id, _, _):
             return "/v1/plan/template/\(id)/videos"
-        case .generate(let id):
-            return "/v1/plan/template/\(id)/generate"
         case .duration(let id, _, _, _):
             return "/v1/plan/template/\(id)/duration"
         case .style(let id, _, _):
@@ -36,6 +36,12 @@ extension PlanTargetType: BaseTargetType {
             return "/v1/plan/template/\(id)/companion"
         case .destination(let id, _, _):
             return "/v1/plan/template/\(id)/destination"
+        case .generate(let id):
+            return "/v1/plan/template/\(id)/generate"
+        case .fetchGeneratedPlan(let id):
+            return "/v1/plan/template/\(id)/plan"
+        case .fetchGeneratedPlanSummary(let id):
+            return "/v1/plan/template/\(id)/plan-summary"
         case .list:
             return "/v1/plan/template"
         }
@@ -45,9 +51,9 @@ extension PlanTargetType: BaseTargetType {
         switch self {
         case .mood, .generate, .destination:
             return .post
-        case .videos, .duration, .style, .companion:
+        case .videos, .duration, .style, .companion, .fetchGeneratedPlanSummary:
             return .patch
-        case .list:
+        case .list, .fetchGeneratedPlan:
             return .get
         }
     }
@@ -59,9 +65,6 @@ extension PlanTargetType: BaseTargetType {
             
         case .videos(_, let region, let urls):
             return .requestJSONEncodable(VideosRequestDTO(region: region, videoUrlList: urls))
-            
-        case .generate:
-            return .requestPlain
             
         case .duration(_, let duration, let start, let finish):
             return .requestJSONEncodable(DurationRequestDTO(duration: duration, startDate: start, finishedDate: finish))
@@ -75,7 +78,7 @@ extension PlanTargetType: BaseTargetType {
         case .destination(_, let travel, let stay):
             return .requestJSONEncodable(DestinationRequestDTO(travelPlaceDtoList: travel, stayPlaceDtoList: stay))
             
-        case .list:
+        case .generate, .list, .fetchGeneratedPlan, .fetchGeneratedPlanSummary:
             return .requestPlain
         }
     }
@@ -86,5 +89,9 @@ extension PlanTargetType: BaseTargetType {
             base["Authorization"] = "Bearer \(token)"
         }
         return base
+    }
+    
+    var validationType: ValidationType {
+        .successCodes
     }
 }

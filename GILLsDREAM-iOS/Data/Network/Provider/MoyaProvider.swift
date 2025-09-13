@@ -123,18 +123,18 @@ extension MoyaProvider where Target: TargetType {
         let session: Alamofire.Session = {
             switch auth {
             case .none:
-                return Alamofire.Session(configuration: config,
-                                         eventMonitors: monitors)
+                return Alamofire.Session(configuration: config) //,
+                                         //eventMonitors: monitors)
             case .user:
                 return Alamofire.Session(configuration: config,
-                                         interceptor: chain,
-                                         eventMonitors: monitors)
+                                         interceptor: chain) //,
+                                         // eventMonitors: monitors)
             }
         }()
 
         let plugins: [PluginType]
         #if DEBUG
-        plugins = [MoyaLoggingPlugin(), ResponseKindPlugin()]
+        plugins = [MoyaLoggingPlugin()] //, ResponseKindPlugin()]
         #else
         plugins = []
         #endif

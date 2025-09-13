@@ -48,8 +48,8 @@ final class UserAuthInterceptor: RequestInterceptor {
         if let token = KeychainManager.shared.accessToken {
             req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
-        print("🟦 [ADAPT] \(req.httpMethod ?? "") \(req.url?.absoluteString ?? "")")
-        print("🟦 Headers:", req.allHTTPHeaderFields ?? [:])
+//        print("🟦 [ADAPT] \(req.httpMethod ?? "") \(req.url?.absoluteString ?? "")")
+//        print("🟦 Headers:", req.allHTTPHeaderFields ?? [:])
         completion(.success(req))
     }
     

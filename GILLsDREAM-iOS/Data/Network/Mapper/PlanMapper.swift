@@ -27,7 +27,6 @@ enum PlanMapper {
              isPinned: false,
              imageURL: nil,
              sortOrder: 0,
-             places: [],
              summary: "")
     }
     
@@ -51,8 +50,48 @@ enum PlanMapper {
             isPinned: false,
             imageURL: dto.mainImg,
             sortOrder: dto.planId, // TODO: 고정 로직 적용
-            places: [],
             summary: ""
         )
+    }
+    
+    static func toPlanResult(from dto: PlanResultResponseDTO) -> PlanResult {
+        let perDayList = dto.planPerDayDtoList.map { dayDTO in
+            let from = PlanPlace(
+                placeId: dayDTO.from.placeId,
+                name: dayDTO.from.name,
+                mainImg: dayDTO.from.mainImg
+            )
+            
+            let routes = dayDTO.routeDtoList.map { routeDTO in
+                let to = PlanPlace(
+                    placeId: routeDTO.to.placeId,
+                    name: routeDTO.to.name,
+                    mainImg: routeDTO.to.mainImg
+                )
+                return PlanRoute(
+                    cnt: routeDTO.cnt,
+                    to: to,
+                    distance: Int(routeDTO.distance),
+                    time: Int(routeDTO.time)
+                )
+            }
+            
+            return PlanPerDay(
+                dayNum: dayDTO.dayNum,
+                from: from,
+                routes: routes
+            )
+        }
+        
+        return PlanResult(
+            title: dto.title,
+            planId: dto.planId,
+            duration: dto.duration,
+            perDayList: perDayList
+        )
+    }
+    
+    static func toPlanSummary(from dto: PlanSummaryResponseDTO) -> PlanSummary {
+        PlanSummary(title: dto.title, summary: dto.summary)
     }
 }

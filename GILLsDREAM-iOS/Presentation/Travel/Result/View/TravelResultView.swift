@@ -25,7 +25,7 @@ final class TravelResultView: UIView {
     let containerView = UIView()
     let travelDayResultView = TravelDayResultView()
     let summaryView = UILabel()
-    let primaryButton = CustomButton(title: "지도로 확인하기")
+    let primaryButton = CustomButton(title: "여행 저장하기")
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -58,7 +58,8 @@ final class TravelResultView: UIView {
 
     private func setUpUI() {
         titleLabel.do {
-            $0.attributedText = "강릉 트로피컬 썸머 여행".pretendardAttributedString(style: .title1)
+            $0.numberOfLines = 0
+            $0.lineBreakMode = .byWordWrapping
         }
         
         travelDaysCollectionView.do {
@@ -77,8 +78,8 @@ final class TravelResultView: UIView {
 
     private func setUpLayout() {
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide).offset(15)
-            $0.leading.equalToSuperview().offset(24)
+            $0.top.equalTo(safeAreaLayoutGuide)
+            $0.horizontalEdges.equalToSuperview().inset(24)
         }
         
         travelDaysCollectionView.snp.makeConstraints {
@@ -111,6 +112,14 @@ final class TravelResultView: UIView {
 }
 
 extension TravelResultView {
+    func configure(plan: PlanResult) {
+        titleLabel.attributedText = plan.title.pretendardAttributedString(style: .title2)
+    }
+    
+    func configure(summary: PlanSummary) {
+        summaryView.attributedText = summary.summary.pretendardAttributedString(style: .body1)
+    }
+    
     enum ContentMode {
         case day
         case summary
@@ -121,7 +130,7 @@ extension TravelResultView {
         case .day:
             travelDayResultView.isHidden = false
             summaryView.isHidden = true
-            primaryButton.updateTitle("지도로 확인하기")
+            primaryButton.updateTitle("여행 저장하기")
         case .summary:
             travelDayResultView.isHidden = true
             summaryView.isHidden = false
