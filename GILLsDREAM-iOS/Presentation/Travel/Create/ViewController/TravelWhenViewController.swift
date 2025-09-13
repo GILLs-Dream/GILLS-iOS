@@ -19,7 +19,7 @@ final class TravelWhenViewController: TravelViewController {
     init(flowViewModel: TravelRequestFlowViewModel) {
         self.flowViewModel = flowViewModel
         self.rootView = TravelWhenView(titleText: flowViewModel.moodSummary)
-        self.viewModel = TravelWhenViewModel(planId: flowViewModel.planId ?? -1)
+        self.viewModel = TravelWhenViewModel(planId: flowViewModel.planId)
         super.init(nibName: nil, bundle: nil)
     }
     

@@ -21,6 +21,8 @@ final class TravelCustomTextField: UIView {
     let didBeginEditing = PublishRelay<Void>()
     var didAttemptToEditWhilePending: (() -> Void)?
     var onTappedWhilePending: (() -> Void)?
+    var onDateChanged: ((Date) -> Void)?
+    var onNumberChanged: ((Int) -> Void)?
     
     // MARK: Views
     private let fieldContainer = UIView()
@@ -184,7 +186,24 @@ final class TravelCustomTextField: UIView {
     }
 
     @objc private func doneTapped() {
-        self.endEditing(true)
+        switch inputMode {
+        case .datePicker: dateChanged()
+        case .numberPicker:
+            if let picker = pickerView {
+                let n = numberList[picker.selectedRow(inComponent: 0)]
+                textField.text = "\(n)"
+                onNumberChanged?(n)
+            }
+        case .keyboard: break
+        }
+        endEditing(true)
+    }
+    
+    // 초기값 세팅할 수 있게 공개 메서드 추가
+    func preset(date: Date) {
+        datePicker?.setDate(date, animated: false)
+        textField.text = date.formatted("yyyy년 M월 d일")
+        onDateChanged?(date)
     }
 }
 
@@ -194,6 +213,40 @@ extension TravelCustomTextField: UITextFieldDelegate {
         underlineView.backgroundColor = .orange
         unitLabel.textColor = .orange
         didBeginEditing.accept(())
+        
+        switch inputMode {
+        case .datePicker:
+            if let picker = datePicker, (textField.text ?? "").isEmpty {
+                // 오늘 날짜 또는 min/max 범위로 보정
+                let today = Date()
+                let initial: Date = {
+                    if let min = picker.minimumDate, today < min { return min }
+                    if let max = picker.maximumDate, today > max { return max }
+                    return today
+                }()
+                picker.setDate(initial, animated: false)
+                dateChanged()
+            }
+            
+        case .numberPicker:
+            // ⬇️ 비어 있으면 첫 번째 값(=보통 1) 즉시 바인딩
+            if (textField.text ?? "").isEmpty,
+               let first = numberList.first,
+               let picker = pickerView {
+                picker.selectRow(0, inComponent: 0, animated: false)
+                textField.text = "\(first)"
+                onNumberChanged?(first)
+            } else if let picker = pickerView,
+                      let text = textField.text,
+                      let n = Int(text),
+                      let idx = numberList.firstIndex(of: n) {
+                // 텍스트와 피커 동기화
+                picker.selectRow(idx, inComponent: 0, animated: false)
+            }
+            
+        case .keyboard:
+            break
+        }
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -216,7 +269,10 @@ extension TravelCustomTextField: UIPickerViewDelegate, UIPickerViewDataSource {
     }
 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        "\(numberList[row])"
+        let n = numberList[row]
+        textField.text = "\(n)"
+        onNumberChanged?(n)
+        return "\(n)"
     }
 
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
