@@ -53,9 +53,9 @@ final class PlanRepositoryImpl: PlanRepository {
     }
     
     func generatePlan(planId: Int) async throws {
-        let api: ApiResponse<PlanIdResultDTO> = try await provider.requestDecodableAutoRefresh(
+        let api: ApiResponse<PlanGenerateResponseDTO> = try await provider.requestDecodableAutoRefresh(
             .generate(planId: planId),
-            as: ApiResponse<PlanIdResultDTO>.self
+            as: ApiResponse<PlanGenerateResponseDTO>.self
         )
         guard api.isSuccess else {
             throw NetworkError.server(.init(code: api.code, message: api.message), status: 200)

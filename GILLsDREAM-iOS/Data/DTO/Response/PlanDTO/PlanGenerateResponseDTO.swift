@@ -2,36 +2,55 @@
 //  PlanGenerateResponseDTO.swift
 //  GILLsDREAM-iOS
 //
-//  Created by 오연서 on 9/12/25.
+//  Created by 오연서 on 9/14/25.
 //
 
-struct PlanResultResponseDTO: Decodable {
-    let title: String
-    let planId: Int
-    let duration: Int
-    let planPerDayDtoList: [PlanPerDayDTO]
+struct PlanGenerateResponseDTO: Decodable {
+    let mode: String
+    let days: [PlanGenerateDayDTO]
 }
 
-struct PlanPerDayDTO: Decodable {
-    let dayNum: Int
-    let from: PlanPlaceDTO
-    let routeDtoList: [PlanRouteDTO]
+struct PlanGenerateDayDTO: Decodable {
+    let date: String?
+    let index: Int
+    let routes: [PlanGenerateRouteDTO]
 }
 
-struct PlanRouteDTO: Decodable {
-    let cnt: Int
-    let to: PlanPlaceDTO
+struct PlanGenerateRouteDTO: Decodable {
     let distance: Double
-    let time: Double
+    let duration: Double
+    let polyline: String?
+    let legs: [PlanGenerateLegDTO]
 }
 
-struct PlanPlaceDTO: Decodable {
-    let placeId: Int
-    let name: String
-    let mainImg: String
+struct PlanGenerateLegDTO: Decodable {
+    let startName: String
+    let startLat: Double
+    let startLng: Double
+    let startPlace: PlanGeneratePlaceDTO
+
+    let endName: String
+    let endLat: Double
+    let endLng: Double
+    let endPlace: PlanGeneratePlaceDTO
+
+    let modes: [String]
+    let distance: Double
+    let duration: Double
 }
 
-struct PlanSummaryResponseDTO: Decodable {
-    let title: String
-    let summary: String
+struct PlanGeneratePlaceDTO: Decodable {
+    let platform: String
+    let contentId: String
+    let placeType: String
+    let detailUrl: String?
+    let imageUrl: String?
+    let period: PlanGeneratePeriodDTO
+}
+
+struct PlanGeneratePeriodDTO: Decodable {
+    let startedAt: String
+    let finishedAt: String
+    let duration: Int?
+    let dayOrder: Int
 }
