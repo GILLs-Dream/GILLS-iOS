@@ -67,6 +67,12 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
             $0.contentMode = .scaleAspectFill
         }
         
+        planTitle.do {
+            $0.numberOfLines = 1
+            $0.lineBreakMode = .byTruncatingTail
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
         pinImageView.do {
             $0.image = UIImage(systemName: "pin.fill")
             $0.tintColor = .white
@@ -94,6 +100,7 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
         planTitle.snp.makeConstraints {
             $0.top.equalTo(pinImageView.snp.bottom).offset(2)
             $0.leading.equalTo(pinImageView).offset(3)
+            $0.trailing.equalToSuperview().inset(204)
         }
         
         planDate.snp.makeConstraints {

@@ -39,4 +39,8 @@ final class LoadingOverlayView: UIView {
         lottie.stopAnimating()
         removeFromSuperview()
     }
+    
+    func updateText(_ text: String) {
+        lottie.updateText(text)
+    }
 }

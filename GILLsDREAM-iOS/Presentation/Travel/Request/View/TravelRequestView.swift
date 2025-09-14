@@ -64,7 +64,6 @@ final class TravelRequestView: UIView {
         }
         
         extraLabel.do {
-            $0.attributedText = "분위기가 구체적일수록 좋아요!".pretendardAttributedString(style: .body2)
             $0.numberOfLines = 2
         }
         
@@ -149,12 +148,14 @@ extension TravelRequestView {
         switch step {
         case .region:
             exampleLabel.attributedText = "제주".pretendardAttributedString(style: .title4, color: .mainYellow)
-            extraLabel.isHidden = true
+            extraLabel.isHidden = false
+            extraLabel.attributedText = "*국내 지역을 입력해주세요.".pretendardAttributedString(style: .body2)
             underlineView.isHidden = true
             requestPlaceHolder.attributedText = "어디 지역으로 여행을 계획하시나요?".pretendardAttributedString(style: .subtitle6)
         case .mood:
             extraLabel.isHidden = false
             underlineView.isHidden = false
+            extraLabel.attributedText = "분위기가 구체적일수록 좋아요!".pretendardAttributedString(style: .body2)
             requestPlaceHolder.attributedText = "지금 어떤 분위기의 여행이 가고싶나요?".pretendardAttributedString(style: .subtitle6)
 
             if let location = location {

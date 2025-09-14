@@ -76,6 +76,19 @@ class TravelSaveViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
+        output.isLoading
+            .drive(onNext: { [weak self] isLoading in
+                guard let self else { return }
+                let hostView = self.tabBarController?.view ?? self.view.window ?? self.view
+                if isLoading {
+                    LoadingOverlayView.shared.updateText("길동이가 열심히\n여행을 저장 중이에요!")
+                    LoadingOverlayView.shared.show(in: hostView!)
+                } else {
+                    LoadingOverlayView.shared.hide()
+                }
+            })
+            .disposed(by: disposeBag)
+        
         output.navigateToNext
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
