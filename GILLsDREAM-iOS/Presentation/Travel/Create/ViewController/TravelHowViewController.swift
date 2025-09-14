@@ -102,6 +102,7 @@ final class TravelHowViewController: TravelViewController {
                 let hostView = self.tabBarController?.view ?? self.view.window ?? self.view
                 LoadingOverlayView.shared.show(in: hostView!)
                 if isLoading {
+                    LoadingOverlayView.shared.updateText("길동이가 열심히\n여행을 생성 중이에요\n(최대 1분 소요)")
                     LoadingOverlayView.shared.show(in: hostView!)
                     self.rootView.doneButton.isEnabled = false
                     self.view.isUserInteractionEnabled = false

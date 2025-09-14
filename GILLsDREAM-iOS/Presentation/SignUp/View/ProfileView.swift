@@ -50,7 +50,7 @@ final class ProfileView: UIView {
             profileImageView,
             profileSelectButton,
             nicknameTextField,
-            duplicateCheckButton,
+            //duplicateCheckButton,
             errorLabel,
             completeLabel,
             lengthLabel,

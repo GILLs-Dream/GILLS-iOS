@@ -39,7 +39,7 @@ class TravelSaveViewController: UIViewController {
         tabBarController?.isTabBarHidden = true
         bindViewModel()
         setUpDelegate()
-        observeKeyboardNotifications()
+//        observeKeyboardNotifications()
     }
     
     private func setUpDelegate() {

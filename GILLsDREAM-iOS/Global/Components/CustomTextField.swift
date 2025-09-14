@@ -81,12 +81,12 @@ final class CustomTextField: UIView {
             $0.top.leading.trailing.equalToSuperview()
         }
 
-        actionButton.snp.makeConstraints {
-            $0.centerY.equalTo(textField)
-            $0.trailing.equalTo(textField).inset(12)
-            $0.verticalEdges.equalTo(textField).inset(11)
-            $0.width.equalTo(74)
-        }
+//        actionButton.snp.makeConstraints {
+//            $0.centerY.equalTo(textField)
+//            $0.trailing.equalTo(textField).inset(12)
+//            $0.verticalEdges.equalTo(textField).inset(11)
+//            $0.width.equalTo(74)
+//        }
 
         timerLabel.snp.makeConstraints {
             $0.top.equalTo(textField.snp.bottom).offset(8)

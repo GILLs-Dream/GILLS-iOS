@@ -97,7 +97,7 @@ final class TravelResultViewController: TravelViewController {
                 let hostView = self.tabBarController?.view ?? self.view.window ?? self.view
                 if isLoading {
                     LoadingOverlayView.shared.updateText("길동이가\n여행 결과를 불러오고 있어요!")
-                    LoadingOverlayView.shared.show(in: hostView!)
+                    LoadingOverlayView.shared.show(in: hostView!, alpha: 1.0)
                 } else {
                     LoadingOverlayView.shared.hide()
                 }

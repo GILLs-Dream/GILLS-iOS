@@ -11,10 +11,11 @@ final class LoadingOverlayView: UIView {
     static let shared = LoadingOverlayView()
 
     private let lottie = CustomLottieView(text: "길동이가 열심히\n여행을 생성 중이에요\n(최대 1분 소요)")
+    private var backgroundAlpha: CGFloat = 0.6
     
     private override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        backgroundColor = UIColor.black.withAlphaComponent(backgroundAlpha)
         addSubview(lottie)
         lottie.translatesAutoresizingMaskIntoConstraints = false
         lottie.snp.makeConstraints {
@@ -28,12 +29,21 @@ final class LoadingOverlayView: UIView {
         fatalError()
     }
 
-    func show(in host: UIView) {
+    func show(in host: UIView, alpha: CGFloat? = nil) {
+        if let alpha = alpha {
+            backgroundAlpha = alpha
+        }
+        backgroundColor = UIColor.black.withAlphaComponent(backgroundAlpha)
+        
         frame = host.bounds
         autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        if superview == nil { host.addSubview(self) }
+        if superview !== host {
+            removeFromSuperview()
+            host.addSubview(self)
+        }
         lottie.startAnimating()
     }
+    
 
     func hide() {
         lottie.stopAnimating()

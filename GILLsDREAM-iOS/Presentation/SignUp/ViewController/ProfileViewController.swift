@@ -39,7 +39,7 @@ class ProfileViewController: UIViewController {
         configureCustomNavigationBar()
         bindViewModel()
         setUpDelegate()
-        observeKeyboardNotifications()
+        // observeKeyboardNotifications()
     }
     
     private func setUpDelegate() {

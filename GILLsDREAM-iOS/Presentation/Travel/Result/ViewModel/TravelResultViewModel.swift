@@ -65,11 +65,11 @@ final class TravelResultViewModel {
                     await MainActor.run {
                         self.rowsCache = builtCache
                         self.resultRelay.accept(result)
-                        self.summaryRelay.accept(nil)
                         self.selectedIndexRelay.accept(0)
                         self.timelineRelay.accept(builtCache[0] ?? [])
                         self.isLoadingRelay.accept(false)
                         self.summaryRelay.accept(summary)
+                        self.summaryLoaded = true
                     }
                 }
                 .asObservable()
@@ -94,10 +94,8 @@ final class TravelResultViewModel {
                 guard let self else { return .empty() }
 
                 if index == result.duration {
-                    // 요약 탭
-                    if let cached = self.summaryRelay.value, self.summaryLoaded {
-                        // 이미 있음 -> 그냥 바인딩
-                        self.timelineRelay.accept([]) // 표는 숨김
+                    if self.summaryRelay.value != nil {
+                        self.timelineRelay.accept([]) // 표 숨김
                         return .just(())
                     } else {
                         // 처음 요약 요청 -> 그때만 로딩 켬
@@ -108,7 +106,6 @@ final class TravelResultViewModel {
 
                             let summary = try await self.usecase.getGeneratedPlanSummary(planId: self.planId)
                             await MainActor.run {
-                                self.summaryLoaded = true
                                 self.summaryRelay.accept(summary)
                                 self.timelineRelay.accept([]) // 표 숨김
                             }
