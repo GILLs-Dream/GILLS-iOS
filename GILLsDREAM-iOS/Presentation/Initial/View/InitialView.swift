@@ -63,7 +63,8 @@ final class InitialView: UIView {
         kakaoButton.do {
             $0.setButtonStyle(title: "카카오로 로그인",
                               titleColor: .black,
-                              backgroundColor: .kakaoYellow)
+                              backgroundColor: .kakaoYellow,
+                              font:.PretendardStyle.subtitle6.font)
         }
         
         appleButton.do {
