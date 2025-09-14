@@ -111,30 +111,21 @@ final class TravelHowViewModel {
                         throw error
                     }
 
-                    // 2) 생성 트리거
                     do {
                         try await self.usecase.generatePlan(planId: self.planId)
-                        print("✅ [API] generatePlan done")
                     } catch {
-                        print("❌ [API] generatePlan error:", error)
                         throw error
                     }
 
-                    // 3) 생성본 조회
                     let generated: PlanResult
                     do {
                         generated = try await self.usecase.getGeneratedPlan(planId: self.planId)
-                        print("✅ [API] getGeneratedPlan days=\(generated.perDayList.count)")
-                        for day in generated.perDayList {
-                            print("   • day=\(day.dayNum) routes=\(day.routes.count)")
-                        }
                     } catch {
-                        print("❌ [API] getGeneratedPlan error:", error)
                         throw error
-                    // 4) 실패/성공 판정
+                    }
+
                     let isAllEmpty = generated.perDayList.isEmpty
                         || generated.perDayList.allSatisfy { $0.routes.isEmpty }
-                    print("🔍 [HOW] isAllEmpty=\(isAllEmpty)")
 
                     await MainActor.run {
                         isAllEmpty ? self.showGenerationFailedRelay.accept(())
