@@ -55,7 +55,7 @@ final class TravelHowView: UIView {
     // MARK: setUpUI
     private func setUpUI() {
         titleLabel.do {
-            $0.attributedText = "STEP 4. 여행 스타일을 선택해주세요.".pretendardAttributedString(style: .body1)
+            $0.attributedText = "STEP 3. 여행 스타일을 선택해주세요.".pretendardAttributedString(style: .body1)
         }
         
         transportLabel.do {
