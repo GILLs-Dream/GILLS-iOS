@@ -5,7 +5,7 @@
 //  Created by 오연서 on 7/23/25.
 //
 
-import Foundation
+import UIKit
 import RxSwift
 import RxCocoa
 
@@ -34,6 +34,7 @@ final class TravelHowViewModel {
         let isLoading: Driver<Bool>
         let errorMessage: Signal<String>
         let showGeneratedConfirmModal: Signal<Void>
+        let showGenerationFailed: Signal<Void>
     }
 
     private let disposeBag = DisposeBag()
@@ -45,6 +46,7 @@ final class TravelHowViewModel {
     private let isLoadingRelay = BehaviorRelay<Bool>(value: false)
     private let errorRelay = PublishRelay<String>()
     private let showGeneratedConfirmModalRelay = PublishRelay<Void>()
+    private let showGenerationFailedRelay = PublishRelay<Void>()
 
     func transform(input: Input) -> Output {
         input.transportTapped
@@ -78,35 +80,65 @@ final class TravelHowViewModel {
                     return .empty()
                 }
 
-                guard let transport = transportBtn?.title(for: .normal),
+                guard let transport = (transportBtn as? UIButton)?.title(for: .normal),
                       categoryBtns.isEmpty == false,
                       self.planId > 0 else {
                     self.errorRelay.accept("교통수단과 카테고리를 선택해 주세요.")
                     return .empty()
                 }
 
-                let categories = categoryBtns.compactMap { $0.title(for: .normal) }
-
+                let categories = categoryBtns.compactMap { ($0 as? UIButton)?.title(for: .normal) }
+                
                 return RxAsync.run { [weak self] () async throws -> Void in
                     guard let self else { return }
                     await MainActor.run { self.isLoadingRelay.accept(true) }
                     defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
 
-                    let saved = try await self.usecase.setStyle(
-                        planId: self.planId,
-                        transport: transport,
-                        categories: categories
-                    )
-                    
-                    if saved == false {
-                        throw NSError(domain: "plan", code: -1,
-                                      userInfo: [NSLocalizedDescriptionKey: "여행 스타일 저장에 실패했어요."])
+                    do {
+                        let saved = try await self.usecase.setStyle(
+                            planId: self.planId,
+                            transport: transport,
+                            categories: categories
+                        )
+                        if saved == false {
+                            throw NSError(
+                                domain: "plan",
+                                code: -1,
+                                userInfo: [NSLocalizedDescriptionKey: "여행 스타일 저장에 실패했어요."]
+                            )
+                        }
+                    } catch {
+                        throw error
                     }
 
-                    try await self.usecase.generatePlan(planId: self.planId)
+                    // 2) 생성 트리거
+                    do {
+                        try await self.usecase.generatePlan(planId: self.planId)
+                        print("✅ [API] generatePlan done")
+                    } catch {
+                        print("❌ [API] generatePlan error:", error)
+                        throw error
+                    }
+
+                    // 3) 생성본 조회
+                    let generated: PlanResult
+                    do {
+                        generated = try await self.usecase.getGeneratedPlan(planId: self.planId)
+                        print("✅ [API] getGeneratedPlan days=\(generated.perDayList.count)")
+                        for day in generated.perDayList {
+                            print("   • day=\(day.dayNum) routes=\(day.routes.count)")
+                        }
+                    } catch {
+                        print("❌ [API] getGeneratedPlan error:", error)
+                        throw error
+                    // 4) 실패/성공 판정
+                    let isAllEmpty = generated.perDayList.isEmpty
+                        || generated.perDayList.allSatisfy { $0.routes.isEmpty }
+                    print("🔍 [HOW] isAllEmpty=\(isAllEmpty)")
+
                     await MainActor.run {
-                        self.showGeneratedConfirmModalRelay.accept(())
-                        
+                        isAllEmpty ? self.showGenerationFailedRelay.accept(())
+                        : self.showGeneratedConfirmModalRelay.accept(())
                     }
                 }
                 .asObservable()
@@ -130,17 +162,18 @@ final class TravelHowViewModel {
             navigateToNext: navigateToNextRelay.asDriver(onErrorDriveWith: .empty()),
             isLoading: isLoadingRelay.asDriver(),
             errorMessage: errorRelay.asSignal(),
-            showGeneratedConfirmModal: showGeneratedConfirmModalRelay.asSignal()
+            showGeneratedConfirmModal: showGeneratedConfirmModalRelay.asSignal(),
+            showGenerationFailed: showGenerationFailedRelay.asSignal()
         )
     }
 }
 extension TravelHowViewModel {
     // MARK: Output accessors
     var transportation: String? {
-        return selectedTransportRelay.value?.title(for: .normal)
+        selectedTransportRelay.value?.title(for: UIControl.State.normal)
     }
 
     var categories: [String]? {
-        return selectedCategoriesRelay.value.map { $0.title(for: .normal) ?? "" }
+        selectedCategoriesRelay.value.compactMap { $0.title(for: UIControl.State.normal) }
     }
 }

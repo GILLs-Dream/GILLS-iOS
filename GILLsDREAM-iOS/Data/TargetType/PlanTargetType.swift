@@ -88,17 +88,17 @@ extension PlanTargetType: BaseTargetType {
             var parts: [MultipartFormData] = []
 
             // profile part
-            struct TravelPayload: Encodable {
+            struct TitlePayload: Encodable {
                 let title: String
             }
             
-            let payload = TravelPayload(title: title)
+            let payload = TitlePayload(title: title)
             if let jsonData = try? JSONEncoder().encode(payload) {
                 parts.append(
                     MultipartFormData(
                         provider: .data(jsonData),
-                        name: "plan",
-                        fileName: "plan.json",
+                        name: "title",
+                        fileName: "title.json",
                         mimeType: "application/json"
                     )
                 )
@@ -120,11 +120,21 @@ extension PlanTargetType: BaseTargetType {
     }
     
     var headers: [String: String]? {
-        var base: [String: String] = ["Content-Type": "application/json"]
-        if let token = KeychainManager.shared.accessToken {
-            base["Authorization"] = "Bearer \(token)"
+        switch self {
+        case .profile:
+            if let token = KeychainManager.shared.accessToken {
+                return ["Authorization": "Bearer \(token)"]
+            }
+            return nil
+
+        default:
+            // 기본 JSON 요청
+            var base: [String: String] = ["Content-Type": "application/json"]
+            if let token = KeychainManager.shared.accessToken {
+                base["Authorization"] = "Bearer \(token)" 
+            }
+            return base
         }
-        return base
     }
     
     var validationType: ValidationType {

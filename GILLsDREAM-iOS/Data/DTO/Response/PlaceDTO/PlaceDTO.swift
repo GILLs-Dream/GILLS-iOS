@@ -15,8 +15,8 @@ struct PlaceDTO: Decodable {
 }
 
 struct PeriodDTO: Decodable {
-    let startedAt: String
-    let finishedAt: String
+    let startedAt: String?
+    let finishedAt: String?
     let duration: Int?
-    let dayOrder: Int
+    let dayOrder: Int?
 }

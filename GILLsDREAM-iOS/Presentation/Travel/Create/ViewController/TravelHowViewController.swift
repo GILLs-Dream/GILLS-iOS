@@ -16,6 +16,7 @@ final class TravelHowViewController: TravelViewController {
     private let disposeBag = DisposeBag()
     var onPrev: (() -> Void)?
     var onComplete: ((Int) -> Void)?
+    var onFail: (() -> Void)?
     
     init(flowViewModel: TravelRequestFlowViewModel) {
         self.flowViewModel = flowViewModel
@@ -128,6 +129,21 @@ final class TravelHowViewController: TravelViewController {
         output.showGeneratedConfirmModal
             .emit(onNext: { [weak self] in
                 self?.presentGeneratedModal()
+            })
+            .disposed(by: disposeBag)
+        
+        output.showGenerationFailed
+            .emit(onNext: { [weak self] in
+                guard let self else { return }
+                let alert = UIAlertController(
+                    title: "생성 실패",
+                    message: "길동이가 여행 생성을 실패하였습니다.\n잠시 후 다시 시도해주세요.",
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+                    self.onFail?()
+                }))
+                self.present(alert, animated: true)
             })
             .disposed(by: disposeBag)
         
