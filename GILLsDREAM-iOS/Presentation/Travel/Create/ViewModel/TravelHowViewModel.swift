@@ -102,7 +102,9 @@ final class TravelHowViewModel {
                     }
 
                     try await self.usecase.generatePlan(planId: self.planId)
-                    await MainActor.run { self.navigateToNextRelay.accept(()) }
+                    await MainActor.run {
+                        self.navigateToNextRelay.accept(())
+                    }
                 }
                 .asObservable()
                 .catch { [weak self] error in

@@ -90,17 +90,18 @@ final class MainHomeCoordinator: Coordinator {
     private func showTravelResultVC(planId: Int) {
         let vc = TravelResultViewController(planId: planId)
         vc.onSave = { [weak self] in
-            self?.showTravelSaveVC()
+            self?.showTravelSaveVC(planId: planId)
         }
         vc.onMap = { [weak self] items in
             self?.showMapModal(with: items)
         }
+        print("🚨 navController: \(navigationController)")
         navigationController.setViewControllers([vc], animated: false)
     }
     
     
-    private func showTravelSaveVC() {
-        let vc = TravelSaveViewController()
+    private func showTravelSaveVC(planId: Int) {
+        let vc = TravelSaveViewController(planId: planId)
         vc.onComplete = { [weak self] in
             guard let self = self else { return }
             self.finish()

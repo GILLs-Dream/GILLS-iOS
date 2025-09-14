@@ -83,4 +83,12 @@ final class PlanRepositoryImpl: PlanRepository {
         }
         return dto
     }
+    
+    func updatePlanProfile(planId: Int, title: String, imageData: Data?) async throws -> Bool {
+        let response: ApiResponse<PlanProfileResponseDTO> = try await provider.requestDecodableAutoRefresh(
+            .profile(planId: planId, title: title, imageData: imageData),
+            as: ApiResponse<PlanProfileResponseDTO>.self
+        )
+        return response.isSuccess
+    }
 }

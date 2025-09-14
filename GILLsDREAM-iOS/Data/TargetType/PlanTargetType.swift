@@ -18,6 +18,7 @@ enum PlanTargetType {
     case generate(planId: Int)
     case fetchGeneratedPlan(planId: Int)
     case fetchGeneratedPlanSummary(planId: Int)
+    case profile(planId: Int, title: String, imageData: Data?)
     case list
 }
 
@@ -42,6 +43,8 @@ extension PlanTargetType: BaseTargetType {
             return "/v1/plan/template/\(id)/plan"
         case .fetchGeneratedPlanSummary(let id):
             return "/v1/plan/template/\(id)/plan-summary"
+        case .profile(let id, _, _):
+            return "/v1/plan/template/\(id)/profile"
         case .list:
             return "/v1/plan/template"
         }
@@ -51,7 +54,7 @@ extension PlanTargetType: BaseTargetType {
         switch self {
         case .mood, .generate, .destination:
             return .post
-        case .videos, .duration, .style, .companion, .fetchGeneratedPlanSummary:
+        case .videos, .duration, .style, .companion, .fetchGeneratedPlanSummary, .profile:
             return .patch
         case .list, .fetchGeneratedPlan:
             return .get
@@ -80,6 +83,39 @@ extension PlanTargetType: BaseTargetType {
             
         case .generate, .list, .fetchGeneratedPlan, .fetchGeneratedPlanSummary:
             return .requestPlain
+            
+        case let .profile(_, title, imageData):
+            var parts: [MultipartFormData] = []
+
+            // profile part
+            struct TravelPayload: Encodable {
+                let title: String
+            }
+            
+            let payload = TravelPayload(title: title)
+            if let jsonData = try? JSONEncoder().encode(payload) {
+                parts.append(
+                    MultipartFormData(
+                        provider: .data(jsonData),
+                        name: "plan",
+                        fileName: "plan.json",
+                        mimeType: "application/json"
+                    )
+                )
+            }
+
+            // image part
+            if let data = imageData {
+                parts.append(
+                    MultipartFormData(
+                        provider: .data(data),
+                        name: "image",
+                        fileName: "plan.jpg",
+                        mimeType: "image/jpeg"
+                    )
+                )
+            }
+            return .uploadMultipart(parts)
         }
     }
     

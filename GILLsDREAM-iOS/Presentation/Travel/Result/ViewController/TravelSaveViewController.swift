@@ -14,11 +14,19 @@ class TravelSaveViewController: UIViewController {
     // MARK: Properties
     private let disposeBag = DisposeBag()
     private let rootView = TravelSaveView()
-    private let viewModel = TravelSaveViewModel()
+    private let viewModel: TravelSaveViewModel
     private let travelnameMaxLength = 10
     private var isEnable: Bool = true
     var onComplete: (() -> Void)?
+
+    init(planId: Int) {
+        self.viewModel = TravelSaveViewModel(planId: planId)
+        super.init(nibName: nil, bundle: nil)
+    }
     
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: Life Cycle
     override func loadView() {
@@ -52,21 +60,30 @@ class TravelSaveViewController: UIViewController {
 
         output.selectedImage
             .drive(onNext: { [weak self] image in
-                self?.rootView.updateProfileImage(image)
+                guard let self = self else { return }
+                self.rootView.updateProfileImage(image)
             })
             .disposed(by: disposeBag)
-
-        output.nicknameCountText
+        
+        output.travelNameCountText
             .drive(rootView.lengthLabel.rx.text)
             .disposed(by: disposeBag)
 
-        output.navigateToNext
-            .drive(onNext: { [weak self] in
-                self?.onComplete?()
+        output.isNextEnabled
+            .drive(onNext: { [weak self] enabled in
+                self?.rootView.saveButton.isEnabled = enabled
+                self?.rootView.updateNextButtonTheme(isAvailable: enabled)
             })
             .disposed(by: disposeBag)
-
-        output.showToast
+        
+        output.navigateToNext
+            .drive(onNext: { [weak self] in
+                guard let self = self else { return }
+                self.onComplete?()
+            })
+            .disposed(by: disposeBag)
+        
+        output.errorMessage
             .emit(onNext: { message in
                 ToastManager.shared.show(message: message)
             })

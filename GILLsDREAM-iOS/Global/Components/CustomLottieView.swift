@@ -48,7 +48,7 @@ final class CustomLottieView: UIView {
         }
         
         textLabel.do {
-            $0.numberOfLines = 2
+            $0.numberOfLines = 3
             $0.textAlignment = .center
             $0.font = .PretendardStyle.subtitle1.font
             $0.textColor = .white

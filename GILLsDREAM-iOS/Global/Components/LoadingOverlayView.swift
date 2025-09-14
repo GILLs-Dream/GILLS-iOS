@@ -10,7 +10,7 @@ import UIKit
 final class LoadingOverlayView: UIView {
     static let shared = LoadingOverlayView()
 
-    private let lottie = CustomLottieView(text: "길동이가 열심히\n여행을 생성 중이에요")
+    private let lottie = CustomLottieView(text: "길동이가 열심히\n여행을 생성 중이에요\n약 1분 소요")
 
     private override init(frame: CGRect) {
         super.init(frame: frame)

@@ -70,7 +70,7 @@ final class TravelResultView: UIView {
         }
         
         summaryView.do {
-            $0.attributedText = "요약 정보를 불러오고 있습니다.".pretendardAttributedString(style: .body1)
+            $0.attributedText = "요약 정보를 불러오고 있습니다. (약 10초 소요)".pretendardAttributedString(style: .body1)
             $0.numberOfLines = 0
             $0.isHidden = true
         }
