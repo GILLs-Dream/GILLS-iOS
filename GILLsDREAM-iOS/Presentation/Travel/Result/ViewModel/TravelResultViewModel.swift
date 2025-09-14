@@ -32,6 +32,7 @@ final class TravelResultViewModel {
         let timeline: Driver<[TravelTimelineRow]>
         let summary: Driver<PlanSummary?>
         let isSummaryMode: Driver<Bool>
+        let summaryText: Driver<String?>
         let title: Driver<String>
         let daysCount: Driver<Int>
         let isLoading: Driver<Bool>
@@ -43,6 +44,7 @@ final class TravelResultViewModel {
     private let errorRelay = PublishRelay<String>()
     let resultRelay = BehaviorRelay<PlanResult?>(value: nil)
     let summaryRelay = BehaviorRelay<PlanSummary?>(value: nil)
+    private let summaryTextRelay = BehaviorRelay<String?>(value: nil)
     private let selectedIndexRelay = BehaviorRelay<Int>(value: 0)
     private let timelineRelay = BehaviorRelay<[TravelTimelineRow]>(value: [])
     private var rowsCache: [Int: [TravelTimelineRow]] = [:]
@@ -69,6 +71,7 @@ final class TravelResultViewModel {
                         self.timelineRelay.accept(builtCache[0] ?? [])
                         self.isLoadingRelay.accept(false)
                         self.summaryRelay.accept(summary)
+                        self.summaryTextRelay.accept(summary.summary)
                         self.summaryLoaded = true
                     }
                 }
@@ -94,32 +97,11 @@ final class TravelResultViewModel {
                 guard let self else { return .empty() }
 
                 if index == result.duration {
-                    if self.summaryRelay.value != nil {
-                        self.timelineRelay.accept([]) // 표 숨김
-                        return .just(())
-                    } else {
-                        // 처음 요약 요청 -> 그때만 로딩 켬
-                        return RxAsync.run { [weak self] in
-                            guard let self else { return }
-                            await MainActor.run { self.isLoadingRelay.accept(true) }
-                            defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
-
-                            let summary = try await self.usecase.getGeneratedPlanSummary(planId: self.planId)
-                            await MainActor.run {
-                                self.summaryRelay.accept(summary)
-                                self.timelineRelay.accept([]) // 표 숨김
-                            }
-                        }
-                        .asObservable()
-                        .catch { [weak self] error in
-                            self?.errorRelay.accept(error.displayMessage)
-                            return .empty()
-                        }
-                    }
+                    self.timelineRelay.accept([]) // 표 숨김
+                    return .just(())
                 } else {
                     // n일차: 캐시 즉시 바인딩
                     let rows = self.rowsCache[index] ?? []
-                    self.summaryRelay.accept(nil)
                     self.timelineRelay.accept(rows)
                     return .just(())
                 }
@@ -155,6 +137,7 @@ final class TravelResultViewModel {
             timeline: timelineRelay.asDriver(),
             summary: summaryRelay.asDriver(),
             isSummaryMode: isSummaryMode,
+            summaryText: summaryTextRelay.asDriver(),
             title: title,
             daysCount: daysCount,
             isLoading: isLoadingRelay.asDriver(),
