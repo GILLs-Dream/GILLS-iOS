@@ -111,25 +111,30 @@ final class TravelHowViewModel {
                         throw error
                     }
 
+                    // 생성 트리거 – 실패 시 모달로 종료
                     do {
                         try await self.usecase.generatePlan(planId: self.planId)
                     } catch {
-                        throw error
+                        await MainActor.run { self.showGenerationFailedRelay.accept(()) }
+                        return
                     }
 
+                    // 생성본 조회 – 실패 시 모달로 종료
                     let generated: PlanResult
                     do {
                         generated = try await self.usecase.getGeneratedPlan(planId: self.planId)
                     } catch {
-                        throw error
+                        await MainActor.run { self.showGenerationFailedRelay.accept(()) }
+                        return
                     }
 
+                    // 내용 비었는지 검사 -> 실패 모달 or 성공 모달
                     let isAllEmpty = generated.perDayList.isEmpty
                         || generated.perDayList.allSatisfy { $0.routes.isEmpty }
 
                     await MainActor.run {
                         isAllEmpty ? self.showGenerationFailedRelay.accept(())
-                        : self.showGeneratedConfirmModalRelay.accept(())
+                                   : self.showGeneratedConfirmModalRelay.accept(())
                     }
                 }
                 .asObservable()

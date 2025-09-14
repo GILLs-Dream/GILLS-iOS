@@ -59,6 +59,7 @@ final class TravelResultViewModel {
                     await MainActor.run { self.isLoadingRelay.accept(true) }
 
                     let result = try await self.usecase.getGeneratedPlan(planId: self.planId)
+                    let summary = try await self.usecase.getGeneratedPlanSummary(planId: self.planId)
                     let builtCache = self.makeRowsCache(from: result)
 
                     await MainActor.run {
@@ -68,6 +69,7 @@ final class TravelResultViewModel {
                         self.selectedIndexRelay.accept(0)
                         self.timelineRelay.accept(builtCache[0] ?? [])
                         self.isLoadingRelay.accept(false)
+                        self.summaryRelay.accept(summary)
                     }
                 }
                 .asObservable()
