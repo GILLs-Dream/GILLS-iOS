@@ -61,9 +61,11 @@ final class TravelSaveViewModel: ViewModelType {
             .disposed(by: disposeBag)
 
         // 다음 버튼 탭 처리
-        let isNextEnabledObs = travelNameRelay
+        travelNameRelay
             .map { !$0.isEmpty }
             .distinctUntilChanged()
+            .bind(to: isNextEnabledRelay)
+            .disposed(by: disposeBag)
 
         let combinedInput = Observable.combineLatest(
             travelNameRelay.asObservable(),
@@ -108,7 +110,7 @@ final class TravelSaveViewModel: ViewModelType {
                 .map { "\($0.count)/10" }
                 .asDriver(onErrorJustReturn: "0/10"),
             
-            isNextEnabled: isNextEnabledObs.asDriver(onErrorJustReturn: false),
+            isNextEnabled: isNextEnabledRelay.asDriver(onErrorJustReturn: false),
             
             navigateToNext: navigateToNextRelay
                 .asDriver(onErrorDriveWith: .empty()),
