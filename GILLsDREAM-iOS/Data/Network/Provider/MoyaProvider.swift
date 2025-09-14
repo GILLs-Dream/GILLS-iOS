@@ -120,7 +120,7 @@ extension MoyaProvider where Target: TargetType {
         let chain = Interceptor(adapters: [UserAuthInterceptor.shared],
                                 retriers: [UserAuthInterceptor.shared])
         
-        let monitors: [EventMonitor] = [AFEventLogger()]
+        // let monitors: [EventMonitor] = [AFEventLogger()]
         
         let session: Alamofire.Session = {
             switch auth {
