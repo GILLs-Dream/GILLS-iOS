@@ -8,6 +8,7 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import AuthenticationServices
 
 final class InitialViewController: UIViewController {
     var onLogin: (() -> Void)?

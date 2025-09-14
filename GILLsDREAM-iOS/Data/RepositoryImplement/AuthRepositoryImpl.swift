@@ -18,6 +18,12 @@ final class AuthRepositoryImpl: AuthRepository {
         return (dto.accessToken, dto.refreshToken)
     }
     
+    func exchangeAppleToken(_ identityToken: String) async throws -> (access: String, refresh: String) {
+        let res = try await publicProvider.asyncRequest(.appleLogin(identityToken: identityToken))
+        let dto = try JSONDecoder().decode(AppleLoginResponseDTO.self, from: res.data)
+        return (dto.accessToken, dto.refreshToken)
+    }
+    
     func logout() async throws {
         _ = try await userProvider.asyncRequest(.logout)
     }
