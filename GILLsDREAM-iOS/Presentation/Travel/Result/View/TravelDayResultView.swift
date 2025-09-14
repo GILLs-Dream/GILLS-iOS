@@ -51,7 +51,7 @@ final class TravelDayResultView: UIView {
             $0.backgroundColor = .clear
             $0.separatorStyle = .none
             $0.isScrollEnabled = true
-            $0.sectionHeaderHeight = 8
+            $0.sectionHeaderHeight = 15
             $0.estimatedRowHeight = 80
             $0.rowHeight = UITableView.automaticDimension
             $0.showsVerticalScrollIndicator = false
@@ -67,7 +67,8 @@ final class TravelDayResultView: UIView {
         }
         
         travelTimelineTableView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(16)
+            $0.verticalEdges.equalToSuperview().inset(20)
+            $0.horizontalEdges.equalToSuperview().inset(20)
         }
         
         //TODO: Label api 연결
