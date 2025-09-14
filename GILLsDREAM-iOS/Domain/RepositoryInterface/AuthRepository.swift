@@ -10,6 +10,7 @@ import Moya
 
 protocol AuthRepository {
     func exchangeKakaoToken(_ kakaoAccess: String) async throws -> (access: String, refresh: String)
+    func exchangeAppleToken(_ identityToken: String) async throws -> (access: String, refresh: String)
     func logout() async throws
     func updateSetting(nickname: String, marketingAgreement: Bool, imageData: Data?) async throws -> SettingResponseDTO
     func reissue(access: String?, refresh: String) async throws -> ReissueResponseDTO

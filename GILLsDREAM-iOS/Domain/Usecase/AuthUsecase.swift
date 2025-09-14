@@ -9,6 +9,7 @@ import UIKit
 
 protocol AuthUsecase {
     func loginWithKakao(accessToken: String) async throws
+    func loginWithApple(identityToken: String) async throws
     func logout() async throws
     func updateSetting(nickname: String, profileImgData: Data?, agreed: Bool) async throws -> SettingResponseDTO
     func refreshAccessTokenIfNeeded() async throws -> String
@@ -24,6 +25,13 @@ final class AuthUsecaseImpl: AuthUsecase {
         let tokens = try await repo.exchangeKakaoToken(accessToken)
         KeychainManager.shared.setTokens(access: tokens.access,
                                          refresh: tokens.refresh)
+        UserDefaultsManager.shared.isLogin = true
+    }
+    
+    func loginWithApple(identityToken: String) async throws {
+        let (access, refresh) = try await repo.exchangeAppleToken(identityToken)
+        KeychainManager.shared.accessToken = access
+        KeychainManager.shared.refreshToken = refresh
         UserDefaultsManager.shared.isLogin = true
     }
     
