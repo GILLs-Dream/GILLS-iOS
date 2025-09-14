@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 final class TravelTimelineCell: UITableViewCell {
     //MARK: Properties
@@ -127,6 +128,11 @@ extension TravelTimelineCell {
     /// 1번째(시작) 셀
     func configureStart(place: PlanPlace) {
         titleLabel.attributedText = place.name.pretendardAttributedString(style: .body0)
+        if place.mainImg.isEmpty {
+            placeImageView.image = .imgDefaultGillSquare
+        } else {
+            placeImageView.kf.setImage(with: URL(string: place.mainImg), placeholder: UIImage(named: "img_default_gill_square"))
+        }
         distanceLabel.isHidden = true
         dottedLine.isHidden = true // 첫 셀만 점선 숨김
         dottedLineHeightConstraint?.update(offset: 0)
@@ -136,7 +142,11 @@ extension TravelTimelineCell {
     /// 2번째 이후(이전→현재) 셀
     func configureRoute(_ route: PlanRoute) {
         titleLabel.attributedText = route.to.name.pretendardAttributedString(style: .body0)
-
+        if route.to.mainImg.isEmpty {
+            placeImageView.image = .imgDefaultGillSquare
+        } else {
+            placeImageView.kf.setImage(with: URL(string: route.to.mainImg), placeholder: UIImage(named: "img_default_gill_square"))
+        }
         // m→km, sec→min
         let km = max(0, Int(round(Double(route.distance) / 1000.0)))
         let min = max(0, Int(round(Double(route.time) / 60.0)))

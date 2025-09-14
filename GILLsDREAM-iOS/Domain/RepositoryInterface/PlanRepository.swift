@@ -17,5 +17,6 @@ protocol PlanRepository {
     func generatePlan(planId: Int) async throws
     func fetchGeneratedPlan(planId: Int) async throws -> PlanResultResponseDTO
     func fetchGeneratedPlanSummary(planId: Int) async throws -> PlanSummaryResponseDTO
+    func updatePlanProfile(planId: Int, title: String, imageData: Data?) async throws -> Bool
     func fetchPlanList() async throws -> [Plan]
 }

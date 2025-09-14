@@ -48,7 +48,7 @@ final class CustomLottieView: UIView {
         }
         
         textLabel.do {
-            $0.numberOfLines = 2
+            $0.numberOfLines = 3
             $0.textAlignment = .center
             $0.font = .PretendardStyle.subtitle1.font
             $0.textColor = .white
@@ -70,7 +70,15 @@ final class CustomLottieView: UIView {
 // MARK: Public Methods
 extension CustomLottieView {
     func setText(_ text: String) {
-        textLabel.text = text
+        let attrString = NSMutableAttributedString(string: text)
+        textLabel.attributedText = attrString
+        textLabel.applyMultipleAttributes(styles: [
+            (
+                target: "(최대 1분 소요)",
+                font: .PretendardStyle.body1.font,
+                color: .white
+            )
+        ])
     }
 
     func startAnimating() {

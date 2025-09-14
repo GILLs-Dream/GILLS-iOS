@@ -115,7 +115,7 @@ final class TravelHowViewController: TravelViewController {
         output.errorMessage
             .emit(onNext: { ToastManager.shared.show(message: $0) })
             .disposed(by: disposeBag)
-
+        
         output.navigateToPrev
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
@@ -124,7 +124,13 @@ final class TravelHowViewController: TravelViewController {
                 self.onPrev?()
             })
             .disposed(by: disposeBag)
-
+        
+        output.showGeneratedConfirmModal
+            .emit(onNext: { [weak self] in
+                self?.presentGeneratedModal()
+            })
+            .disposed(by: disposeBag)
+        
         output.navigateToNext
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
@@ -138,6 +144,27 @@ final class TravelHowViewController: TravelViewController {
                 }
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func presentGeneratedModal() {
+        let modal = CustomModalView(
+            title: "길동이가 생성한 여행을\n확인하시겠습니까?",
+            confirmTitle: "확인"
+        )
+        
+        modal.onConfirm = { [weak self] in
+            self?.viewModel.navigateToNextRelay.accept(())
+        }
+        
+        modal.onCancel = { [weak self] in
+            let mainHomeVC = MainHomeViewController()
+            self?.navigationController?.setViewControllers([mainHomeVC], animated: true)
+        }
+        
+        view.addSubview(modal)
+        modal.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
     }
 }
 

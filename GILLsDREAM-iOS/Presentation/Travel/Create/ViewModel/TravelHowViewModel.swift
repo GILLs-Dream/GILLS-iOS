@@ -33,6 +33,7 @@ final class TravelHowViewModel {
         let navigateToNext: Driver<Void>
         let isLoading: Driver<Bool>
         let errorMessage: Signal<String>
+        let showGeneratedConfirmModal: Signal<Void>
     }
 
     private let disposeBag = DisposeBag()
@@ -40,9 +41,10 @@ final class TravelHowViewModel {
     let selectedTransportRelay = BehaviorRelay<CustomSelectableButton?>(value: nil)
     let selectedCategoriesRelay = BehaviorRelay<[CustomButton]>(value: [])
     private let navigateToPrevRelay = PublishRelay<Void>()
-    private let navigateToNextRelay = PublishRelay<Void>()
+    let navigateToNextRelay = PublishRelay<Void>()
     private let isLoadingRelay = BehaviorRelay<Bool>(value: false)
     private let errorRelay = PublishRelay<String>()
+    private let showGeneratedConfirmModalRelay = PublishRelay<Void>()
 
     func transform(input: Input) -> Output {
         input.transportTapped
@@ -102,7 +104,10 @@ final class TravelHowViewModel {
                     }
 
                     try await self.usecase.generatePlan(planId: self.planId)
-                    await MainActor.run { self.navigateToNextRelay.accept(()) }
+                    await MainActor.run {
+                        self.showGeneratedConfirmModalRelay.accept(())
+                        
+                    }
                 }
                 .asObservable()
                 .catch { [weak self] error in
@@ -124,7 +129,8 @@ final class TravelHowViewModel {
             navigateToPrev: navigateToPrevRelay.asDriver(onErrorDriveWith: .empty()),
             navigateToNext: navigateToNextRelay.asDriver(onErrorDriveWith: .empty()),
             isLoading: isLoadingRelay.asDriver(),
-            errorMessage: errorRelay.asSignal()
+            errorMessage: errorRelay.asSignal(),
+            showGeneratedConfirmModal: showGeneratedConfirmModalRelay.asSignal()
         )
     }
 }

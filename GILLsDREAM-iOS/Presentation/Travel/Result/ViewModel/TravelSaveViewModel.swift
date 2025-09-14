@@ -10,7 +10,14 @@ import RxSwift
 import RxCocoa
 
 final class TravelSaveViewModel: ViewModelType {
+    private let planId: Int
+    private let usecase: PlanUsecase
 
+    init(planId: Int, usecase: PlanUsecase = PlanUsecaseImpl(repository: PlanRepositoryImpl())) {
+        self.planId = planId
+        self.usecase = usecase
+    }
+    
     struct Input {
         let profileImageButtonTapped: Observable<Void>
         let travelNameInput: Observable<String>
@@ -19,17 +26,19 @@ final class TravelSaveViewModel: ViewModelType {
 
     struct Output {
         let selectedImage: Driver<UIImage>
-        let nicknameCountText: Driver<String>
+        let travelNameCountText: Driver<String>
+        let isNextEnabled: Driver<Bool>
         let navigateToNext: Driver<Void>
-        let showToast: Signal<String>
+        let errorMessage: Signal<String>
     }
 
     var disposeBag = DisposeBag()
 
     private let selectedImageRelay = PublishRelay<UIImage>()
     private let travelNameRelay = BehaviorRelay<String>(value: "")
+    private let isNextEnabledRelay = BehaviorRelay<Bool>(value: false)
     private let navigateToNextRelay = PublishRelay<Void>()
-    private let toastRelay = PublishRelay<String>()
+    private let errorRelay = PublishRelay<String>()
     private let imagePickerService = ImagePickerService()
 
     func transform(input: Input) -> Output {
@@ -51,32 +60,62 @@ final class TravelSaveViewModel: ViewModelType {
             .bind(to: travelNameRelay)
             .disposed(by: disposeBag)
 
-        // 유효성 체크 후 네비게이트 or 토스트
+        // 다음 버튼 탭 처리
+        travelNameRelay
+            .map { !$0.isEmpty }
+            .distinctUntilChanged()
+            .bind(to: isNextEnabledRelay)
+            .disposed(by: disposeBag)
+
+        let combinedInput = Observable.combineLatest(
+            travelNameRelay.asObservable(),
+            selectedImageRelay
+                .asObservable()
+                .map { Optional($0) }
+                .startWith(nil),
+            isNextEnabledRelay.asObservable()
+        )
+
         input.saveButtonTapped
-            .withLatestFrom(travelNameRelay)
-            .subscribe(onNext: { [weak self] name in
-                guard let self = self else { return }
-                if name.isEmpty {
-                    self.toastRelay.accept("여행 이름을 입력해 주세요.")
-                } else {
-                    self.navigateToNextRelay.accept(())
+            .withLatestFrom(combinedInput)
+            .flatMapLatest { [weak self] name, image, enabled -> Observable<Void> in
+                guard let self else { return .empty() }
+
+                guard enabled else {
+                    self.errorRelay.accept("여행이름을 입력해 주세요.")
+                    return .empty()
                 }
-            })
+                
+                return RxAsync.run {
+                    try await self.usecase.updatePlanProfile(
+                        planId: self.planId,
+                        title: name,
+                        imageData: image?.jpegData(compressionQuality: 0.8)
+                    )
+                }
+                .asObservable()
+                .catch { [weak self] error in
+                    self?.errorRelay.accept(error.displayMessage)
+                    return .empty()
+                }
+            }
+            .bind(to: navigateToNextRelay)
             .disposed(by: disposeBag)
 
         return Output(
             selectedImage: selectedImageRelay
                 .asDriver(onErrorDriveWith: .empty()),
 
-            nicknameCountText: travelNameRelay
+            travelNameCountText: travelNameRelay
                 .map { "\($0.count)/10" }
                 .asDriver(onErrorJustReturn: "0/10"),
-
+            
+            isNextEnabled: isNextEnabledRelay.asDriver(onErrorJustReturn: false),
+            
             navigateToNext: navigateToNextRelay
                 .asDriver(onErrorDriveWith: .empty()),
-
-            showToast: toastRelay
-                .asSignal()
+            
+            errorMessage: errorRelay.asSignal()
         )
     }
 }

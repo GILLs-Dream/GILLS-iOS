@@ -25,7 +25,8 @@ final class TravelResultView: UIView {
     let containerView = UIView()
     let travelDayResultView = TravelDayResultView()
     let summaryView = UILabel()
-    let primaryButton = CustomButton(title: "여행 저장하기")
+    let saveButton = CustomButton(title: "여행 저장하기")
+    let loadingLabel = UILabel()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -47,12 +48,13 @@ final class TravelResultView: UIView {
             titleLabel,
             travelDaysCollectionView,
             containerView,
-            primaryButton
+            saveButton
         ].forEach { addSubview($0) }
         
         [
             travelDayResultView,
             summaryView,
+            loadingLabel
         ].forEach { containerView.addSubview($0) }
     }
 
@@ -70,8 +72,15 @@ final class TravelResultView: UIView {
         }
         
         summaryView.do {
-            $0.attributedText = "요약 정보를 불러오고 있습니다.".pretendardAttributedString(style: .body1)
+            $0.attributedText = "요약 정보를 불러오고 있습니다. (약 10초 소요)".pretendardAttributedString(style: .body1)
             $0.numberOfLines = 0
+            $0.isHidden = true
+        }
+        
+        loadingLabel.do {
+            $0.attributedText = "여행 계획을 불러오고 있습니다.\n(최대 10초 소요)".pretendardAttributedString(style: .body1)
+            $0.textAlignment = .center
+            $0.numberOfLines = 2
             $0.isHidden = true
         }
     }
@@ -89,7 +98,7 @@ final class TravelResultView: UIView {
             self.daysHeightConstraint = $0.height.equalTo(28).constraint
         }
         
-        primaryButton.snp.makeConstraints {
+        saveButton.snp.makeConstraints {
             $0.height.equalTo(51)
             $0.horizontalEdges.equalToSuperview().inset(43)
             $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
@@ -98,7 +107,7 @@ final class TravelResultView: UIView {
         containerView.snp.makeConstraints {
             $0.top.equalTo(travelDaysCollectionView.snp.bottom).offset(16)
             $0.horizontalEdges.equalToSuperview().inset(24)
-            $0.bottom.equalTo(primaryButton.snp.top).offset(-16)
+            $0.bottom.equalTo(saveButton.snp.top).offset(-16)
         }
         
         travelDayResultView.snp.makeConstraints {
@@ -107,6 +116,10 @@ final class TravelResultView: UIView {
         
         summaryView.snp.makeConstraints {
             $0.top.horizontalEdges.equalToSuperview()
+        }
+        
+        loadingLabel.snp.makeConstraints {
+            $0.center.equalToSuperview()
         }
     }
 }
@@ -130,11 +143,11 @@ extension TravelResultView {
         case .day:
             travelDayResultView.isHidden = false
             summaryView.isHidden = true
-            primaryButton.updateTitle("여행 저장하기")
+            saveButton.updateTitle("여행 저장하기")
         case .summary:
             travelDayResultView.isHidden = true
             summaryView.isHidden = false
-            primaryButton.updateTitle("여행 저장하기")
+            saveButton.updateTitle("여행 저장하기")
         }
     }
     
