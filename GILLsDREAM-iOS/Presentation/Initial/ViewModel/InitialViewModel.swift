@@ -54,7 +54,25 @@ final class InitialViewModel: ViewModelType {
             .disposed(by: disposeBag)
 
         input.appleButtonTapped
-            .bind(to: successRelay)
+            .flatMapLatest { [weak self] _ -> Observable<Void> in
+                guard let self else { return .empty() }
+                return RxAsync.run {
+                    await MainActor.run { self.isLoadingRelay.accept(true) }
+                    defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
+
+                    let idToken = try await AppleAuthService.shared.fetchIdentityToken() // 애플 토큰 취득
+                    try await self.usecase.loginWithApple(identityToken: idToken)
+                    await MainActor.run {
+                        self.successRelay.accept(())
+                    }
+                }
+                .asObservable()
+                .catch { [weak self] error in
+                    self?.errorRelay.accept(error.displayMessage)
+                    return .empty()
+                }
+            }
+            .subscribe()
             .disposed(by: disposeBag)
 
         return Output(

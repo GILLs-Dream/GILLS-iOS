@@ -10,6 +10,7 @@ import UIKit
 
 enum MemberTargetType {
     case kakaoLogin(accessToken: String)
+    case appleLogin(identityToken: String)
     case logout
     case setting(nickname: String, marketingAgreement: Bool, imageData: Data?)
     case reissue(refreshToken: String)
@@ -22,6 +23,8 @@ extension MemberTargetType: BaseTargetType {
         switch self {
         case .kakaoLogin:
             return "/v1/member/oauth/kakao/login"
+        case .appleLogin:
+            return "/v1/member/oauth/apple/login"
         case .logout:
             return "/v1/member/logout"
         case .setting:
@@ -37,7 +40,7 @@ extension MemberTargetType: BaseTargetType {
     
     var method: Moya.Method {
         switch self {
-        case .kakaoLogin, .logout:
+        case .kakaoLogin, .appleLogin, .logout:
             return .post
         case .setting:
             return .patch
@@ -53,12 +56,16 @@ extension MemberTargetType: BaseTargetType {
         case .kakaoLogin(let accessToken):
             return .requestParameters(parameters: ["accessToken": accessToken],
                                       encoding: URLEncoding.queryString)
+        case .appleLogin(let token):
+            return .requestParameters(parameters: ["identityToken": token],
+                                      encoding: URLEncoding.httpBody)
+            
         case .logout, .info, .delete:
             return .requestPlain
             
         case let .setting(nickname, marketingAgreement, imageData):
             var parts: [MultipartFormData] = []
-
+            
             // profile part
             struct ProfilePayload: Encodable {
                 let nickname: String
@@ -78,7 +85,7 @@ extension MemberTargetType: BaseTargetType {
                     )
                 )
             }
-
+            
             // image part
             if let data = imageData {
                 parts.append(
@@ -102,18 +109,24 @@ extension MemberTargetType: BaseTargetType {
         switch self {
         case .kakaoLogin:
             return ["Content-Type": "application/json", "Accept": "application/json"]
-
+            
+        case .appleLogin:
+            return [
+                "Accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded; charset=utf-8"
+            ]
+            
         case .reissue(let refresh):
             return ["Accept": "application/json",
-                                       "X-Refresh-Token": refresh]
-
+                    "X-Refresh-Token": refresh]
+            
         case .info:
             var h: [String: String] = ["Accept": "application/json"]
             if let token = KeychainManager.shared.accessToken {
                 h["Authorization"] = "Bearer \(token)"
             }
             return h
-
+            
         default:
             var base: [String: String] = ["Content-Type": "application/json", "Accept": "application/json"]
             if let token = KeychainManager.shared.accessToken {
