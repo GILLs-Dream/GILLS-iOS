@@ -41,7 +41,7 @@ final class MainHomeViewModel: ViewModelType {
                     defer { Task { @MainActor in self.loadingRelay.accept(false) } }
                     let me = try await self.usecase.getInfo()
                     await MainActor.run {
-                        self.nicknameRelay.accept(me.nickname)
+                        self.nicknameRelay.accept(me.nickname!)
                     }
                 }
                 .asObservable()
