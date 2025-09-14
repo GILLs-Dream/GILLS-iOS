@@ -52,6 +52,11 @@ final class MyPageViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
 
+        output.showEmail
+            .map { !$0 }
+            .drive(rootView.emailLabel.rx.isHidden)
+            .disposed(by: disposeBag)
+        
         output.email
             .drive(onNext: { [weak self] email in
                 self?.rootView.apply(email: email)

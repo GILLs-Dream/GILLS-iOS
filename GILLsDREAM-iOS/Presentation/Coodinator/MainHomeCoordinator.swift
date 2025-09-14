@@ -84,6 +84,9 @@ final class MainHomeCoordinator: Coordinator {
         vc.onPrev = { [weak self] in
             self?.navigationController.popViewController(animated: false)
         }
+        vc.onFail = { [weak self] in
+            self?.showMainHomeVC()
+        }
         navigationController.pushViewController(vc, animated: false)
     }
 
@@ -95,7 +98,6 @@ final class MainHomeCoordinator: Coordinator {
         vc.onMap = { [weak self] items in
             self?.showMapModal(with: items)
         }
-        print("🚨 navController: \(navigationController)")
         navigationController.setViewControllers([vc], animated: false)
     }
     
