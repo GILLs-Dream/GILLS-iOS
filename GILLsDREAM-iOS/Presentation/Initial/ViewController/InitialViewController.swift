@@ -12,6 +12,7 @@ import AuthenticationServices
 
 final class InitialViewController: UIViewController {
     var onLogin: (() -> Void)?
+    var onNeedOnboarding: (() -> Void)?
 
     private let disposeBag = DisposeBag()
     private let rootView = InitialView()
@@ -35,17 +36,29 @@ final class InitialViewController: UIViewController {
 
         let output = viewModel.transform(input: input)
 
-        output.loginSucceeded
-            .emit(onNext: { [weak self] in
-                self?.onLogin?()
-            })
+        output.showMain
+            .emit(onNext: { [weak self] in self?.onLogin?() })
             .disposed(by: disposeBag)
 
+        output.showOnboarding
+            .emit(onNext: { [weak self] in self?.onNeedOnboarding?() })
+            .disposed(by: disposeBag)
+        
         output.isLoading
-            .drive(onNext: { [weak self] loading in
+            .drive(onNext: { [weak self] isLoading in
                 guard let self else { return }
-                self.rootView.kakaoButton.isEnabled = !loading
-                self.rootView.appleButton.isEnabled = !loading
+                rootView.kakaoButton.isEnabled = !isLoading
+                rootView.appleButton.isEnabled = !isLoading
+
+                let host = self.tabBarController?.view ?? self.view
+                if isLoading {
+                    LoadingOverlayView.shared.updateText("로그인 중입니다.")
+                    LoadingOverlayView.shared.show(in: host!)
+                    self.view.isUserInteractionEnabled = false
+                } else {
+                    LoadingOverlayView.shared.hide()
+                    self.view.isUserInteractionEnabled = true
+                }
             })
             .disposed(by: disposeBag)
 

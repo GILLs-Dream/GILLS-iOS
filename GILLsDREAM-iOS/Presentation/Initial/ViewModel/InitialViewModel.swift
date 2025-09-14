@@ -22,17 +22,28 @@ final class InitialViewModel: ViewModelType {
     }
 
     struct Output {
-        let loginSucceeded: Signal<Void>
+        let showMain: Signal<Void>
+        let showOnboarding: Signal<Void>
         let isLoading: Driver<Bool>
         let errorMessage: Signal<String>
     }
 
     var disposeBag = DisposeBag()
     private let isLoadingRelay = BehaviorRelay<Bool>(value: false)
-    private let successRelay = PublishRelay<Void>()
+    private let showMainRelay = PublishRelay<Void>()
+    private let showOnboardingRelay = PublishRelay<Void>()
     private let errorRelay = PublishRelay<String>()
     
     func transform(input: Input) -> Output {
+
+        func route(using res: LoginResponseDTO) {
+            if res.needOnboarding {
+                showOnboardingRelay.accept(())
+            } else {
+                showMainRelay.accept(())
+            }
+        }
+
         input.kakaoButtonTapped
             .flatMapLatest { [weak self] _ -> Observable<Void> in
                 guard let self else { return .empty() }
@@ -41,8 +52,8 @@ final class InitialViewModel: ViewModelType {
                     defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
 
                     let kakaoAccess = try await self.kakaoAuth.fetchAccessToken()
-                    try await self.usecase.loginWithKakao(accessToken: kakaoAccess) // JWT 저장
-                    await MainActor.run { self.successRelay.accept(()) }
+                    let res = try await self.usecase.loginWithKakao(accessToken: kakaoAccess)
+                    await MainActor.run { route(using: res) }
                 }
                 .asObservable()
                 .catch { [weak self] error in
@@ -50,8 +61,7 @@ final class InitialViewModel: ViewModelType {
                     return .empty()
                 }
             }
-            .subscribe()
-            .disposed(by: disposeBag)
+            .subscribe().disposed(by: disposeBag)
 
         input.appleButtonTapped
             .flatMapLatest { [weak self] _ -> Observable<Void> in
@@ -60,11 +70,9 @@ final class InitialViewModel: ViewModelType {
                     await MainActor.run { self.isLoadingRelay.accept(true) }
                     defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
 
-                    let idToken = try await AppleAuthService.shared.fetchIdentityToken() // 애플 토큰 취득
-                    try await self.usecase.loginWithApple(identityToken: idToken)
-                    await MainActor.run {
-                        self.successRelay.accept(())
-                    }
+                    let idtk = try await AppleAuthService.shared.fetchIdentityToken()
+                    let res = try await self.usecase.loginWithApple(identityToken: idtk)
+                    await MainActor.run { route(using: res) }
                 }
                 .asObservable()
                 .catch { [weak self] error in
@@ -72,11 +80,11 @@ final class InitialViewModel: ViewModelType {
                     return .empty()
                 }
             }
-            .subscribe()
-            .disposed(by: disposeBag)
+            .subscribe().disposed(by: disposeBag)
 
         return Output(
-            loginSucceeded: successRelay.asSignal(),
+            showMain: showMainRelay.asSignal(),
+            showOnboarding: showOnboardingRelay.asSignal(),
             isLoading: isLoadingRelay.asDriver(),
             errorMessage: errorRelay.asSignal()
         )

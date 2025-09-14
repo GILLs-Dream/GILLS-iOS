@@ -12,16 +12,12 @@ final class AuthRepositoryImpl: AuthRepository {
     private let publicProvider = Providers.memberPublic
     private let userProvider = Providers.memberUser
     
-    func exchangeKakaoToken(_ kakaoAccess: String) async throws -> (access: String, refresh: String) {
-        let res = try await publicProvider.asyncRequest(.kakaoLogin(accessToken: kakaoAccess))
-        let dto = try JSONDecoder().decode(KakaoLoginResponseDTO.self, from: res.data)
-        return (dto.accessToken, dto.refreshToken)
+    func kakaoLogin(accessToken: String) async throws -> LoginResponseDTO {
+        try await publicProvider.asyncRequest(.kakaoLogin(accessToken: accessToken), as: LoginResponseDTO.self)
     }
     
-    func exchangeAppleToken(_ identityToken: String) async throws -> (access: String, refresh: String) {
-        let res = try await publicProvider.asyncRequest(.appleLogin(identityToken: identityToken))
-        let dto = try JSONDecoder().decode(AppleLoginResponseDTO.self, from: res.data)
-        return (dto.accessToken, dto.refreshToken)
+    func appleLogin(identityToken: String) async throws -> LoginResponseDTO {
+        try await publicProvider.asyncRequest(.appleLogin(identityToken: identityToken), as: LoginResponseDTO.self)
     }
     
     func logout() async throws {
