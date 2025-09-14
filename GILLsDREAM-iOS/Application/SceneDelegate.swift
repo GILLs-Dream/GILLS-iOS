@@ -23,6 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         navigationController.interactivePopGestureRecognizer?.isEnabled = false
         self.window?.rootViewController = navigationController
         self.window?.makeKeyAndVisible()
+        self.window?.overrideUserInterfaceStyle = .light // 라이트 모드
         
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             DispatchQueue.main.async {

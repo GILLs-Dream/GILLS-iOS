@@ -12,7 +12,7 @@ final class MainHomeCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
     var type: CoordinatorType { .main }
-    private let flowViewModel = TravelRequestFlowViewModel()
+    private var flowViewModel = TravelRequestFlowViewModel()
     
     init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -23,13 +23,19 @@ final class MainHomeCoordinator: Coordinator {
     }
     
     func showMainHomeVC() {
+        flowViewModel = TravelRequestFlowViewModel()
         let vc = MainHomeViewController()
         vc.onStart = { [weak self] in
-            self?.showTravelRequestVC()
+            self?.startNewTravelFlow()
         }
         navigationController.setViewControllers([vc], animated: false)
     }
-    
+
+    private func startNewTravelFlow() {  // 진입 직전에 한 번 더 안전하게 새로 생성
+        flowViewModel = TravelRequestFlowViewModel()
+        showTravelRequestVC()
+    }
+
     private func showTravelRequestVC() {
         let vc = TravelRequestViewController(flowViewModel: flowViewModel)
         vc.onNext = { [weak self] in

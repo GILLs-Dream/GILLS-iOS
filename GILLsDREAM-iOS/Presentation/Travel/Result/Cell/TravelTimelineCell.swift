@@ -26,6 +26,8 @@ final class TravelTimelineCell: UITableViewCell {
         static let inset: CGFloat = 0   // 위/아래 여백
         static let hInset: CGFloat = 0  // 좌우 여백
     }
+    
+    private var dottedLineHeightConstraint: Constraint?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -78,7 +80,7 @@ final class TravelTimelineCell: UITableViewCell {
             $0.numberOfLines = 1
         }
         dottedLine.do {
-            $0.image = .imgDottedLine // 세로 점선 이미지(2px 폭 권장)
+            $0.image = .imgDottedLine // 세로 점선 이미지
             $0.contentMode = .scaleToFill
         }
     }
@@ -87,9 +89,9 @@ final class TravelTimelineCell: UITableViewCell {
         // 점선: 높이 = 이미지 높이
         dottedLine.snp.makeConstraints {
             $0.top.equalToSuperview().inset(Const.inset)
-            $0.width.equalTo(Const.lineWidth)
-            $0.height.equalTo(Const.image) // 점선 높이 = 이미지 높이
             $0.leading.equalToSuperview().offset(Const.hInset + Const.image/2 - Const.lineWidth/2)
+            $0.width.equalTo(Const.lineWidth)
+            self.dottedLineHeightConstraint = $0.height.equalTo(Const.image).constraint
         }
 
         // 점선 중앙에 이동거리 라벨
@@ -127,6 +129,7 @@ extension TravelTimelineCell {
         titleLabel.attributedText = place.name.pretendardAttributedString(style: .body0)
         distanceLabel.isHidden = true
         dottedLine.isHidden = true // 첫 셀만 점선 숨김
+        dottedLineHeightConstraint?.update(offset: 0)
         setNeedsLayout()
     }
 
@@ -139,6 +142,7 @@ extension TravelTimelineCell {
         let min = max(0, Int(round(Double(route.time) / 60.0)))
         let text = "\(km)km, 약 \(min)분"
 
+        dottedLineHeightConstraint?.update(offset: 56)
         distanceLabel.attributedText = text.pretendardAttributedString(style: .body3)
         distanceLabel.isHidden = false
         dottedLine.isHidden = false

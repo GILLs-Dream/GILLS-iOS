@@ -80,8 +80,8 @@ final class TravelRequestView: UIView {
             $0.layer.borderColor = UIColor.white.cgColor
             $0.font = .PretendardStyle.subtitle6.font
             $0.textColor = .white
-            $0.textContainerInset = .init(top: 15, left: 17, bottom: 15, right: 53)
-            $0.isScrollEnabled = false
+            $0.textContainerInset = .init(top: 17, left: 17, bottom: 15, right: 53)
+            $0.isScrollEnabled = true
         }
         
         requestPlaceHolder.do {
@@ -123,7 +123,7 @@ final class TravelRequestView: UIView {
         requestTextView.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(21)
             $0.bottom.equalTo(self.keyboardLayoutGuide.snp.top).offset(-100)
-            $0.height.greaterThanOrEqualTo(60)
+            $0.height.equalTo(60)
         }
         
         requestPlaceHolder.snp.makeConstraints {
@@ -148,7 +148,7 @@ extension TravelRequestView {
     func update(for step: TravelRequestStep, with location: String? = nil) {
         switch step {
         case .region:
-            exampleLabel.attributedText = "묵호".pretendardAttributedString(style: .title4, color: .mainYellow)
+            exampleLabel.attributedText = "제주".pretendardAttributedString(style: .title4, color: .mainYellow)
             extraLabel.isHidden = true
             underlineView.isHidden = true
             requestPlaceHolder.attributedText = "어디 지역으로 여행을 계획하시나요?".pretendardAttributedString(style: .subtitle6)

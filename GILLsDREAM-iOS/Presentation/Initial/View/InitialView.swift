@@ -67,9 +67,9 @@ final class InitialView: UIView {
         }
         
         appleButton.do {
-            $0.setButtonStyle(title: "애플로 로그인",
-                              titleColor: .white,
-                              backgroundColor: .black)
+            $0.setImage(.appleButton, for: .normal)
+            $0.frame = CGRect(x: 50, y: 100, width: 350, height: 50)
+            $0.imageView?.contentMode = .scaleAspectFit
         }
     }
     

@@ -125,7 +125,8 @@ iOSInjectionProject/
 ### Xcode Patch ###
 **/APIKey.swift
 *.xcconfig
-*.xcodeproj/*
+*.xcodeproj/
+*.TosContent.swift
 !*.xcodeproj/project.pbxproj
 !*.xcodeproj/xcshareddata/
 !*.xcodeproj/project.xcworkspace/

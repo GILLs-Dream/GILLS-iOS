@@ -12,6 +12,7 @@ enum Config {
         enum Plist {
             static let baseURL = "BASE_URL"
             static let appKey = "APP_KEY"
+            static let appName = "APP_NAME"
         }
     }
     
@@ -23,7 +24,7 @@ enum Config {
     }()
     
     static let service: String = {
-        let base = Bundle.main.bundleIdentifier ?? "com.gillsdream.ios"
+        let base = Bundle.main.bundleIdentifier ?? "sammy.GILLsDREAM-iOS"
         return base + ".keychain"
     }()
 }
@@ -40,6 +41,13 @@ extension Config {
     static let appKey: String = {
         guard let key = Config.infoDictionary[Keys.Plist.appKey] as? String else {
             fatalError("APP_KEY is not set in plist for this configuration.")
+        }
+        return key
+    }()
+    
+    static let appName: String = {
+        guard let key = Config.infoDictionary[Keys.Plist.appName] as? String else {
+            fatalError("APP_NAME is not set in plist for this configuration.")
         }
         return key
     }()
