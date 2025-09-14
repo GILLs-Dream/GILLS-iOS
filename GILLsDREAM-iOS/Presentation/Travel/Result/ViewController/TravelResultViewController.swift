@@ -50,7 +50,7 @@ final class TravelResultViewController: TravelViewController {
         super.viewDidLoad()
         setUpCollectionViewDelegate()
         bindViewModel()
-        rootView.primaryButton.isHidden = shouldHideSaveButton
+        rootView.saveButton.isHidden = shouldHideSaveButton
     }
     
     override func viewDidLayoutSubviews() {
@@ -151,6 +151,12 @@ final class TravelResultViewController: TravelViewController {
                 self.daysCount = count
                 self.rootView.travelDaysCollectionView.reloadData()
                 self.updateCollectionHeight(itemsCount: count + 1)
+            })
+            .disposed(by: disposeBag)
+        
+        rootView.saveButton.rx.tap
+            .bind(onNext: { [weak self] in
+                self?.onSave?()
             })
             .disposed(by: disposeBag)
     }

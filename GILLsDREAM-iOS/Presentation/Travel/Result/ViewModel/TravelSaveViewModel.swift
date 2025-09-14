@@ -65,12 +65,17 @@ final class TravelSaveViewModel: ViewModelType {
             .map { !$0.isEmpty }
             .distinctUntilChanged()
 
+        let combinedInput = Observable.combineLatest(
+            travelNameRelay.asObservable(),
+            selectedImageRelay
+                .asObservable()
+                .map { Optional($0) }
+                .startWith(nil),
+            isNextEnabledRelay.asObservable()
+        )
+
         input.saveButtonTapped
-            .withLatestFrom(Observable.combineLatest(
-                travelNameRelay.asObservable(),
-                selectedImageRelay.asObservable().map { Optional($0) }.startWith(nil),
-                isNextEnabledRelay.asObservable()
-            ))
+            .withLatestFrom(combinedInput)
             .flatMapLatest { [weak self] name, image, enabled -> Observable<Void> in
                 guard let self else { return .empty() }
 
@@ -86,6 +91,7 @@ final class TravelSaveViewModel: ViewModelType {
                         imageData: image?.jpegData(compressionQuality: 0.8)
                     )
                 }
+                .asObservable()
                 .catch { [weak self] error in
                     self?.errorRelay.accept(error.displayMessage)
                     return .empty()
