@@ -24,7 +24,7 @@ enum Config {
     }()
     
     static let service: String = {
-        let base = Bundle.main.bundleIdentifier ?? "sammy.GILLsDREAM-iOS"
+        let base = Bundle.main.bundleIdentifier ?? "com.sammy.GILLsDREAM-iOS"
         return base + ".keychain"
     }()
 }
