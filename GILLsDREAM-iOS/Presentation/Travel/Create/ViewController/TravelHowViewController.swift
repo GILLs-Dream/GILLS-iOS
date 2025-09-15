@@ -16,6 +16,7 @@ final class TravelHowViewController: TravelViewController {
     private let disposeBag = DisposeBag()
     var onPrev: (() -> Void)?
     var onComplete: ((Int) -> Void)?
+    var onFail: (() -> Void)?
     
     init(flowViewModel: TravelRequestFlowViewModel) {
         self.flowViewModel = flowViewModel
@@ -101,6 +102,7 @@ final class TravelHowViewController: TravelViewController {
                 let hostView = self.tabBarController?.view ?? self.view.window ?? self.view
                 LoadingOverlayView.shared.show(in: hostView!)
                 if isLoading {
+                    LoadingOverlayView.shared.updateText("길동이가 열심히\n여행을 생성 중이에요\n(최대 1분 소요)")
                     LoadingOverlayView.shared.show(in: hostView!)
                     self.rootView.doneButton.isEnabled = false
                     self.view.isUserInteractionEnabled = false
@@ -128,6 +130,21 @@ final class TravelHowViewController: TravelViewController {
         output.showGeneratedConfirmModal
             .emit(onNext: { [weak self] in
                 self?.presentGeneratedModal()
+            })
+            .disposed(by: disposeBag)
+        
+        output.showGenerationFailed
+            .emit(onNext: { [weak self] in
+                guard let self else { return }
+                let alert = UIAlertController(
+                    title: "생성 실패",
+                    message: "길동이가 여행 생성을 실패하였습니다.\n잠시 후 다시 시도해주세요.",
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+                    self.onFail?()
+                }))
+                self.present(alert, animated: true)
             })
             .disposed(by: disposeBag)
         

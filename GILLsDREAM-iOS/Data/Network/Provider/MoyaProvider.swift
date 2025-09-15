@@ -24,6 +24,24 @@ public extension MoyaProvider {
         }
     }
     
+    func asyncRequest<T: Decodable>(_ target: Target, as type: T.Type) async throws -> T {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.request(target) { result in
+                switch result {
+                case .success(let response):
+                    do {
+                        let decoded = try JSONDecoder().decode(T.self, from: response.data)
+                        continuation.resume(returning: decoded)
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
     /// 공통 요청 + 디코딩 + 에러 매핑
     func requestDecodableAutoRefresh<T: Decodable>(
         _ target: Target,
@@ -120,7 +138,7 @@ extension MoyaProvider where Target: TargetType {
         let chain = Interceptor(adapters: [UserAuthInterceptor.shared],
                                 retriers: [UserAuthInterceptor.shared])
         
-        let monitors: [EventMonitor] = [AFEventLogger()]
+        // let monitors: [EventMonitor] = [AFEventLogger()]
         
         let session: Alamofire.Session = {
             switch auth {

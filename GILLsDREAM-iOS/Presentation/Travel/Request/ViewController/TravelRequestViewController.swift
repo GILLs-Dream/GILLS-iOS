@@ -71,6 +71,7 @@ final class TravelRequestViewController: BaseViewController {
                 let hostView = self.tabBarController?.view ?? self.view.window ?? self.view
                 if isLoading {
                     // self.rootView.lottieView.startAnimating()
+                    LoadingOverlayView.shared.updateText("길동이가 열심히\n여행을 생성 중이에요\n(최대 1분 소요)")
                     LoadingOverlayView.shared.show(in: hostView!)
                     self.rootView.sendButton.isEnabled = false
                     self.view.isUserInteractionEnabled = false

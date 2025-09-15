@@ -29,6 +29,7 @@ final class TravelSaveViewModel: ViewModelType {
         let travelNameCountText: Driver<String>
         let isNextEnabled: Driver<Bool>
         let navigateToNext: Driver<Void>
+        let isLoading: Driver<Bool>
         let errorMessage: Signal<String>
     }
 
@@ -39,6 +40,7 @@ final class TravelSaveViewModel: ViewModelType {
     private let isNextEnabledRelay = BehaviorRelay<Bool>(value: false)
     private let navigateToNextRelay = PublishRelay<Void>()
     private let errorRelay = PublishRelay<String>()
+    private let isLoadingRelay = BehaviorRelay<Bool>(value: false)
     private let imagePickerService = ImagePickerService()
 
     func transform(input: Input) -> Output {
@@ -86,7 +88,11 @@ final class TravelSaveViewModel: ViewModelType {
                     return .empty()
                 }
                 
-                return RxAsync.run {
+                return RxAsync.run { [weak self] in
+                    guard let self else { return }
+                    await MainActor.run { self.isLoadingRelay.accept(true) }
+                    defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
+
                     try await self.usecase.updatePlanProfile(
                         planId: self.planId,
                         title: name,
@@ -114,6 +120,8 @@ final class TravelSaveViewModel: ViewModelType {
             
             navigateToNext: navigateToNextRelay
                 .asDriver(onErrorDriveWith: .empty()),
+            
+            isLoading: isLoadingRelay.asDriver(),
             
             errorMessage: errorRelay.asSignal()
         )

@@ -32,6 +32,7 @@ final class TravelResultViewModel {
         let timeline: Driver<[TravelTimelineRow]>
         let summary: Driver<PlanSummary?>
         let isSummaryMode: Driver<Bool>
+        let summaryText: Driver<String?>
         let title: Driver<String>
         let daysCount: Driver<Int>
         let isLoading: Driver<Bool>
@@ -43,29 +44,40 @@ final class TravelResultViewModel {
     private let errorRelay = PublishRelay<String>()
     let resultRelay = BehaviorRelay<PlanResult?>(value: nil)
     let summaryRelay = BehaviorRelay<PlanSummary?>(value: nil)
+    private let summaryTextRelay = BehaviorRelay<String?>(value: nil)
     private let selectedIndexRelay = BehaviorRelay<Int>(value: 0)
     private let timelineRelay = BehaviorRelay<[TravelTimelineRow]>(value: [])
+    private var rowsCache: [Int: [TravelTimelineRow]] = [:]
+    private var summaryLoaded = false
 
     func transform(input: Input) -> Output {
         // 1) 최초 결과 로드
         input.viewWillAppear
+            .take(1)
             .flatMapLatest { [weak self] _ -> Observable<Void> in
                 guard let self else { return .empty() }
                 return RxAsync.run { [weak self] in
                     guard let self else { return }
                     await MainActor.run { self.isLoadingRelay.accept(true) }
-                    defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
 
                     let result = try await self.usecase.getGeneratedPlan(planId: self.planId)
+                    let summary = try await self.usecase.getGeneratedPlanSummary(planId: self.planId)
+                    let builtCache = self.makeRowsCache(from: result)
+
                     await MainActor.run {
+                        self.rowsCache = builtCache
                         self.resultRelay.accept(result)
-                        self.summaryRelay.accept(nil)
                         self.selectedIndexRelay.accept(0)
-                        self.updateRows(with: result, dayIndex: 0)
+                        self.timelineRelay.accept(builtCache[0] ?? [])
+                        self.isLoadingRelay.accept(false)
+                        self.summaryRelay.accept(summary)
+                        self.summaryTextRelay.accept(summary.summary)
+                        self.summaryLoaded = true
                     }
                 }
                 .asObservable()
                 .catch { [weak self] error in
+                    Task { @MainActor in self?.isLoadingRelay.accept(false) }
                     self?.errorRelay.accept(error.displayMessage)
                     return .empty()
                 }
@@ -75,6 +87,7 @@ final class TravelResultViewModel {
 
         // 2) 날짜 선택
         input.daySelected
+            .distinctUntilChanged()
             .bind(to: selectedIndexRelay)
             .disposed(by: disposeBag)
 
@@ -82,36 +95,15 @@ final class TravelResultViewModel {
         Observable.combineLatest(selectedIndexRelay, resultRelay.compactMap { $0 })
             .flatMapLatest { [weak self] (index, result) -> Observable<Void> in
                 guard let self else { return .empty() }
-                return RxAsync.run { [weak self] in
-                    guard let self else { return }
-                    await MainActor.run { self.isLoadingRelay.accept(true) }
-                    defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
 
-                    let lastIndex = result.duration
-                    if index == lastIndex {
-                        if let cached = self.summaryRelay.value {
-                            await MainActor.run {
-                                self.summaryRelay.accept(cached)
-                                self.timelineRelay.accept([]) // 표는 비움
-                            }
-                        } else {
-                            let summary = try await self.usecase.getGeneratedPlanSummary(planId: self.planId)
-                            await MainActor.run {
-                                self.summaryRelay.accept(summary)
-                                self.timelineRelay.accept([])
-                            }
-                        }
-                    } else {
-                        await MainActor.run {
-                            self.summaryRelay.accept(nil)
-                            self.updateRows(with: result, dayIndex: index)
-                        }
-                    }
-                }
-                .asObservable()
-                .catch { [weak self] error in
-                    self?.errorRelay.accept(error.displayMessage)
-                    return .empty()
+                if index == result.duration {
+                    self.timelineRelay.accept([]) // 표 숨김
+                    return .just(())
+                } else {
+                    // n일차: 캐시 즉시 바인딩
+                    let rows = self.rowsCache[index] ?? []
+                    self.timelineRelay.accept(rows)
+                    return .just(())
                 }
             }
             .subscribe()
@@ -145,6 +137,7 @@ final class TravelResultViewModel {
             timeline: timelineRelay.asDriver(),
             summary: summaryRelay.asDriver(),
             isSummaryMode: isSummaryMode,
+            summaryText: summaryTextRelay.asDriver(),
             title: title,
             daysCount: daysCount,
             isLoading: isLoadingRelay.asDriver(),
@@ -153,6 +146,21 @@ final class TravelResultViewModel {
     }
 
     // MARK: Helpers
+    private func makeRowsCache(from result: PlanResult) -> [Int: [TravelTimelineRow]] {
+        var cache: [Int: [TravelTimelineRow]] = [:]
+        let days = result.perDayList
+        for idx in 0 ..< result.duration {
+            if let day = days.first(where: { $0.dayNum == idx + 1 }) ?? days[safe: idx] {
+                var rows: [TravelTimelineRow] = [.start(day.from)]
+                rows.append(contentsOf: day.routes.map { .route($0) })
+                cache[idx] = rows
+            } else {
+                cache[idx] = []
+            }
+        }
+        return cache
+    }
+    
     private func updateRows(with result: PlanResult, dayIndex: Int) {
         let perDay = result.perDayList.first { $0.dayNum == dayIndex + 1 }
             ?? (dayIndex < result.perDayList.count ? result.perDayList[dayIndex] : nil)
@@ -165,5 +173,11 @@ final class TravelResultViewModel {
         var rows: [TravelTimelineRow] = [.start(day.from)]
         rows.append(contentsOf: day.routes.map { .route($0) })
         timelineRelay.accept(rows)
+    }
+}
+
+private extension Array {
+    subscript(safe index: Int) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }

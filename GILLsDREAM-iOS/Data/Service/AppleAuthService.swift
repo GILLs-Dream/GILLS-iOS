@@ -49,7 +49,7 @@ extension AppleAuthService: ASAuthorizationControllerDelegate {
             // identityToken(Data) -> String
             if let tokenData = appleIdCredential.identityToken,
                let tokenString = String(data: tokenData, encoding: .utf8) {
-                print("🍎 Apple identityToken: \(tokenString.prefix(30))...")
+                // print("🍎 Apple identityToken: \(tokenString.prefix(30))...")
                 continuation?.resume(returning: tokenString)
                 continuation = nil
             } else { // 토큰이 없으면 에러 리턴
@@ -60,17 +60,17 @@ extension AppleAuthService: ASAuthorizationControllerDelegate {
                 )
                 continuation = nil
             }
-            if let email { print("email: \(email)") }
-            if let fullName { print("fullName: \(PersonNameComponentsFormatter().string(from: fullName))") }
-            if let authCode, let codeStr = String(data: authCode, encoding: .utf8) {
-                print("authorizationCode: \(codeStr.prefix(20))...")
-            }
+//            if let email { print("email: \(email)") }
+//            if let fullName { print("fullName: \(PersonNameComponentsFormatter().string(from: fullName))") }
+//            if let authCode, let codeStr = String(data: authCode, encoding: .utf8) {
+//                print("authorizationCode: \(codeStr.prefix(20))...")
+//            }
 
         case let passwordCredential as ASPasswordCredential:
             // iCloud 키체인
             let userIdentifier = passwordCredential.user
             let password = passwordCredential.password
-            print("🔑 iCloud Keychain credential – user: \(userIdentifier), pw: \(password)")
+            // print("🔑 iCloud Keychain credential – user: \(userIdentifier), pw: \(password)")
             continuation?.resume(
                 throwing: NSError(domain: "AppleAuth",
                                   code: -2,

@@ -67,7 +67,7 @@ final class UserAuthInterceptor: RequestInterceptor {
         if request.retryCount >= 2 {        // 최대 2회
             completion(.doNotRetry); return
         }
-        print("🟧 [RETRY?] status=\(response.statusCode), url=\(request.request?.url?.absoluteString ?? "")")
+//        print("🟧 [RETRY?] status=\(response.statusCode), url=\(request.request?.url?.absoluteString ?? "")")
 
         if let path = request.request?.url?.path, path.contains("/member/reissue") {
             completion(.doNotRetry); return
@@ -83,10 +83,10 @@ final class UserAuthInterceptor: RequestInterceptor {
 
         AuthService.shared.reissue { ok in
             if ok {
-                print("🟩 [REISSUE] success → retry")
+//                print("🟩 [REISSUE] success → retry")
                 RefreshCoordinator.shared.finish(.retry)
             } else {
-                print("🟥 [REISSUE] failed → logout & doNotRetry")
+//                print("🟥 [REISSUE] failed → logout & doNotRetry")
                 AuthService.shared.forceLogout()
                 RefreshCoordinator.shared.finish(.doNotRetry)
             }

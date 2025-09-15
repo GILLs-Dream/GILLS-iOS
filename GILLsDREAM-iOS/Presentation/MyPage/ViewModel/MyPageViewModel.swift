@@ -28,6 +28,7 @@ final class MyPageViewModel {
         let profile: Driver<String>
         let nickname: Driver<String>
         let email: Driver<String>
+        let showEmail: Driver<Bool>
         let showServiceTerms: Signal<Void>
         let showWithdrawModal: Signal<Void>
         let showLogoutModal: Signal<Void>
@@ -36,9 +37,10 @@ final class MyPageViewModel {
         let withdrawSucceeded: Signal<Void>
         let errorMessage: Signal<String>
     }
-
+    
     private let disposeBag = DisposeBag()
     private let loadingRelay = BehaviorRelay<Bool>(value: false)
+    private let showEmailRelay = BehaviorRelay<Bool>(value: true)
     private let showServiceRelay = PublishRelay<Void>()
     private let showWithdrawRelay = PublishRelay<Void>()
     private let showLogoutRelay = PublishRelay<Void>()
@@ -61,10 +63,13 @@ final class MyPageViewModel {
                     await MainActor.run { self.loadingRelay.accept(true) }
                     defer { Task { @MainActor in self.loadingRelay.accept(false) } }
                     let me = try await self.usecase.getInfo()
+                    let isApple = me.email!.hasSuffix("@privaterelay.appleid.com")
+                    
                     await MainActor.run {
                         self.profileRelay.accept(me.profile ?? "")
-                        self.nicknameRelay.accept(me.nickname)
-                        self.emailRelay.accept(me.email)
+                        self.nicknameRelay.accept(me.nickname ?? "")
+                        self.showEmailRelay.accept(!isApple)
+                        self.emailRelay.accept((isApple ? "" : me.email) ?? "")
                     }
                 }
                 .asObservable()
@@ -93,7 +98,7 @@ final class MyPageViewModel {
                 }
             }
             .subscribe().disposed(by: disposeBag)
-
+        
         // 회원탈퇴
         input.confirmWithdraw
             .flatMapLatest { [weak self] _ -> Observable<Void> in
@@ -111,11 +116,12 @@ final class MyPageViewModel {
                 }
             }
             .subscribe().disposed(by: disposeBag)
-
+        
         return Output(
             profile: profileRelay.asDriver(),
             nickname: nicknameRelay.asDriver(),
             email: emailRelay.asDriver(),
+            showEmail: showEmailRelay.asDriver(),
             showServiceTerms: showServiceRelay.asSignal(),
             showWithdrawModal: showWithdrawRelay.asSignal(),
             showLogoutModal: showLogoutRelay.asSignal(),

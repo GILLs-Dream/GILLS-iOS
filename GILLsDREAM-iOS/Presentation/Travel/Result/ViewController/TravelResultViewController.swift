@@ -91,6 +91,19 @@ final class TravelResultViewController: TravelViewController {
             .drive(rootView.travelDaysCollectionView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
         
+        output.isLoading
+            .drive(onNext: { [weak self] isLoading in
+                guard let self else { return }
+                let hostView = self.tabBarController?.view ?? self.view.window ?? self.view
+                if isLoading {
+                    LoadingOverlayView.shared.updateText("길동이가\n여행 결과를 불러오고 있어요!")
+                    LoadingOverlayView.shared.show(in: hostView!, alpha: 1.0)
+                } else {
+                    LoadingOverlayView.shared.hide()
+                }
+            })
+            .disposed(by: disposeBag)
+        
         let tableDataSource = RxTableViewSectionedReloadDataSource<TimelineSection>(
             configureCell: { [weak self] (_, tableView, indexPath, row) in
                 guard let cell = tableView.dequeueReusableCell(

@@ -39,7 +39,7 @@ class TravelSaveViewController: UIViewController {
         tabBarController?.isTabBarHidden = true
         bindViewModel()
         setUpDelegate()
-        observeKeyboardNotifications()
+//        observeKeyboardNotifications()
     }
     
     private func setUpDelegate() {
@@ -73,6 +73,19 @@ class TravelSaveViewController: UIViewController {
             .drive(onNext: { [weak self] enabled in
                 self?.rootView.saveButton.isEnabled = enabled
                 self?.rootView.updateNextButtonTheme(isAvailable: enabled)
+            })
+            .disposed(by: disposeBag)
+        
+        output.isLoading
+            .drive(onNext: { [weak self] isLoading in
+                guard let self else { return }
+                let hostView = self.tabBarController?.view ?? self.view.window ?? self.view
+                if isLoading {
+                    LoadingOverlayView.shared.updateText("길동이가 열심히\n여행을 저장 중이에요!")
+                    LoadingOverlayView.shared.show(in: hostView!)
+                } else {
+                    LoadingOverlayView.shared.hide()
+                }
             })
             .disposed(by: disposeBag)
         

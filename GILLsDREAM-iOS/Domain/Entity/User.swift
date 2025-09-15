@@ -20,7 +20,7 @@ public enum SocialProvider: String, Codable {
 
 struct MemberInfo {
     let id: Int
-    let email: String
-    let nickname: String
+    let email: String?
+    let nickname: String?
     let profile: String?
 }

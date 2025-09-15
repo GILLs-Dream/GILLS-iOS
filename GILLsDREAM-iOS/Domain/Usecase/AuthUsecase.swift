@@ -8,8 +8,8 @@
 import UIKit
 
 protocol AuthUsecase {
-    func loginWithKakao(accessToken: String) async throws
-    func loginWithApple(identityToken: String) async throws
+    func loginWithKakao(accessToken: String) async throws -> LoginResponseDTO
+    func loginWithApple(identityToken: String) async throws -> LoginResponseDTO
     func logout() async throws
     func updateSetting(nickname: String, profileImgData: Data?, agreed: Bool) async throws -> SettingResponseDTO
     func refreshAccessTokenIfNeeded() async throws -> String
@@ -21,19 +21,39 @@ final class AuthUsecaseImpl: AuthUsecase {
     private let repo: AuthRepository
     init(repo: AuthRepository = AuthRepositoryImpl()) { self.repo = repo }
     
-    func loginWithKakao(accessToken: String) async throws {
-        let tokens = try await repo.exchangeKakaoToken(accessToken)
-        KeychainManager.shared.setTokens(access: tokens.access,
-                                         refresh: tokens.refresh)
-        UserDefaultsManager.shared.isLogin = true
+    func loginWithKakao(accessToken: String) async throws -> LoginResponseDTO {
+        let res = try await repo.kakaoLogin(accessToken: accessToken)
+        persistLogin(res)
+        return res
+    }
+
+    func loginWithApple(identityToken: String) async throws -> LoginResponseDTO {
+        let res = try await repo.appleLogin(identityToken: identityToken)
+        persistLogin(res)
+        return res
     }
     
-    func loginWithApple(identityToken: String) async throws {
-        let (access, refresh) = try await repo.exchangeAppleToken(identityToken)
-        KeychainManager.shared.accessToken = access
-        KeychainManager.shared.refreshToken = refresh
+    private func persistLogin(_ res: LoginResponseDTO) {
+        KeychainManager.shared.setTokens(access: res.accessToken, refresh: res.refreshToken)
         UserDefaultsManager.shared.isLogin = true
+        UserDefaultsManager.shared.loginType = res.loginType.rawValue
+        UserDefaultsManager.shared.isOnboarding = !res.needOnboarding
     }
+
+    
+//    func loginWithKakao(accessToken: String) async throws {
+//        let tokens = try await repo.exchangeKakaoToken(accessToken)
+//        KeychainManager.shared.setTokens(access: tokens.access,
+//                                         refresh: tokens.refresh)
+//        UserDefaultsManager.shared.isLogin = true
+//    }
+//    
+//    func loginWithApple(identityToken: String) async throws {
+//        let (access, refresh) = try await repo.exchangeAppleToken(identityToken)
+//        KeychainManager.shared.accessToken = access
+//        KeychainManager.shared.refreshToken = refresh
+//        UserDefaultsManager.shared.isLogin = true
+//    }
     
     func logout() async throws {
         try await repo.logout()

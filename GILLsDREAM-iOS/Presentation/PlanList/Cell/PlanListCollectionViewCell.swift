@@ -67,6 +67,12 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
             $0.contentMode = .scaleAspectFill
         }
         
+        planTitle.do {
+            $0.numberOfLines = 1
+            $0.lineBreakMode = .byTruncatingTail
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
         pinImageView.do {
             $0.image = UIImage(systemName: "pin.fill")
             $0.tintColor = .white
@@ -94,6 +100,7 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
         planTitle.snp.makeConstraints {
             $0.top.equalTo(pinImageView.snp.bottom).offset(2)
             $0.leading.equalTo(pinImageView).offset(3)
+            $0.trailing.equalToSuperview().inset(20)
         }
         
         planDate.snp.makeConstraints {
@@ -137,6 +144,7 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
 extension PlanListCollectionViewCell {
     func configure(with model: Plan) {
         planTitle.attributedText = model.title.pretendardAttributedString(style: .subtitle5)
+        planTitle.lineBreakMode = .byTruncatingTail
         planDate.attributedText = model.dateRange?.pretendardAttributedString(style: .body3) ??
             "날짜 미정".pretendardAttributedString(style: .body3)
         pinImageView.isHidden = !model.isPinned

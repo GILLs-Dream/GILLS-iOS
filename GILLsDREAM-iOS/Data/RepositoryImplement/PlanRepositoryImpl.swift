@@ -33,12 +33,12 @@ final class PlanRepositoryImpl: PlanRepository {
         let api: ApiResponse<PlanIdResultDTO> = try await provider.requestDecodableAutoRefresh(.style(planId: planId, transport: transport, categories: categories), as: ApiResponse<PlanIdResultDTO>.self)
         return api.isSuccess
     }
-
+    
     func setCompanion(planId: Int, party: Int, companion: String) async throws -> Bool {
         let api: ApiResponse<PlanIdResultDTO> = try await provider.requestDecodableAutoRefresh(.companion(planId: planId, party: party, companion: companion), as: ApiResponse<PlanIdResultDTO>.self)
         return api.isSuccess
     }
-
+    
     func setDestination(planId: Int, travel: [TravelPlaceRequestDTO], stay: [StayPlaceRequestDTO]) async throws -> Bool {
         let api: ApiResponse<PlanIdResultDTO> = try await provider.requestDecodableAutoRefresh(.destination(planId: planId, travelPlaces: travel, stayPlaces: stay), as: ApiResponse<PlanIdResultDTO>.self)
         return api.isSuccess
@@ -61,7 +61,7 @@ final class PlanRepositoryImpl: PlanRepository {
             throw NetworkError.server(.init(code: api.code, message: api.message), status: 200)
         }
     }
-
+    
     func fetchGeneratedPlan(planId: Int) async throws -> PlanResultResponseDTO {
         let api: ApiResponse<PlanResultResponseDTO> = try await provider.requestDecodableAutoRefresh(
             .fetchGeneratedPlan(planId: planId),
@@ -72,7 +72,7 @@ final class PlanRepositoryImpl: PlanRepository {
         }
         return dto
     }
-
+    
     func fetchGeneratedPlanSummary(planId: Int) async throws -> PlanSummaryResponseDTO {
         let api: ApiResponse<PlanSummaryResponseDTO> = try await provider.requestDecodableAutoRefresh(
             .fetchGeneratedPlanSummary(planId: planId),
@@ -84,11 +84,13 @@ final class PlanRepositoryImpl: PlanRepository {
         return dto
     }
     
-    func updatePlanProfile(planId: Int, title: String, imageData: Data?) async throws -> Bool {
-        let response: ApiResponse<PlanProfileResponseDTO> = try await provider.requestDecodableAutoRefresh(
-            .profile(planId: planId, title: title, imageData: imageData),
-            as: ApiResponse<PlanProfileResponseDTO>.self
-        )
-        return response.isSuccess
+    func updatePlanProfile(planId: Int, title: String, imageData: Data?) async throws -> PlanIdResultDTO {
+        let res = try await provider.asyncRequest(
+            .profile(planId: planId, title: title, imageData: imageData))
+        let api = try JSONDecoder().decode(ApiResponse<PlanIdResultDTO>.self, from: res.data)
+        guard api.isSuccess, let dto = api.result else {
+            throw NetworkError.server(.init(code: api.code, message: api.message), status: res.statusCode)
+        }
+        return dto
     }
 }

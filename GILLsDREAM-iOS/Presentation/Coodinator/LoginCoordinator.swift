@@ -24,12 +24,10 @@ final class LoginCoordinator: Coordinator {
     private func showInitialVC() {
         let vc = InitialViewController()
         vc.onLogin = { [weak self] in
-            guard let self else { return }
-            if UserDefaultsManager.shared.isOnboarding {
-                self.finish()
-            } else {
-                self.startSignup()
-            }
+            self?.finish()
+        }
+        vc.onNeedOnboarding = { [weak self] in
+            self?.startSignup()
         }
         navigationController.setViewControllers([vc], animated: false)
     }

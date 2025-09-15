@@ -62,8 +62,7 @@ final class SignUpCoordinator: Coordinator {
         let viewModel = TosDetailViewModel(title: termsContent.title, content: termsContent.content)
         let vc = TosDetailViewController(viewModel: viewModel)
         vc.onDismiss = { [weak self] in
-            guard let self = self else { return }
-            self.navigationController.popViewController(animated: true)
+            vc.dismiss(animated: true)
         }
         vc.modalPresentationStyle = .pageSheet
         if let sheet = vc.sheetPresentationController {
