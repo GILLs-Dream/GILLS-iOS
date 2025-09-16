@@ -30,6 +30,7 @@ final class InitialViewController: UIViewController {
     
     private func bindViewModel() {
         let input = InitialViewModel.Input(
+            guestButtonTapped: rootView.guestButton.rx.tap.asObservable(),
             kakaoButtonTapped: rootView.kakaoButton.rx.tap.asObservable(),
             appleButtonTapped: rootView.appleButton.rx.tap.asObservable()
         )
@@ -49,6 +50,7 @@ final class InitialViewController: UIViewController {
                 guard let self else { return }
                 rootView.kakaoButton.isEnabled = !isLoading
                 rootView.appleButton.isEnabled = !isLoading
+                rootView.guestButton.isEnabled = !isLoading
 
                 let host = self.tabBarController?.view ?? self.view
                 if isLoading {

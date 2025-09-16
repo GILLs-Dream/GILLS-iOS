@@ -17,6 +17,7 @@ final class InitialViewModel: ViewModelType {
     }
     
     struct Input {
+        let guestButtonTapped: Observable<Void>
         let kakaoButtonTapped: Observable<Void>
         let appleButtonTapped: Observable<Void>
     }
@@ -36,6 +37,7 @@ final class InitialViewModel: ViewModelType {
     
     func transform(input: Input) -> Output {
 
+        @Sendable
         func route(using res: LoginResponseDTO) {
             if res.needOnboarding {
                 showOnboardingRelay.accept(())
@@ -43,6 +45,17 @@ final class InitialViewModel: ViewModelType {
                 showMainRelay.accept(())
             }
         }
+        
+        input.guestButtonTapped
+            .observe(on: MainScheduler.instance)
+            .do(onNext: {
+                UserDefaultsManager.shared.loginType = "guest"
+                UserDefaultsManager.shared.isLogin = true
+            })
+            .bind(onNext: { [weak self] in
+                self?.showMainRelay.accept(())
+            })
+            .disposed(by: disposeBag)
 
         input.kakaoButtonTapped
             .flatMapLatest { [weak self] _ -> Observable<Void> in

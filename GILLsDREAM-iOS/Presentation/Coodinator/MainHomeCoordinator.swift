@@ -13,6 +13,7 @@ final class MainHomeCoordinator: Coordinator {
     var navigationController: UINavigationController
     var type: CoordinatorType { .main }
     private var flowViewModel = TravelRequestFlowViewModel()
+    var onRequestSignup: (() -> Void)?
     
     init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -25,8 +26,10 @@ final class MainHomeCoordinator: Coordinator {
     func showMainHomeVC() {
         flowViewModel = TravelRequestFlowViewModel()
         let vc = MainHomeViewController()
-        vc.onStart = { [weak self] in
-            self?.startNewTravelFlow()
+        vc.onStart = { [weak self] in self?.startNewTravelFlow() }
+
+        vc.onHome = { [weak self] in
+            self?.onRequestSignup?()
         }
         navigationController.setViewControllers([vc], animated: false)
     }
@@ -101,8 +104,25 @@ final class MainHomeCoordinator: Coordinator {
         navigationController.setViewControllers([vc], animated: false)
     }
     
-    
     private func showTravelSaveVC(planId: Int) {
+        // 게스트
+        if UserDefaultsManager.shared.loginType == "guest" {
+            let alert = UIAlertController(
+                title: "회원가입이 필요해요",
+                message: "여행을 저장하려면 회원가입이 필요합니다. 지금 진행할까요?",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "아니오", style: .cancel, handler: { [weak self] _ in
+                self?.showMainHomeVC()   // 메인홈
+            }))
+            alert.addAction(UIAlertAction(title: "예", style: .default, handler: { [weak self] _ in
+                self?.onRequestSignup?() // 탭 종료 -> 로그인/회원가입 플로우로
+            }))
+            navigationController.present(alert, animated: true)
+            return
+        }
+
+        // 가입자
         let vc = TravelSaveViewController(planId: planId)
         vc.onComplete = { [weak self] in
             guard let self = self else { return }
