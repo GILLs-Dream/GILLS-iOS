@@ -39,9 +39,9 @@ final class InitialView: UIView {
         
         [
             loginLabel,
-            guestButton,
             kakaoButton,
-            appleButton
+            appleButton,
+            guestButton
         ].forEach { loginStackView.addArrangedSubview($0) }
     }
     
