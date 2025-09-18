@@ -18,10 +18,16 @@ final class AppCoordinator: Coordinator {
     }
     
     func start() {
+        let loginType = UserDefaultsManager.shared.loginType
         let hasToken = KeychainManager.shared.accessToken != nil
         let isLogin = UserDefaultsManager.shared.isLogin
         let isOnboarded = UserDefaultsManager.shared.isOnboarding
-        
+
+        if loginType == "guest" {
+            showTabBarFlow(isGuest: true)
+            return
+        }
+
         if !hasToken || !isLogin || !isOnboarded {
             showLoginFlow()
             return
@@ -35,12 +41,17 @@ final class AppCoordinator: Coordinator {
         childCoordinators.append(loginCoordinator)
         loginCoordinator.start()
     }
-    
-    func showTabBarFlow() {
+
+    func showTabBarFlow(isGuest: Bool = false) {
         let tabCoordinator = TabBarCoordinator(navigationController)
         tabCoordinator.finishDelegate = self
         childCoordinators.append(tabCoordinator)
-        tabCoordinator.start()
+
+        if isGuest {
+            tabCoordinator.startGuestMode()
+        } else {
+            tabCoordinator.start()
+        }
     }
 }
 
@@ -51,7 +62,9 @@ extension AppCoordinator: CoordinatorFinishDelegate {
         
         switch childCoordinator.type {
         case .login:
-            if UserDefaultsManager.shared.isOnboarding {
+            if UserDefaultsManager.shared.loginType == "guest" {
+                showTabBarFlow(isGuest: true)
+            } else if UserDefaultsManager.shared.isOnboarding {
                 showTabBarFlow()
             } else {
                 showLoginFlow()

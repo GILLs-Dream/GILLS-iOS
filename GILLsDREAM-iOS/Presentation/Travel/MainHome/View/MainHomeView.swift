@@ -45,11 +45,13 @@ final class MainHomeView: UIView {
     // MARK: setUpHierarchy
     private func setUpHierarchy() {
         [
-            topBarView,
             textLabel,
             backgroundImage,
+            topBarView,
             travelButton
         ].forEach { self.addSubview($0) }
+        
+        bringSubviewToFront(topBarView)
     }
     
     // MARK: setUpUI
@@ -62,6 +64,7 @@ final class MainHomeView: UIView {
         backgroundImage.do {
             $0.image = .imgGradGill
             $0.contentMode = .scaleAspectFill
+            $0.isUserInteractionEnabled = false
         }
     }
     
@@ -70,7 +73,7 @@ final class MainHomeView: UIView {
         topBarView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(60)
             $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(50)
+            $0.height.equalTo(60)
         }
         
         textLabel.snp.makeConstraints {

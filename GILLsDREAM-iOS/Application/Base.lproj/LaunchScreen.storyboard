@@ -16,17 +16,20 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="SplashView" translatesAutoresizingMaskIntoConstraints="NO" id="vAh-2S-JGT">
-                                <rect key="frame" x="37" y="302.66666666666669" width="319" height="247.00000000000006"/>
+                                <rect key="frame" x="0.0" y="274" width="393" height="304"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="vAh-2S-JGT" secondAttribute="height" multiplier="319:247" id="95z-Nr-JCz"/>
+                                </constraints>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="0.062745101750000004" green="0.18039217590000001" blue="0.46274507050000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <color key="tintColor" red="0.062745101750000004" green="0.18039217590000001" blue="0.46274507050000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
-                            <constraint firstItem="vAh-2S-JGT" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="37" id="Lxc-ZS-xgV"/>
-                            <constraint firstItem="vAh-2S-JGT" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="tqk-h2-0kU"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="vAh-2S-JGT" secondAttribute="trailing" constant="37" id="xDK-Za-q6s"/>
+                            <constraint firstItem="vAh-2S-JGT" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="1kx-TF-mPm"/>
+                            <constraint firstItem="vAh-2S-JGT" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="C0a-bQ-xiL"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="vAh-2S-JGT" secondAttribute="trailing" id="OYZ-13-NQ4"/>
                             <constraint firstItem="vAh-2S-JGT" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="xOu-N5-Z83"/>
                         </constraints>
                     </view>

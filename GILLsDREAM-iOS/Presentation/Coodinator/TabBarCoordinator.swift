@@ -32,6 +32,31 @@ final class TabBarCoordinator: NSObject, Coordinator {
         tabBarController.selectedIndex = AppTab.plane.rawValueIndex
         navigationController.setViewControllers([tabBarController], animated: false)
     }
+    
+    func startGuestMode() {
+        let navController = UINavigationController()
+        navController.setNavigationBarHidden(true, animated: false)
+
+        let coordinator = MainHomeCoordinator(navController)
+        coordinator.finishDelegate = self.finishDelegate
+        coordinator.onRequestSignup = { [weak self] in
+            self?.finish()   // AppCoordinator.case .tab -> showLoginFlow()
+        }
+
+        childCoordinators.append(coordinator)
+        mainHomeCoordinator = coordinator
+        coordinator.start()
+
+        tabBarController.setViewControllers([navController], animated: false)
+        tabBarController.selectedIndex = 0
+        navigationController.setViewControllers([tabBarController], animated: false)
+
+        navController.tabBarItem = UITabBarItem(
+            title: "",
+            image: AppTab.plane.unselectedImage,
+            selectedImage: AppTab.plane.selectedImage
+        )
+    }
 
     private func getTabController(for tab: AppTab) -> UINavigationController {
         let navController = UINavigationController()

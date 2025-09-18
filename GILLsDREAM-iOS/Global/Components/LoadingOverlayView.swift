@@ -22,7 +22,7 @@ final class LoadingOverlayView: UIView {
             $0.edges.equalToSuperview()
         }
         layer.zPosition = 9999 // 탭바보다 위에 확실히 올라오게
-        isUserInteractionEnabled = true // 터치 차단
+        isUserInteractionEnabled = false // 터치 차단
     }
 
     required init?(coder: NSCoder) {

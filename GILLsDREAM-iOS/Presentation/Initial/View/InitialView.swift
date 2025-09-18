@@ -16,6 +16,7 @@ final class InitialView: UIView {
     private let loginLabel = UILabel()
     let kakaoButton = UIButton()
     let appleButton = UIButton()
+    let guestButton = UIButton()
     
     // MARK: Init
     override init(frame: CGRect) {
@@ -39,7 +40,8 @@ final class InitialView: UIView {
         [
             loginLabel,
             kakaoButton,
-            appleButton
+            appleButton,
+            guestButton
         ].forEach { loginStackView.addArrangedSubview($0) }
     }
     
@@ -60,6 +62,13 @@ final class InitialView: UIView {
             $0.attributedText = "SNS 계정으로 빠르게 시작하기".pretendardAttributedString(style: .body2)
         }
         
+        guestButton.do {
+            $0.setButtonStyle(title: "게스트 모드",
+                              titleColor: .black,
+                              backgroundColor: .white,
+                              font:.PretendardStyle.subtitle6.font)
+        }
+        
         kakaoButton.do {
             $0.setButtonStyle(title: "카카오로 로그인",
                               titleColor: .black,
@@ -69,7 +78,7 @@ final class InitialView: UIView {
         
         appleButton.do {
             $0.setImage(.appleButton, for: .normal)
-            $0.frame = CGRect(x: 50, y: 100, width: 350, height: 50)
+            $0.frame = CGRect(x: 50, y: 100, width: 306, height: 45)
             $0.imageView?.contentMode = .scaleAspectFit
         }
     }
@@ -85,14 +94,19 @@ final class InitialView: UIView {
             $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
         }
         
+        guestButton.snp.makeConstraints {
+            $0.height.equalTo(50)
+            $0.width.equalTo(306)
+        }
+        
         kakaoButton.snp.makeConstraints {
             $0.height.equalTo(50)
-            $0.width.equalTo(340)
+            $0.width.equalTo(306)
         }
         
         appleButton.snp.makeConstraints {
             $0.height.equalTo(50)
-            $0.width.equalTo(340)
+            $0.width.equalTo(306)
         }
     }
 }

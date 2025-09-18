@@ -15,6 +15,7 @@ class MainHomeViewController: BaseViewController {
     private let rootView = MainHomeView()
     private let viewModel = MainHomeViewModel()
     var onStart: (() -> Void)?
+    var onHome: (() -> Void)?
 
     // MARK: Life Cycle
     override func loadView() {
@@ -30,14 +31,18 @@ class MainHomeViewController: BaseViewController {
     private func bindViewModel() {
         let input = MainHomeViewModel.Input(
             viewWillAppear: rx.methodInvoked(#selector(UIViewController.viewWillAppear(_:))).map { _ in () },
-            buttonTapped: rootView.travelButton.rx.tap.asObservable()
+            buttonTapped: rootView.travelButton.rx.tap.asObservable(),
+            homeButtonTapped: rootView.topBarView.homeButton.rx.tap.asObservable()
         )
         
         let output = viewModel.transform(input: input)
         
+        let isGuest = UserDefaultsManager.shared.loginType == "guest"
+        
         output.nickname
             .drive(onNext: { [weak self] name in
-                self?.rootView.topBarView.apply(nickname: name)
+                let displayName = isGuest ? "길동이" : (name.isEmpty ? "길동이" : name)
+                self?.rootView.topBarView.apply(nickname: displayName)
             })
             .disposed(by: disposeBag)
         
@@ -45,6 +50,14 @@ class MainHomeViewController: BaseViewController {
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
                 self.onStart?()
+            })
+            .disposed(by: disposeBag)
+        
+        output.navigateToHome
+            .drive(onNext: { [weak self] in
+                guard let self = self else { return }
+                print("💚💚💚💚💚")
+                self.onHome?()
             })
             .disposed(by: disposeBag)
     }
