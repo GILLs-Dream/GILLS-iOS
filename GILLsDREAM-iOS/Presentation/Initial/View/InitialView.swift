@@ -63,10 +63,7 @@ final class InitialView: UIView {
         }
         
         guestButton.do {
-            $0.setButtonStyle(title: "게스트 모드",
-                              titleColor: .black,
-                              backgroundColor: .white,
-                              font:.PretendardStyle.subtitle6.font)
+            $0.setAttributedTitle("둘러보기".pretendardAttributedString(style: .body0), for: .normal)
         }
         
         kakaoButton.do {
@@ -92,11 +89,6 @@ final class InitialView: UIView {
         loginStackView.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(20)
-        }
-        
-        guestButton.snp.makeConstraints {
-            $0.height.equalTo(50)
-            $0.width.equalTo(306)
         }
         
         kakaoButton.snp.makeConstraints {
