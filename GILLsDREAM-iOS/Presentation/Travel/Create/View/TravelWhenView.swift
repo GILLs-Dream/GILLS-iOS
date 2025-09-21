@@ -15,7 +15,7 @@ final class TravelWhenView: UIView {
                                                       inputMode: .numberPicker(range: 1...7),
                                                       unit: "일",
                                                       detail: "* 최대 7일")
-    let travelDateView = TravelCustomView(title: "✪  여행 날짜:\n  (필수)",
+    let travelDateView = TravelCustomView(title: "✪  여행 날짜:\n  (선택)",
                                                   inputMode: .datePicker)
     lazy var pendingButton = UIButton()
     lazy var nextButton = CustomButton()

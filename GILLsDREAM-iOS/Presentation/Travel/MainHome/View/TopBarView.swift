@@ -16,7 +16,6 @@ final class TopBarView: UIView {
     private let alarmButton = UIButton()
     private let alarmView = UIView()
     private let alarmLabel = UILabel()
-    let homeButton = HitTestButton()
     
     // MARK: Init
     override init(frame: CGRect) {
@@ -40,7 +39,6 @@ final class TopBarView: UIView {
     private func setUpHierarchy() {
         [
             welcomeLabel,
-            homeButton,
             alarmButton,
             alarmView,
             alarmLabel,
@@ -63,12 +61,6 @@ final class TopBarView: UIView {
         alarmLabel.do {
             $0.attributedText = "3".pretendardAttributedString(style: .smalltext)
         }
-        
-        homeButton.do {
-            $0.setImage(.icHome, for: .normal)
-            $0.imageView?.contentMode = .scaleAspectFit
-            (homeButton as? HitTestButton)?.hitTestInset = UIEdgeInsets(top: -12, left: -12, bottom: -12, right: -12)
-        }
     }
     
     // MARK: setUpLayout
@@ -76,12 +68,6 @@ final class TopBarView: UIView {
         welcomeLabel.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.leading.equalToSuperview().offset(20)
-        }
-        
-        homeButton.snp.makeConstraints {
-            $0.centerY.equalToSuperview().offset(3)
-            $0.trailing.equalToSuperview().inset(25)
-            $0.size.equalTo(55)
         }
 //        
 //        alarmButton.snp.makeConstraints {
@@ -106,13 +92,5 @@ extension TopBarView {
     func apply(nickname: String) {
         welcomeLabel.attributedText = "안녕하세요, \(nickname)님!"
             .pretendardAttributedString(style: .body1)
-    }
-}
-
-final class HitTestButton: UIButton {
-    var hitTestInset = UIEdgeInsets(top: -10, left: -10, bottom: -10, right: -10) // +20 확장
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        let larger = bounds.inset(by: hitTestInset)
-        return larger.contains(point)
     }
 }
