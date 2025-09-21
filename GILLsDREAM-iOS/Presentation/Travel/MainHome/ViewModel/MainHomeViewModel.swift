@@ -18,13 +18,11 @@ final class MainHomeViewModel: ViewModelType {
     struct Input {
         let viewWillAppear: Observable<Void>
         let buttonTapped: Observable<Void>
-        let homeButtonTapped: Observable<Void>
     }
 
     struct Output {
         let nickname: Driver<String>
         let navigateToRequest: Driver<Void>
-        let navigateToHome: Driver<Void>
     }
 
     var disposeBag = DisposeBag()
@@ -32,7 +30,6 @@ final class MainHomeViewModel: ViewModelType {
     private let nicknameRelay = BehaviorRelay<String>(value: "")
     private let errorRelay = PublishRelay<String>()
     private let navigateRelay = PublishRelay<Void>()
-    let navigateHomeRelay = PublishRelay<Void>()
     private let alarmCountRelay = BehaviorRelay<Int>(value: 0)
 
     func transform(input: Input) -> Output {
@@ -59,16 +56,10 @@ final class MainHomeViewModel: ViewModelType {
         input.buttonTapped
             .bind(to: navigateRelay)
             .disposed(by: disposeBag)
-        
-        input.homeButtonTapped
-            .throttle(.milliseconds(300), scheduler: MainScheduler.instance) // 중복 탭 방지(선택)
-            .bind(to: navigateHomeRelay)
-            .disposed(by: disposeBag)
 
         return Output(
             nickname: nicknameRelay.asDriver(),
             navigateToRequest: navigateRelay.asDriver(onErrorDriveWith: .empty()),
-            navigateToHome: navigateHomeRelay.asDriver(onErrorDriveWith: .empty())
         )
     }
 }

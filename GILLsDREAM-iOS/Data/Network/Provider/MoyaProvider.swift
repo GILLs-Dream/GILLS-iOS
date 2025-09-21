@@ -50,9 +50,7 @@ public extension MoyaProvider {
         attempt: Int = 0,
         maxRetry: Int = 1
     ) async throws -> T {
-        do {
-            let res = try await asyncRequest(target)
-            
+        func handle(_ res: Response) async throws -> T {
             switch res.statusCode {
             case 200..<300:
                 if T.self == EmptyResponse.self {
@@ -88,8 +86,16 @@ public extension MoyaProvider {
             default:
                 return try decodeServerError(res, decoder: decoder)
             }
-        } catch {
-            throw error
+        }
+        
+        do {
+            let res = try await asyncRequest(target)
+            return try await handle(res)
+        } catch let moyaErr as MoyaError {
+            if case .statusCode(let res) = moyaErr { // 응답 있는 에러 처리
+                return try await handle(res)
+            }
+            throw moyaErr
         }
     }
     

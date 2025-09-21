@@ -9,14 +9,16 @@ import Foundation
 import Moya
 
 enum PlanTargetType {
-    case mood(inputText: String)
-    case videos(planId: Int, region: String, videoURLs: [String])
+    case region(region: String)
+    case mood(planId: Int, inputText: String)
+    case videos(planId: Int, videoURLs: [String])
     case duration(planId: Int, duration: Int, startDate: String, finishedDate: String)
     case style(planId: Int, transport: String, categories: [String])
     case companion(planId: Int, party: Int, companion: String)
     case destination(planId: Int, travelPlaces: [TravelPlaceRequestDTO], stayPlaces: [StayPlaceRequestDTO])
     case generate(planId: Int)
     case fetchGeneratedPlan(planId: Int)
+    case patchGeneratedPlanSummary(planId: Int)
     case fetchGeneratedPlanSummary(planId: Int)
     case profile(planId: Int, title: String, imageData: Data?)
     case list
@@ -25,9 +27,11 @@ enum PlanTargetType {
 extension PlanTargetType: BaseTargetType {
     var path: String {
         switch self {
-        case .mood:
-            return "/v1/plan/template/mood"
-        case .videos(let id, _, _):
+        case .region:
+            return "/v1/plan/template/region"
+        case .mood(let id, _):
+            return "/v1/plan/template/\(id)/mood"
+        case .videos(let id, _):
             return "/v1/plan/template/\(id)/videos"
         case .duration(let id, _, _, _):
             return "/v1/plan/template/\(id)/duration"
@@ -41,6 +45,8 @@ extension PlanTargetType: BaseTargetType {
             return "/v1/plan/template/\(id)/generate"
         case .fetchGeneratedPlan(let id):
             return "/v1/plan/template/\(id)/plan"
+        case .patchGeneratedPlanSummary(let id):
+            return "/v1/plan/template/\(id)/plan-summary"
         case .fetchGeneratedPlanSummary(let id):
             return "/v1/plan/template/\(id)/plan-summary"
         case .profile(let id, _, _):
@@ -54,20 +60,23 @@ extension PlanTargetType: BaseTargetType {
         switch self {
         case .mood, .generate, .destination:
             return .post
-        case .videos, .duration, .style, .companion, .fetchGeneratedPlanSummary, .profile:
+        case .region, .videos, .duration, .style, .companion, .patchGeneratedPlanSummary, .profile:
             return .patch
-        case .list, .fetchGeneratedPlan:
+        case .list, .fetchGeneratedPlan, .fetchGeneratedPlanSummary:
             return .get
         }
     }
     
     var task: Task {
         switch self {
-        case .mood(let text):
+        case .region(let region):
+            return .requestJSONEncodable(RegionRequestDTO(region: region))
+            
+        case .mood(_, let text):
             return .requestJSONEncodable(MoodRequestDTO(inputText: text))
             
-        case .videos(_, let region, let urls):
-            return .requestJSONEncodable(VideosRequestDTO(region: region, videoUrlList: urls))
+        case .videos(_, let urls):
+            return .requestJSONEncodable(VideosRequestDTO(videoUrlList: urls))
             
         case .duration(_, let duration, let start, let finish):
             return .requestJSONEncodable(DurationRequestDTO(duration: duration, startDate: start, finishedDate: finish))
@@ -81,7 +90,7 @@ extension PlanTargetType: BaseTargetType {
         case .destination(_, let travel, let stay):
             return .requestJSONEncodable(DestinationRequestDTO(travelPlaceDtoList: travel, stayPlaceDtoList: stay))
             
-        case .generate, .list, .fetchGeneratedPlan, .fetchGeneratedPlanSummary:
+        case .generate, .list, .fetchGeneratedPlan, .patchGeneratedPlanSummary, .fetchGeneratedPlanSummary:
             return .requestPlain
             
         case let .profile(_, title, imageData):
@@ -128,16 +137,17 @@ extension PlanTargetType: BaseTargetType {
             return nil
 
         default:
-            // 기본 JSON 요청
-            var base: [String: String] = ["Content-Type": "application/json"]
-            if let token = KeychainManager.shared.accessToken {
-                base["Authorization"] = "Bearer \(token)" 
-            }
-            return base
+            return ["Content-Type": "application/json",
+                    "Accept": "application/json"]
         }
     }
     
     var validationType: ValidationType {
-        .successCodes
+        switch self {
+        case .region:
+            return .none
+        default:
+            return .successCodes
+        }
     }
 }

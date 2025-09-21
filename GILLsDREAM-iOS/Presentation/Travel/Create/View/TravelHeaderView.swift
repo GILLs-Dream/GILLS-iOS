@@ -81,7 +81,7 @@ final class TravelHeaderView: UIView {
             $0.top.equalTo(titleLabel.snp.bottom).offset(15)
             $0.leading.bottom.equalToSuperview()
             $0.height.equalTo(28)
-            $0.width.equalTo(272)
+            $0.width.equalTo(260)
         }
     }
 
@@ -95,12 +95,13 @@ final class TravelHeaderView: UIView {
         let label = UILabel().then {
             $0.attributedText = title.pretendardAttributedString(style: .body1)
             $0.textAlignment = .center
-            $0.numberOfLines = 0
+            $0.numberOfLines = 1
         }
 
         container.addSubview(label)
         label.snp.makeConstraints {
-            $0.center.equalToSuperview()
+            $0.centerX.equalToSuperview().offset(1)
+            $0.centerY.equalToSuperview().offset(-1)
         }
         return container
     }

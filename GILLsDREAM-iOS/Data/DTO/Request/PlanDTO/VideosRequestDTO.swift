@@ -6,11 +6,9 @@
 //
 
 struct VideosRequestDTO: Encodable {
-    let region: String
     let videoUrlList: [String]
 
     enum CodingKeys: String, CodingKey {
-        case region
         case videoUrlList = "video_url_list"
     }
 }

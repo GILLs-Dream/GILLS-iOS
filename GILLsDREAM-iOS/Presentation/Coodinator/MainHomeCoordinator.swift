@@ -13,6 +13,7 @@ final class MainHomeCoordinator: Coordinator {
     var navigationController: UINavigationController
     var type: CoordinatorType { .main }
     private var flowViewModel = TravelRequestFlowViewModel()
+    private weak var currentModal: CustomModalView?
     var onRequestSignup: (() -> Void)?
     
     init(_ navigationController: UINavigationController) {
@@ -107,18 +108,7 @@ final class MainHomeCoordinator: Coordinator {
     private func showTravelSaveVC(planId: Int) {
         // 게스트
         if UserDefaultsManager.shared.loginType == "guest" {
-            let alert = UIAlertController(
-                title: "회원가입이 필요해요",
-                message: "여행을 저장하려면 회원가입이 필요합니다. 지금 진행할까요?",
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "아니오", style: .cancel, handler: { [weak self] _ in
-                self?.showMainHomeVC()   // 메인홈
-            }))
-            alert.addAction(UIAlertAction(title: "예", style: .default, handler: { [weak self] _ in
-                self?.onRequestSignup?() // 탭 종료 -> 로그인/회원가입 플로우로
-            }))
-            navigationController.present(alert, animated: true)
+            presentGuestSignupModal()
             return
         }
 
@@ -129,6 +119,39 @@ final class MainHomeCoordinator: Coordinator {
             self.finish()
         }
         navigationController.pushViewController(vc, animated: true)
+    }
+    
+    // 게스트용 커스텀 모달
+    private func presentGuestSignupModal() {
+        guard currentModal == nil else { return }
+        
+        let modal = CustomModalView(
+            title: "여행을 저장하려면\n회원가입이 필요해요.\n진행하시겠습니까?",
+            confirmTitle: "예"
+        )
+        
+        let hostView = navigationController.view!
+        modal.alpha = 0
+        modal.frame = hostView.bounds
+        modal.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        modal.onConfirm = { [weak self] in
+            guard let self else { return }
+            self.currentModal?.removeFromSuperview()
+            self.currentModal = nil
+            self.onRequestSignup?()
+        }
+        
+        modal.onCancel = { [weak self] in
+            guard let self else { return }
+            self.currentModal?.removeFromSuperview()
+            self.currentModal = nil
+            self.showMainHomeVC()
+        }
+        
+        hostView.addSubview(modal)
+        currentModal = modal
+        UIView.animate(withDuration: 0.2) { modal.alpha = 1 }
     }
     
     private func showMapModal(with items: [TimelineItem]) {

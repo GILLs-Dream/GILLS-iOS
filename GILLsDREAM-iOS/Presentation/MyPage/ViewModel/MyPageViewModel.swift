@@ -63,13 +63,11 @@ final class MyPageViewModel {
                     await MainActor.run { self.loadingRelay.accept(true) }
                     defer { Task { @MainActor in self.loadingRelay.accept(false) } }
                     let me = try await self.usecase.getInfo()
-                    let isApple = me.email!.hasSuffix("@privaterelay.appleid.com")
                     
                     await MainActor.run {
                         self.profileRelay.accept(me.profile ?? "")
                         self.nicknameRelay.accept(me.nickname ?? "")
-                        self.showEmailRelay.accept(!isApple)
-                        self.emailRelay.accept((isApple ? "" : me.email) ?? "")
+                        self.emailRelay.accept(me.email ?? "")
                     }
                 }
                 .asObservable()

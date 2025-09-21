@@ -14,67 +14,77 @@ final class TabBarCoordinator: NSObject, Coordinator {
     var tabBarController: UITabBarController
     var type: CoordinatorType { .tab }
     private var mainHomeCoordinator: MainHomeCoordinator?
-
-    required init(_ navigationController: UINavigationController) {
-        self.navigationController = navigationController
+    
+    private var isGuestMode = false
+    private var currentTabs: [AppTab] = []
+    private var vcToTab: [ObjectIdentifier: AppTab] = [:] // vc -> tab 매핑
+    private weak var currentModal: CustomModalView?
+    
+    required init(_ nav: UINavigationController) {
+        self.navigationController = nav
         self.tabBarController = TabBarViewController()
+        super.init()
+        self.tabBarController.delegate = self
+    }
+
+    func start() {
+        isGuestMode = false
+        let tabs: [AppTab] = [.list, .plane, .mypage]
+
+        vcToTab.removeAll()
+        currentTabs = tabs
+
+        let controllers: [UINavigationController] = currentTabs.map { getTabController(for: $0) }
+        prepareTabBarController(with: controllers)
+
+        let planeIdx = currentTabs.firstIndex(of: .plane) ?? 0
+        tabBarController.selectedIndex = planeIdx
+        DispatchQueue.main.async { [weak self] in
+            self?.tabBarController.selectedIndex = planeIdx
+        }
+    }
+
+    func startGuestMode() {
+        isGuestMode = true
+        let tabs: [AppTab] = [.list, .plane, .mypage]
+
+        vcToTab.removeAll()
+        currentTabs = tabs
+
+        let controllers: [UINavigationController] = currentTabs.map { getTabController(for: $0) }
+        prepareTabBarController(with: controllers)
+
+        let planeIdx = currentTabs.firstIndex(of: .plane) ?? 0
+        tabBarController.selectedIndex = planeIdx
+        DispatchQueue.main.async { [weak self] in
+            self?.tabBarController.selectedIndex = planeIdx
+        }
     }
     
-    func start() {
-        //TODO: map 구현 후 변경 [.map, .plane, .list, .mypage]
-        let tabs: [AppTab] = [.list, .plane, .mypage]
-        let controllers: [UINavigationController] = tabs.map { getTabController(for: $0) }
-        prepareTabBarController(with: controllers)
-    }
-
     private func prepareTabBarController(with controllers: [UIViewController]) {
         tabBarController.setViewControllers(controllers, animated: false)
-        tabBarController.selectedIndex = AppTab.plane.rawValueIndex
         navigationController.setViewControllers([tabBarController], animated: false)
     }
     
-    func startGuestMode() {
-        let navController = UINavigationController()
-        navController.setNavigationBarHidden(true, animated: false)
-
-        let coordinator = MainHomeCoordinator(navController)
-        coordinator.finishDelegate = self.finishDelegate
-        coordinator.onRequestSignup = { [weak self] in
-            self?.finish()   // AppCoordinator.case .tab -> showLoginFlow()
-        }
-
-        childCoordinators.append(coordinator)
-        mainHomeCoordinator = coordinator
-        coordinator.start()
-
-        tabBarController.setViewControllers([navController], animated: false)
-        tabBarController.selectedIndex = 0
-        navigationController.setViewControllers([tabBarController], animated: false)
-
-        navController.tabBarItem = UITabBarItem(
-            title: "",
-            image: AppTab.plane.unselectedImage,
-            selectedImage: AppTab.plane.selectedImage
-        )
-    }
-
     private func getTabController(for tab: AppTab) -> UINavigationController {
         let navController = UINavigationController()
         navController.setNavigationBarHidden(true, animated: false)
         
-        let rootVC: UIViewController
-
         switch tab {
         case .map:
-            rootVC = MainHomeViewController() // mapCoordinator 구현 후 변경
-
+            let root = MainHomeViewController()
+            navController.setViewControllers([root], animated: false)
+            
         case .plane:
             let coordinator = MainHomeCoordinator(navController)
             coordinator.finishDelegate = self.finishDelegate
+            coordinator.onRequestSignup = { [weak self] in
+                guard let self else { return }
+                self.finish()
+            }
             childCoordinators.append(coordinator)
             mainHomeCoordinator = coordinator
             coordinator.start()
-            return configureTabBar(navController, for: tab)
 
         case .list:
             let listVC = PlanListViewController()
@@ -83,24 +93,22 @@ final class TabBarCoordinator: NSObject, Coordinator {
                 vc.shouldHideSaveButton = true
                 self?.navigationController.pushViewController(vc, animated: false)
             }
-            rootVC = listVC
+            navController.setViewControllers([listVC], animated: false)
 
         case .mypage:
             let myPageVC = MyPageViewController()
             myPageVC.onLogout = { [weak self] in
-                guard let self = self else { return }
-                self.tabBarController.viewControllers?.forEach {
-                    if let nav = $0 as? UINavigationController {
-                        nav.popToRootViewController(animated: false)
-                    }
-                }
+                guard let self else { return }
+                self.tabBarController.viewControllers?
+                    .compactMap { $0 as? UINavigationController }
+                    .forEach { $0.popToRootViewController(animated: false) }
                 self.navigationController.setViewControllers([], animated: false)
                 self.finish()
             }
-            rootVC = myPageVC
+            navController.setViewControllers([myPageVC], animated: false)
         }
 
-        navController.setViewControllers([rootVC], animated: false)
+        vcToTab[ObjectIdentifier(navController)] = tab
         return configureTabBar(navController, for: tab)
     }
     
@@ -110,10 +118,56 @@ final class TabBarCoordinator: NSObject, Coordinator {
                                                 selectedImage: tab.selectedImage)
         return navController
     }
+    
+    private func presentGuestSignupModal() {
+        if currentModal != nil { return }
+        let modal = CustomModalView(
+            title: "회원가입이 필요한 기능입니다.\n회원가입 하시겠습니까?",
+            confirmTitle: "예"
+        )
+        modal.alpha = 0
+        modal.frame = tabBarController.view.bounds
+        modal.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        modal.onConfirm = { [weak self] in
+            guard let self else { return }
+            self.currentModal?.removeFromSuperview()
+            self.currentModal = nil
+            self.finish() // showLoginFlow()
+        }
+        modal.onCancel = { [weak self] in
+            guard let self else { return }
+            self.currentModal?.removeFromSuperview()
+            self.currentModal = nil
+            let planeIdx = self.currentTabs.firstIndex(of: .plane) ?? 0
+            self.tabBarController.selectedIndex = planeIdx
+            if let nav = self.tabBarController.viewControllers?[planeIdx] as? UINavigationController {
+                nav.popToRootViewController(animated: false)
+            }
+        }
+        
+        tabBarController.view.addSubview(modal)
+        currentModal = modal
+        UIView.animate(withDuration: 0.2) { modal.alpha = 1 }
+    }
 }
 
-private extension AppTab {
-    var rawValueIndex: Int {
-        return AppTab.allCases.firstIndex(of: self) ?? 0
+extension TabBarCoordinator: UITabBarControllerDelegate {
+    func tabBarController(_ tbc: UITabBarController, shouldSelect vc: UIViewController) -> Bool {
+        let key = ObjectIdentifier(vc)
+        let tab = vcToTab[key]
+        print("DBG shouldSelect vc=\(vc) tab=\(String(describing: tab)) guest=\(isGuestMode)")
+
+        if isGuestMode, let tab, (tab == .list || tab == .mypage) {
+            presentGuestSignupModal()
+            return false
+        }
+        return true
+    }
+}
+
+private extension Array {
+    subscript(safe index: Int) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }

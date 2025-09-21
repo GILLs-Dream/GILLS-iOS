@@ -9,6 +9,7 @@ import RxSwift
 import RxCocoa
 import RxDataSources
 import math_h
+import Foundation
 
 public typealias DaySection = SectionModel<Void, Int>
 
@@ -49,6 +50,7 @@ final class TravelResultViewModel {
     private let timelineRelay = BehaviorRelay<[TravelTimelineRow]>(value: [])
     private var rowsCache: [Int: [TravelTimelineRow]] = [:]
     private var summaryLoaded = false
+    private func summaryPatchedKey(for planId: Int) -> String { "summaryPatched_\(planId)" }
 
     func transform(input: Input) -> Output {
         // 1) 최초 결과 로드
@@ -61,7 +63,16 @@ final class TravelResultViewModel {
                     await MainActor.run { self.isLoadingRelay.accept(true) }
 
                     let result = try await self.usecase.getGeneratedPlan(planId: self.planId)
-                    let summary = try await self.usecase.getGeneratedPlanSummary(planId: self.planId)
+
+                    let summary: PlanSummary
+                    let key = self.summaryPatchedKey(for: self.planId)
+                    if UserDefaults.standard.bool(forKey: key) {
+                        summary = try await self.usecase.getGeneratedPlanSummary(planId: self.planId)
+                    } else {
+                        summary = try await self.usecase.patchGeneratedPlanSummary(planId: self.planId)
+                        UserDefaults.standard.set(true, forKey: key)
+                    }
+
                     let builtCache = self.makeRowsCache(from: result)
 
                     await MainActor.run {
