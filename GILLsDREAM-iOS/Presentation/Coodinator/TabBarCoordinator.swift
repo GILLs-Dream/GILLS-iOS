@@ -78,6 +78,10 @@ final class TabBarCoordinator: NSObject, Coordinator {
         case .plane:
             let coordinator = MainHomeCoordinator(navController)
             coordinator.finishDelegate = self.finishDelegate
+            coordinator.onRequestSignup = { [weak self] in
+                guard let self else { return }
+                self.finish()
+            }
             childCoordinators.append(coordinator)
             mainHomeCoordinator = coordinator
             coordinator.start()
