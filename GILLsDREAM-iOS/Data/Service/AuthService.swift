@@ -11,7 +11,7 @@ final class AuthService {
     static let shared = AuthService()
     private init() {}
 
-    private let userProvider = Providers.memberUser
+    private let publicProvider = Providers.memberPublic
     private let tokenStore = KeychainManager.shared
 
     
@@ -20,7 +20,7 @@ final class AuthService {
             completion(false); return
         }
 
-        userProvider.request(.reissue(refreshToken: refresh)) { result in
+        publicProvider.request(.reissue(refreshToken: refresh)) { result in
             switch result {
             case .success(let res):
                 guard (200..<300).contains(res.statusCode) else {
@@ -31,7 +31,6 @@ final class AuthService {
                 }
                 do {
                     let dec = JSONDecoder()
-                    dec.keyDecodingStrategy = .convertFromSnakeCase
                     let dto = try dec.decode(ReissueResponseDTO.self, from: res.data)
                     self.tokenStore.setTokens(access: dto.access_token, refresh: dto.refresh_token)
                     completion(true)
@@ -48,7 +47,7 @@ final class AuthService {
         guard let refresh = KeychainManager.shared.refreshToken, !refresh.isEmpty else {
             completion(false); return
         }
-        Providers.memberPublic.request(.reissue(refreshToken: refresh)) { result in
+        publicProvider.request(.reissue(refreshToken: refresh)) { result in
             switch result {
             case .success(let res) where (200..<300).contains(res.statusCode):
                 do {

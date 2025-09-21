@@ -29,68 +29,34 @@ final class UserAuthInterceptor: RequestInterceptor {
                for session: Alamofire.Session,
                completion: @escaping (Result<URLRequest, Error>) -> Void) {
         var req = urlRequest
-//        // 1) 만료 임박/만료 판단 (예: 만료까지 60초 미만이면 선발급)
-//        if KeychainManager.shared.isAccessTokenExpired(earlyBy: 60) {
-//            let starter = RefreshCoordinator.shared.enqueue { _ in /* no-op here */ }
-//            if starter {
-//                AuthService.shared.reissue { ok in
-//                    if !ok {
-//                        AuthService.shared.forceLogout()
-//                    }
-//                    // 큐에 쌓인 대기자들 깨우기
-//                    RefreshCoordinator.shared.finish(.doNotRetry)
-//                }
-//            }
-//            // 선발급이 끝날 때까지 큐에 합류해서 기다렸다가 헤더 부착
-//            // finish가 호출되면 아래로 진행
-//        }
-
-        if let token = KeychainManager.shared.accessToken {
-            req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        if req.url?.path.contains("/member/reissue") == true {
+            completion(.success(req)); return
         }
-//        print("🟦 [ADAPT] \(req.httpMethod ?? "") \(req.url?.absoluteString ?? "")")
-//        print("🟦 Headers:", req.allHTTPHeaderFields ?? [:])
-        completion(.success(req))
-    }
-    
-    // 401/403에서만 재발급 -> 원요청 재시도
-    func retry(_ request: Request,
-               for session: Session,
-               dueTo error: Error,
-               completion: @escaping (RetryResult) -> Void) {
         
-        guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401 else {
-            completion(.doNotRetryWithError(error))
+        let current = KeychainManager.shared.accessToken ?? ""
+
+        if !current.isEmpty, KeychainManager.shared.isAccessTokenExpired(earlyBy: 600) {
+            let started = RefreshCoordinator.shared.enqueue { _ in
+                var newReq = req
+                if let newToken = KeychainManager.shared.accessToken, !newToken.isEmpty {
+                    newReq.setValue("Bearer \(newToken)", forHTTPHeaderField: "Authorization")
+                } else {
+                    newReq.setValue(nil, forHTTPHeaderField: "Authorization")
+                }
+                completion(.success(newReq))
+            }
+            if started {
+                AuthService.shared.reissue { ok in
+                    RefreshCoordinator.shared.finish(ok ? .retry : .doNotRetry)
+                }
+            }
             return
         }
         
-        if request.retryCount >= 2 {        // 최대 2회
-            completion(.doNotRetry); return
+        if !current.isEmpty {
+            req.setValue("Bearer \(current)", forHTTPHeaderField: "Authorization")
         }
-//        print("🟧 [RETRY?] status=\(response.statusCode), url=\(request.request?.url?.absoluteString ?? "")")
-
-        if let path = request.request?.url?.path, path.contains("/member/reissue") {
-            completion(.doNotRetry); return
-        }
-
-        guard KeychainManager.shared.refreshToken != nil else {
-            completion(.doNotRetry); return
-        }
-
-        // 동시 재발급 방지
-        let starter = RefreshCoordinator.shared.enqueue(completion)
-        guard starter else { return }
-
-        AuthService.shared.reissue { ok in
-            if ok {
-//                print("🟩 [REISSUE] success → retry")
-                RefreshCoordinator.shared.finish(.retry)
-            } else {
-//                print("🟥 [REISSUE] failed → logout & doNotRetry")
-                AuthService.shared.forceLogout()
-                RefreshCoordinator.shared.finish(.doNotRetry)
-            }
-        }
+        completion(.success(req))
     }
 }
 
@@ -102,9 +68,6 @@ final class AFEventLogger: EventMonitor {
     }
     func request(_ request: Request, didCreateInitialURLRequest urlRequest: URLRequest) {
         print("🧱 didCreateInitialURLRequest:", urlRequest.url?.absoluteString ?? "-")
-    }
-    func request(_ request: Request, didCreateURLRequest urlRequest: URLRequest) {
-        print("🧱 didCreateURLRequest:", urlRequest.url?.absoluteString ?? "-")
     }
     func request(_ request: Request, didCompleteTask task: URLSessionTask, with error: Error?) {
         print("📍 didCompleteTask error=\(String(describing: error))")

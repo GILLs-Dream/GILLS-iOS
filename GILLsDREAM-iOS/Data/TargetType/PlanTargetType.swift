@@ -131,12 +131,8 @@ extension PlanTargetType: BaseTargetType {
             return nil
 
         default:
-            // 기본 JSON 요청
-            var base: [String: String] = ["Content-Type": "application/json"]
-            if let token = KeychainManager.shared.accessToken {
-                base["Authorization"] = "Bearer \(token)" 
-            }
-            return base
+            return ["Content-Type": "application/json",
+                    "Accept": "application/json"]
         }
     }
     
