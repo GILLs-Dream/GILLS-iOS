@@ -17,6 +17,7 @@ enum PlanTargetType {
     case destination(planId: Int, travelPlaces: [TravelPlaceRequestDTO], stayPlaces: [StayPlaceRequestDTO])
     case generate(planId: Int)
     case fetchGeneratedPlan(planId: Int)
+    case patchGeneratedPlanSummary(planId: Int)
     case fetchGeneratedPlanSummary(planId: Int)
     case profile(planId: Int, title: String, imageData: Data?)
     case list
@@ -41,6 +42,8 @@ extension PlanTargetType: BaseTargetType {
             return "/v1/plan/template/\(id)/generate"
         case .fetchGeneratedPlan(let id):
             return "/v1/plan/template/\(id)/plan"
+        case .patchGeneratedPlanSummary(let id):
+            return "/v1/plan/template/\(id)/plan-summary"
         case .fetchGeneratedPlanSummary(let id):
             return "/v1/plan/template/\(id)/plan-summary"
         case .profile(let id, _, _):
@@ -54,9 +57,9 @@ extension PlanTargetType: BaseTargetType {
         switch self {
         case .mood, .generate, .destination:
             return .post
-        case .videos, .duration, .style, .companion, .fetchGeneratedPlanSummary, .profile:
+        case .videos, .duration, .style, .companion, .patchGeneratedPlanSummary, .profile:
             return .patch
-        case .list, .fetchGeneratedPlan:
+        case .list, .fetchGeneratedPlan, .fetchGeneratedPlanSummary:
             return .get
         }
     }
@@ -81,7 +84,7 @@ extension PlanTargetType: BaseTargetType {
         case .destination(_, let travel, let stay):
             return .requestJSONEncodable(DestinationRequestDTO(travelPlaceDtoList: travel, stayPlaceDtoList: stay))
             
-        case .generate, .list, .fetchGeneratedPlan, .fetchGeneratedPlanSummary:
+        case .generate, .list, .fetchGeneratedPlan, .patchGeneratedPlanSummary, .fetchGeneratedPlanSummary:
             return .requestPlain
             
         case let .profile(_, title, imageData):

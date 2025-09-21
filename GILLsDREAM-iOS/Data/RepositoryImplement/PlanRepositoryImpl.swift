@@ -84,6 +84,17 @@ final class PlanRepositoryImpl: PlanRepository {
         return dto
     }
     
+    func patchGeneratedPlanSummary(planId: Int) async throws -> PlanSummaryResponseDTO {
+        let api: ApiResponse<PlanSummaryResponseDTO> = try await provider.requestDecodableAutoRefresh(
+            .patchGeneratedPlanSummary(planId: planId),
+            as: ApiResponse<PlanSummaryResponseDTO>.self
+        )
+        guard api.isSuccess, let dto = api.result else {
+            throw NetworkError.server(.init(code: api.code, message: api.message), status: 200)
+        }
+        return dto
+    }
+    
     func updatePlanProfile(planId: Int, title: String, imageData: Data?) async throws -> PlanIdResultDTO {
         let res = try await provider.asyncRequest(
             .profile(planId: planId, title: title, imageData: imageData))

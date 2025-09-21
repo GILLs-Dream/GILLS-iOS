@@ -17,6 +17,7 @@ protocol PlanUsecase {
     func generatePlan(planId: Int) async throws
     func getGeneratedPlan(planId: Int) async throws -> PlanResult
     func getGeneratedPlanSummary(planId: Int) async throws -> PlanSummary
+    func patchGeneratedPlanSummary(planId: Int) async throws -> PlanSummary
     func fetchMyPlans() async throws -> [Plan]
     func updatePlanProfile(planId: Int, title: String, imageData: Data?) async throws -> PlanIdResultDTO
 }
@@ -69,6 +70,11 @@ final class PlanUsecaseImpl: PlanUsecase {
     
     func getGeneratedPlanSummary(planId: Int) async throws -> PlanSummary {
         let dto = try await repository.fetchGeneratedPlanSummary(planId: planId)
+        return PlanMapper.toPlanSummary(from: dto)
+    }
+    
+    func patchGeneratedPlanSummary(planId: Int) async throws -> PlanSummary {
+        let dto = try await repository.patchGeneratedPlanSummary(planId: planId)
         return PlanMapper.toPlanSummary(from: dto)
     }
     
