@@ -86,7 +86,7 @@ final class TravelRequestViewController: BaseViewController {
             .emit(onNext: { [weak self] in
                 guard let self else { return }
                 let modal = CustomModalView(
-                    title: "해당 지역은 아직 지원하지 않아요.\n국내지역을 다시 입력해 주세요.",
+                    title: "올바르지 않은 지역입니다.\n국내지역을 다시 입력해 주세요.",
                     confirmTitle: "확인"
                 )
                 modal.onConfirm = { [weak modal] in modal?.removeFromSuperview() }
