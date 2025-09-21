@@ -131,11 +131,13 @@ final class TabBarCoordinator: NSObject, Coordinator {
         
         modal.onConfirm = { [weak self] in
             guard let self else { return }
+            self.currentModal?.removeFromSuperview()
             self.currentModal = nil
             self.finish() // showLoginFlow()
         }
         modal.onCancel = { [weak self] in
             guard let self else { return }
+            self.currentModal?.removeFromSuperview()
             self.currentModal = nil
             let planeIdx = self.currentTabs.firstIndex(of: .plane) ?? 0
             self.tabBarController.selectedIndex = planeIdx
