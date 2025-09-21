@@ -9,10 +9,36 @@ import Foundation
 import Moya
 
 final class PlanRepositoryImpl: PlanRepository {
-    private let provider = Providers.plan
+    private let publicProvider = Providers.planPublic
+    private let provider = Providers.planUser
     
-    func setMood(_ text: String) async throws -> PlanMood {
-        let api: ApiResponse<MoodResultDTO> = try await provider.requestDecodableAutoRefresh(.mood(inputText: text), as: ApiResponse<MoodResultDTO>.self)
+    func setRegion(region: String) async throws -> RegionResultDTO {
+        do { let api: ApiResponse<RegionResultDTO> = try await provider.requestDecodableAutoRefresh( .region(region: region),
+                                                                                                     as: ApiResponse<RegionResultDTO>.self)
+            
+            guard api.isSuccess, let dto = api.result else {
+                throw RegionError.invalidRegion
+            }
+            return dto
+        } catch let moyaErr as MoyaError {
+            if case .statusCode(let response) = moyaErr {
+                if response.statusCode == 400 {
+                    throw RegionError.invalidRegion
+                }
+            }
+            throw moyaErr
+        } catch let NetworkError.server(err, status) {
+            if status == 400, err.code == "INVALID REGION" {
+                throw RegionError.invalidRegion
+            }
+            throw NetworkError.server(err, status: status)
+        } catch {
+            throw error
+        }
+    }
+    
+    func setMood(planId: Int, text: String) async throws -> PlanMood {
+        let api: ApiResponse<MoodResultDTO> = try await publicProvider.requestDecodableAutoRefresh(.mood(planId: planId, inputText: text), as: ApiResponse<MoodResultDTO>.self)
         guard api.isSuccess, let dto = api.result else {
             throw NetworkError.server(.init(code: api.code, message: api.message), status: 200)
         }
@@ -20,27 +46,27 @@ final class PlanRepositoryImpl: PlanRepository {
     }
     
     func setVideos(planId: Int, region: String, urls: [String]) async throws -> Bool {
-        let api: ApiResponse<VideosResultDTO> = try await provider.requestDecodableAutoRefresh(.videos(planId: planId, region: region, videoURLs: urls), as: ApiResponse<VideosResultDTO>.self)
+        let api: ApiResponse<VideosResultDTO> = try await publicProvider.requestDecodableAutoRefresh(.videos(planId: planId, videoURLs: urls), as: ApiResponse<VideosResultDTO>.self)
         return api.isSuccess
     }
     
     func setDuration(planId: Int, duration: Int, start: String, finish: String) async throws -> Bool {
-        let api: ApiResponse<PlanIdResultDTO> = try await provider.requestDecodableAutoRefresh(.duration(planId: planId, duration: duration, startDate: start, finishedDate: finish), as: ApiResponse<PlanIdResultDTO>.self)
+        let api: ApiResponse<PlanIdResultDTO> = try await publicProvider.requestDecodableAutoRefresh(.duration(planId: planId, duration: duration, startDate: start, finishedDate: finish), as: ApiResponse<PlanIdResultDTO>.self)
         return api.isSuccess
     }
     
     func setStyle(planId: Int, transport: String, categories: [String]) async throws -> Bool {
-        let api: ApiResponse<PlanIdResultDTO> = try await provider.requestDecodableAutoRefresh(.style(planId: planId, transport: transport, categories: categories), as: ApiResponse<PlanIdResultDTO>.self)
+        let api: ApiResponse<PlanIdResultDTO> = try await publicProvider.requestDecodableAutoRefresh(.style(planId: planId, transport: transport, categories: categories), as: ApiResponse<PlanIdResultDTO>.self)
         return api.isSuccess
     }
     
     func setCompanion(planId: Int, party: Int, companion: String) async throws -> Bool {
-        let api: ApiResponse<PlanIdResultDTO> = try await provider.requestDecodableAutoRefresh(.companion(planId: planId, party: party, companion: companion), as: ApiResponse<PlanIdResultDTO>.self)
+        let api: ApiResponse<PlanIdResultDTO> = try await publicProvider.requestDecodableAutoRefresh(.companion(planId: planId, party: party, companion: companion), as: ApiResponse<PlanIdResultDTO>.self)
         return api.isSuccess
     }
     
     func setDestination(planId: Int, travel: [TravelPlaceRequestDTO], stay: [StayPlaceRequestDTO]) async throws -> Bool {
-        let api: ApiResponse<PlanIdResultDTO> = try await provider.requestDecodableAutoRefresh(.destination(planId: planId, travelPlaces: travel, stayPlaces: stay), as: ApiResponse<PlanIdResultDTO>.self)
+        let api: ApiResponse<PlanIdResultDTO> = try await publicProvider.requestDecodableAutoRefresh(.destination(planId: planId, travelPlaces: travel, stayPlaces: stay), as: ApiResponse<PlanIdResultDTO>.self)
         return api.isSuccess
     }
     

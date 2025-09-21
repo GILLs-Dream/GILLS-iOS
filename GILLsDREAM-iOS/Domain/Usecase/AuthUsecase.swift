@@ -39,21 +39,6 @@ final class AuthUsecaseImpl: AuthUsecase {
         UserDefaultsManager.shared.loginType = res.loginType.rawValue
         UserDefaultsManager.shared.isOnboarding = !res.needOnboarding
     }
-
-    
-//    func loginWithKakao(accessToken: String) async throws {
-//        let tokens = try await repo.exchangeKakaoToken(accessToken)
-//        KeychainManager.shared.setTokens(access: tokens.access,
-//                                         refresh: tokens.refresh)
-//        UserDefaultsManager.shared.isLogin = true
-//    }
-//    
-//    func loginWithApple(identityToken: String) async throws {
-//        let (access, refresh) = try await repo.exchangeAppleToken(identityToken)
-//        KeychainManager.shared.accessToken = access
-//        KeychainManager.shared.refreshToken = refresh
-//        UserDefaultsManager.shared.isLogin = true
-//    }
     
     func logout() async throws {
         try await repo.logout()

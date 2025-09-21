@@ -9,8 +9,9 @@ import Foundation
 import Moya
 
 enum PlanTargetType {
-    case mood(inputText: String)
-    case videos(planId: Int, region: String, videoURLs: [String])
+    case region(region: String)
+    case mood(planId: Int, inputText: String)
+    case videos(planId: Int, videoURLs: [String])
     case duration(planId: Int, duration: Int, startDate: String, finishedDate: String)
     case style(planId: Int, transport: String, categories: [String])
     case companion(planId: Int, party: Int, companion: String)
@@ -26,9 +27,11 @@ enum PlanTargetType {
 extension PlanTargetType: BaseTargetType {
     var path: String {
         switch self {
-        case .mood:
-            return "/v1/plan/template/mood"
-        case .videos(let id, _, _):
+        case .region:
+            return "/v1/plan/template/region"
+        case .mood(let id, _):
+            return "/v1/plan/template/\(id)/mood"
+        case .videos(let id, _):
             return "/v1/plan/template/\(id)/videos"
         case .duration(let id, _, _, _):
             return "/v1/plan/template/\(id)/duration"
@@ -57,7 +60,7 @@ extension PlanTargetType: BaseTargetType {
         switch self {
         case .mood, .generate, .destination:
             return .post
-        case .videos, .duration, .style, .companion, .patchGeneratedPlanSummary, .profile:
+        case .region, .videos, .duration, .style, .companion, .patchGeneratedPlanSummary, .profile:
             return .patch
         case .list, .fetchGeneratedPlan, .fetchGeneratedPlanSummary:
             return .get
@@ -66,11 +69,14 @@ extension PlanTargetType: BaseTargetType {
     
     var task: Task {
         switch self {
-        case .mood(let text):
+        case .region(let region):
+            return .requestJSONEncodable(RegionRequestDTO(region: region))
+            
+        case .mood(_, let text):
             return .requestJSONEncodable(MoodRequestDTO(inputText: text))
             
-        case .videos(_, let region, let urls):
-            return .requestJSONEncodable(VideosRequestDTO(region: region, videoUrlList: urls))
+        case .videos(_, let urls):
+            return .requestJSONEncodable(VideosRequestDTO(videoUrlList: urls))
             
         case .duration(_, let duration, let start, let finish):
             return .requestJSONEncodable(DurationRequestDTO(duration: duration, startDate: start, finishedDate: finish))
@@ -137,6 +143,11 @@ extension PlanTargetType: BaseTargetType {
     }
     
     var validationType: ValidationType {
-        .successCodes
+        switch self {
+        case .region:
+            return .none
+        default:
+            return .successCodes
+        }
     }
 }

@@ -30,6 +30,7 @@ final class TravelRequestViewModel {
         let currentStep: Driver<TravelRequestStep>
         let latestRegionText: Driver<String>
         let moodResult: Signal<PlanMood>
+        let showInvalidRegionModal: Signal<Void>
     }
 
     private let disposeBag = DisposeBag()
@@ -40,6 +41,7 @@ final class TravelRequestViewModel {
     private let navigateToNextRelay = PublishRelay<Void>()
     private let moodResultRelay = PublishRelay<PlanMood>()
     private let latestRegionRelay = BehaviorRelay<String>(value: "")
+    private let showInvalidRegionModalRelay = PublishRelay<Void>()
 
     private var region: String = ""
     private var moodText: String = ""
@@ -58,11 +60,35 @@ final class TravelRequestViewModel {
 
                 switch self.currentStepRelay.value {
                 case .region:
-                    self.region = text.trimmingCharacters(in: .whitespacesAndNewlines)
-                    self.latestRegionRelay.accept(self.region)
-                    self.travelTextRelay.accept("")
-                    self.currentStepRelay.accept(.mood)
-                    return .just(())
+                    let region = text.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                    return RxAsync.run { [weak self] () async throws -> Void in
+                        guard let self else { return }
+                        await MainActor.run { self.isLoadingRelay.accept(true) }
+                        defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
+
+                        do {
+                            let plan = try await self.usecase.createPlanFromRegion(region: region)
+                            self.region = plan.region
+                            self.planId = plan.planId
+                            await MainActor.run {
+                                self.latestRegionRelay.accept(region)
+                                self.travelTextRelay.accept("")
+                                self.currentStepRelay.accept(.mood)
+                            }
+                        } catch RegionError.invalidRegion {
+                            await MainActor.run { self.showInvalidRegionModalRelay.accept(()) }
+
+                        } catch let NetworkError.server(err, status) {
+                            if status == 400, err.code == "INVALID REGION" {
+                                throw RegionError.invalidRegion
+                            }
+                            throw NetworkError.server(err, status: status)
+                        } catch {
+                            await MainActor.run { self.errorRelay.accept(error.displayMessage) }
+                        }
+                    }
+                    .asObservable()
 
                 case .mood:
                     self.moodText = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -72,7 +98,7 @@ final class TravelRequestViewModel {
                         await MainActor.run { self.isLoadingRelay.accept(true) }
                         defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
 
-                        let mood = try await self.usecase.createPlanFromMood(self.moodText)
+                        let mood = try await self.usecase.setMood(planId: self.planId ?? 0, text: self.moodText)
                         self.moodResultRelay.accept(mood)
                         self.planId = mood.id.value
                         await MainActor.run {
@@ -135,7 +161,8 @@ final class TravelRequestViewModel {
             errorMessage: errorRelay.asSignal(),
             currentStep: currentStepRelay.asDriver(),
             latestRegionText: latestRegionRelay.asDriver(),
-            moodResult: moodResultRelay.asSignal()
+            moodResult: moodResultRelay.asSignal(),
+            showInvalidRegionModal: showInvalidRegionModalRelay.asSignal()
         )
     }
 }

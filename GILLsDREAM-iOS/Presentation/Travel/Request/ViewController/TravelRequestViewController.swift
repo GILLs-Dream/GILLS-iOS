@@ -70,17 +70,31 @@ final class TravelRequestViewController: BaseViewController {
                 guard let self else { return }
                 let hostView = self.tabBarController?.view ?? self.view.window ?? self.view
                 if isLoading {
-                    // self.rootView.lottieView.startAnimating()
                     LoadingOverlayView.shared.updateText("길동이가 열심히\n여행을 생성 중이에요\n(최대 1분 소요)")
                     LoadingOverlayView.shared.show(in: hostView!)
                     self.rootView.sendButton.isEnabled = false
                     self.view.isUserInteractionEnabled = false
                 } else {
-                    // self.rootView.lottieView.stopAnimating()
                     LoadingOverlayView.shared.hide()
                     self.rootView.sendButton.isEnabled = true
                     self.view.isUserInteractionEnabled = true
                 }
+            })
+            .disposed(by: disposeBag)
+        
+        output.showInvalidRegionModal
+            .emit(onNext: { [weak self] in
+                guard let self else { return }
+                let modal = CustomModalView(
+                    title: "해당 지역은 아직 지원하지 않아요.\n국내지역을 다시 입력해 주세요.",
+                    confirmTitle: "확인"
+                )
+                modal.onConfirm = { [weak modal] in modal?.removeFromSuperview() }
+                let host = self.tabBarController?.view ?? self.view!
+                modal.frame = host.bounds
+                modal.alpha = 0
+                host.addSubview(modal)
+                UIView.animate(withDuration: 0.2) { modal.alpha = 1 }
             })
             .disposed(by: disposeBag)
         

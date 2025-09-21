@@ -8,7 +8,8 @@
 import Foundation
 
 protocol PlanUsecase {
-    func createPlanFromMood(_ text: String) async throws -> PlanMood
+    func createPlanFromRegion(region: String) async throws -> RegionResultDTO
+    func setMood(planId: Int, text: String) async throws -> PlanMood
     func setVideos(planId: Int, region: String, urls: [String]) async throws -> Bool
     func setDuration(planId: Int, duration: Int, start: String, finish: String) async throws -> Bool
     func setCompanion(planId: Int, party: Int, companion: String) async throws -> Bool
@@ -28,9 +29,13 @@ final class PlanUsecaseImpl: PlanUsecase {
     public init(repository: PlanRepository) {
         self.repository = repository
     }
+    
+    func createPlanFromRegion(region: String) async throws -> RegionResultDTO {
+        try await repository.setRegion(region: region)
+    }
 
-    public func createPlanFromMood(_ text: String) async throws -> PlanMood {
-        try await repository.setMood(text)
+    public func setMood(planId: Int, text: String) async throws -> PlanMood {
+        try await repository.setMood(planId: planId, text: text)
     }
 
     public func setVideos(planId: Int, region: String, urls: [String]) async throws -> Bool {

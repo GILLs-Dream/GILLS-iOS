@@ -18,7 +18,8 @@ enum AuthType {
 struct Providers {
     static let memberPublic = MoyaProvider<MemberTargetType>(auth: .none)
     static let memberUser = MoyaProvider<MemberTargetType>(auth: .user)
-    static let plan = MoyaProvider<PlanTargetType>(auth: .user)
+    static let planPublic = MoyaProvider<PlanTargetType>(auth: .none)
+    static let planUser = MoyaProvider<PlanTargetType>(auth: .user)
 }
 
 final class UserAuthInterceptor: RequestInterceptor {

@@ -8,7 +8,8 @@
 import Foundation
 
 protocol PlanRepository {
-    func setMood(_ text: String) async throws -> PlanMood
+    func setRegion(region: String) async throws -> RegionResultDTO
+    func setMood(planId: Int, text: String) async throws -> PlanMood
     func setVideos(planId: Int, region: String, urls: [String]) async throws -> Bool
     func setDuration(planId: Int, duration: Int, start: String, finish: String) async throws -> Bool
     func setStyle(planId: Int, transport: String, categories: [String]) async throws -> Bool

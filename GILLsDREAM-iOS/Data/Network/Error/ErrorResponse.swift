@@ -13,6 +13,7 @@ public enum NetworkError: Error {
     case decoding(DecodingError)
     case unknown(Error)
     case unauthorized
+    case invalidRegion
 
     public var message: String {
         switch self {
@@ -26,6 +27,8 @@ public enum NetworkError: Error {
             return "알 수 없는 오류가 발생했어요."
         case .unauthorized:
             return "토큰 만료"
+        case .invalidRegion:
+            return "INVALID REGION"
         }
     }
 }
@@ -44,4 +47,8 @@ extension Error {
 
 enum AppAuthError: Error {
     case memberNotFound
+}
+
+enum RegionError: Error {
+    case invalidRegion
 }
