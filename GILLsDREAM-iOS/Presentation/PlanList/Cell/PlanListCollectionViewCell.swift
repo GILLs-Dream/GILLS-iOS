@@ -22,7 +22,7 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
     let detailButton = UIButton()
     
     //MARK: events
-    var onConvertToPDF: (() -> Void)?
+    var onConvertToPDF: ((Plan, UIView) -> Void)?
     var onUnpin: (() -> Void)?
     var onPin: (() -> Void)?
     var onShare: (() -> Void)?
@@ -108,35 +108,27 @@ final class PlanListCollectionViewCell: UICollectionViewCell {
             $0.leading.equalTo(pinImageView).offset(7)
         }
         
-//        detailButton.snp.makeConstraints {
-//            $0.trailing.centerY.equalToSuperview()
-//            $0.size.equalTo(20)
-//        }
+        detailButton.snp.makeConstraints {
+            $0.trailing.centerY.equalToSuperview()
+            $0.size.equalTo(20)
+        }
     }
     
-    private func setUpMenu(isPinned: Bool) {
+    private func setUpMenu(with model: Plan) {
         let pdfAction = UIAction(title: "PDF 변환",
-                                 image: UIImage(systemName: "doc.fill")
-        ) { [weak self] _ in
-            self?.onConvertToPDF?()
+                                 image: UIImage(systemName: "doc.fill")) { [weak self] _ in
+            guard let self else { return }
+            self.onConvertToPDF?(model, self.detailButton)
         }
         
-        let pinToggleAction = UIAction(
-            title: isPinned ? "고정 해제" : "고정하기",
-            image: UIImage(systemName: isPinned ? "pin.slash.fill" : "pin.fill")
-        ) { [weak self] _ in
-            isPinned ? self?.onUnpin?() : self?.onPin?()
-        }
-
-        let shareAction = UIAction(title: "공유하기",
-                                   image: UIImage(systemName: "square.and.arrow.up")
-        ) { [weak self] _ in
-            self?.onShare?()
-        }
+//        let shareAction = UIAction(title: "공유하기",
+//                                   image: UIImage(systemName: "square.and.arrow.up")
+//        ) { [weak self] _ in
+//            self?.onShare?()
+//        }
+        
         detailButton.showsMenuAsPrimaryAction = true
-        detailButton.menu = UIMenu(title: "", children: [pdfAction,
-                                                         pinToggleAction,
-                                                         shareAction])
+        detailButton.menu = UIMenu(title: "", children: [pdfAction])
     }
 }
 
@@ -148,7 +140,7 @@ extension PlanListCollectionViewCell {
         planDate.attributedText = model.dateRange?.pretendardAttributedString(style: .body3) ??
             "날짜 미정".pretendardAttributedString(style: .body3)
         pinImageView.isHidden = !model.isPinned
-        //setUpMenu(isPinned: model.isPinned)
+        setUpMenu(with: model)
 
         if let imageURL = model.imageURL, !imageURL.isEmpty,
            let url = URL(string: imageURL) {

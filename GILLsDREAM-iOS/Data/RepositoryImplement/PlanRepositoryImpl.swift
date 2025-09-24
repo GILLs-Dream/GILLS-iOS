@@ -130,4 +130,26 @@ final class PlanRepositoryImpl: PlanRepository {
         }
         return dto
     }
+    
+    @discardableResult
+    func exportPlanPDF(planId: Int, title: String) async throws -> URL {
+        let res = try await provider.asyncRequest(.exportPDF(planId: planId))
+        guard (200..<300).contains(res.statusCode) else {
+            throw NetworkError.server(
+                (try? JSONDecoder().decode(ErrorResponse.self, from: res.data))
+                ?? .init(code: "HTTP_\(res.statusCode)", message: "PDF 내보내기 실패"),
+                status: res.statusCode
+            )
+        }
+
+        let safeTitle = title
+            .replacingOccurrences(of: "[/:]", with: "_", options: .regularExpression)
+//            .replacingOccurrences(of: "[^0-9a-zA-Z가-힣!?]", with: "_", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let filename = (safeTitle.isEmpty ? "plan" : safeTitle) + ".pdf"
+
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
+        try res.data.write(to: url, options: .atomic)
+        return url
+    }
 }

@@ -22,6 +22,7 @@ enum PlanTargetType {
     case fetchGeneratedPlanSummary(planId: Int)
     case profile(planId: Int, title: String, imageData: Data?)
     case list
+    case exportPDF(planId: Int)
 }
 
 extension PlanTargetType: BaseTargetType {
@@ -53,6 +54,8 @@ extension PlanTargetType: BaseTargetType {
             return "/v1/plan/template/\(id)/profile"
         case .list:
             return "/v1/plan/template"
+        case .exportPDF(let id):
+            return "v1/plan/\(id)/export/pdf"
         }
     }
     
@@ -62,7 +65,7 @@ extension PlanTargetType: BaseTargetType {
             return .post
         case .region, .videos, .duration, .style, .companion, .patchGeneratedPlanSummary, .profile:
             return .patch
-        case .list, .fetchGeneratedPlan, .fetchGeneratedPlanSummary:
+        case .list, .fetchGeneratedPlan, .fetchGeneratedPlanSummary, .exportPDF:
             return .get
         }
     }
@@ -90,7 +93,7 @@ extension PlanTargetType: BaseTargetType {
         case .destination(_, let travel, let stay):
             return .requestJSONEncodable(DestinationRequestDTO(travelPlaceDtoList: travel, stayPlaceDtoList: stay))
             
-        case .generate, .list, .fetchGeneratedPlan, .patchGeneratedPlanSummary, .fetchGeneratedPlanSummary:
+        case .generate, .list, .fetchGeneratedPlan, .patchGeneratedPlanSummary, .fetchGeneratedPlanSummary, .exportPDF:
             return .requestPlain
             
         case let .profile(_, title, imageData):
@@ -135,6 +138,9 @@ extension PlanTargetType: BaseTargetType {
                 return ["Authorization": "Bearer \(token)"]
             }
             return nil
+            
+        case .exportPDF:
+                return ["Accept": "application/pdf, application/octet-stream"]
 
         default:
             return ["Content-Type": "application/json",

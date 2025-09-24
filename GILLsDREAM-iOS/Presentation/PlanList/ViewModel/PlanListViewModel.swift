@@ -5,6 +5,7 @@
 //  Created by 오연서 on 8/4/25.
 //
 
+import Foundation
 import RxSwift
 import RxCocoa
 
@@ -18,16 +19,19 @@ final class PlanListViewModel {
     struct Input {
         let viewDidLoad: Observable<Void>
         let itemSelected: Observable<Plan>
+        let pdfRequested: Observable<Plan>
     }
     
     struct Output {
         let planSections: Driver<[PlanSection]>
         let selectedPlan: Signal<Plan>
+        let exportedPDFURL: Signal<URL>
         let errorMessage: Signal<String>
         let isLoading: Driver<Bool>
     }
     
     private let planSectionsRelay = BehaviorRelay<[PlanSection]>(value: [])
+    private let exportedPDFRelay = PublishRelay<URL>()
     private let isLoadingRelay = BehaviorRelay<Bool>(value: false)
     private let errorRelay = PublishRelay<String>()
     private let disposeBag = DisposeBag()
@@ -51,9 +55,28 @@ final class PlanListViewModel {
             .bind(to: planSectionsRelay)
             .disposed(by: disposeBag)
         
+        input.pdfRequested
+            .flatMapLatest { [weak self] plan -> Observable<URL> in
+                guard let self else { return .empty() }
+                return RxAsync.run {
+                    await MainActor.run { self.isLoadingRelay.accept(true) }
+                    defer { Task { @MainActor in self.isLoadingRelay.accept(false) } }
+                    return try await self.usecase.exportPlanPDF(planId: plan.id, title: plan.title)
+                }
+                .asObservable()
+                .do(onError: { [weak self] _ in
+                    self?.errorRelay.accept("PDF 내보내기에 실패했어요. 잠시 후 다시 시도해 주세요.")
+                })
+                .catchAndReturn(URL(fileURLWithPath: "plan"))
+            }
+            .filter { !$0.path.isEmpty }
+            .bind(to: exportedPDFRelay)
+            .disposed(by: disposeBag)
+        
         return Output(
             planSections: planSectionsRelay.asDriver(),
             selectedPlan: input.itemSelected.asSignal(onErrorSignalWith: .empty()),
+            exportedPDFURL: exportedPDFRelay.asSignal(),
             errorMessage: errorRelay.asSignal(),
             isLoading: isLoadingRelay.asDriver()
         )

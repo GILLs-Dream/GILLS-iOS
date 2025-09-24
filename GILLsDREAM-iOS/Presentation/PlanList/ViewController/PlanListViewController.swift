@@ -15,6 +15,8 @@ final class PlanListViewController: BaseViewController {
     private let viewModel = PlanListViewModel()
     private let disposeBag = DisposeBag()
     private let refreshControl = UIRefreshControl()
+    private let pdfRequestRelay = PublishRelay<Plan>()
+    private let pdfAnchorRelay = PublishRelay<UIView>()
     var onSelectPlan: ((Int) -> Void)?
 
     override func loadView() {
@@ -46,7 +48,8 @@ final class PlanListViewController: BaseViewController {
         // 최초 1회 + 당겨서 새로고침 둘 다 fetch 트리거로 사용
         let input = PlanListViewModel.Input(
             viewDidLoad: Observable.merge(firstAppear, pullToRefresh),
-            itemSelected: rootView.myPlanCollectionView.rx.modelSelected(Plan.self).asObservable()
+            itemSelected: rootView.myPlanCollectionView.rx.modelSelected(Plan.self).asObservable(),
+            pdfRequested: pdfRequestRelay.asObservable()
         )
 
         let output = viewModel.transform(input: input)
@@ -60,6 +63,15 @@ final class PlanListViewController: BaseViewController {
                 guard let self else { return }
                 let plans = sections.flatMap { $0.items }
                 self.rootView.noPlanLabel.isHidden = !plans.isEmpty
+            })
+            .disposed(by: disposeBag)
+        
+        output.exportedPDFURL
+            .emit(onNext: { [weak self] url in
+                guard let self else { return }
+                let activity = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                activity.popoverPresentationController?.sourceView = self.view
+                self.present(activity, animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -105,8 +117,9 @@ final class PlanListViewController: BaseViewController {
                 self?.viewModel.togglePin(for: item)
             }
 
-            cell.onConvertToPDF = {
-                // TODO: PDF 변환 로직
+            cell.onConvertToPDF = { [weak self] plan, anchor in
+                self?.pdfAnchorRelay.accept(anchor)
+                self?.pdfRequestRelay.accept(plan)
             }
 
             cell.onShare = {
