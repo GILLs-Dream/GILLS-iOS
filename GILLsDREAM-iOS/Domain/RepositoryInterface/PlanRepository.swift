@@ -21,4 +21,4 @@ protocol PlanRepository {
     func patchGeneratedPlanSummary(planId: Int) async throws -> PlanSummaryResponseDTO
     func updatePlanProfile(planId: Int, title: String, imageData: Data?) async throws -> PlanIdResultDTO
     func fetchPlanList() async throws -> [Plan]
-}
+    func exportPlanPDF(planId: Int, title: String) async throws -> URL}
