@@ -55,7 +55,7 @@ extension PlanTargetType: BaseTargetType {
         case .list:
             return "/v1/plan/template"
         case .exportPDF(let id):
-            return "v1/plan/\(id)/export/pdf"
+            return "/v1/plan/\(id)/export/pdf"
         }
     }
     

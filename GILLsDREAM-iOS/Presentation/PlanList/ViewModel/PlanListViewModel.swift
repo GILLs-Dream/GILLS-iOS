@@ -64,12 +64,14 @@ final class PlanListViewModel {
                     return try await self.usecase.exportPlanPDF(planId: plan.id, title: plan.title)
                 }
                 .asObservable()
-                .do(onError: { [weak self] _ in
+                .catch { [weak self] _ in
                     self?.errorRelay.accept("PDF 내보내기에 실패했어요. 잠시 후 다시 시도해 주세요.")
-                })
-                .catchAndReturn(URL(fileURLWithPath: "plan"))
+                    return .empty()
+                }
             }
-            .filter { !$0.path.isEmpty }
+            .filter {
+                FileManager.default.fileExists(atPath: $0.path)
+            }
             .bind(to: exportedPDFRelay)
             .disposed(by: disposeBag)
         
