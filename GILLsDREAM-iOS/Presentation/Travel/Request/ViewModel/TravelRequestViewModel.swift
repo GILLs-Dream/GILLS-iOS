@@ -20,6 +20,7 @@ final class TravelRequestViewModel {
     struct Input {
         let textInput: Observable<String>
         let sendButtonTapped: Observable<Void>
+        let skipButtonTapped: Observable<Void>
     }
 
     struct Output {
@@ -145,6 +146,14 @@ final class TravelRequestViewModel {
                 }
             }
             .subscribe()
+            .disposed(by: disposeBag)
+        
+        input.skipButtonTapped
+            .withLatestFrom(currentStepRelay)
+            .filter { $0 == .video }
+            .subscribe(onNext: { [weak self] _ in
+                self?.navigateToNextRelay.accept(())
+            })
             .disposed(by: disposeBag)
 
         return Output(

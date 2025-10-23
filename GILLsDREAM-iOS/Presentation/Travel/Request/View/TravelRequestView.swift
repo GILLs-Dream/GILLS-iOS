@@ -17,6 +17,7 @@ final class TravelRequestView: UIView {
     let requestTextView = UITextView()
     let requestPlaceHolder = UILabel()
     let sendButton = UIButton()
+    let skipButton = UIButton()
     let lottieView = CustomLottieView(text: "길동이가 열심히\n여행을 생성 중이에요")
     
     override init(frame: CGRect) {
@@ -46,6 +47,7 @@ final class TravelRequestView: UIView {
             requestTextView,
             requestPlaceHolder,
             sendButton,
+            skipButton,
             lottieView
         ].forEach { self.addSubview($0) }
         
@@ -75,7 +77,7 @@ final class TravelRequestView: UIView {
             $0.backgroundColor = .clear
             $0.layer.masksToBounds = true
             $0.layer.cornerRadius = 30
-            $0.layer.borderWidth = 5
+            $0.layer.borderWidth = 2
             $0.layer.borderColor = UIColor.white.cgColor
             $0.font = .PretendardStyle.subtitle6.font
             $0.textColor = .white
@@ -89,6 +91,16 @@ final class TravelRequestView: UIView {
         
         sendButton.do {
             $0.setImage(.imgArrowRight, for: .normal)
+        }
+        
+        skipButton.do {
+            $0.setAttributedTitle("건너뛰기".pretendardAttributedString(style: .body0), for: .normal)
+            $0.backgroundColor = UIColor.white.withAlphaComponent(0.15)
+            $0.layer.cornerRadius = 30
+            $0.layer.borderWidth = 2
+            $0.layer.borderColor = UIColor.white.withAlphaComponent(0.3).cgColor
+            $0.contentEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 2, right: 0)
+            $0.isHidden = true
         }
         
         lottieView.do {
@@ -121,8 +133,15 @@ final class TravelRequestView: UIView {
         
         requestTextView.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(21)
-            $0.bottom.equalTo(self.keyboardLayoutGuide.snp.top).offset(-100)
+            $0.bottom.equalTo(skipButton.snp.top).offset(-12)
             $0.height.equalTo(60)
+        }
+
+        skipButton.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview().inset(21)
+            $0.height.equalTo(60)
+            $0.bottom.equalTo(self.keyboardLayoutGuide.snp.top).offset(-60)
         }
         
         requestPlaceHolder.snp.makeConstraints {
@@ -151,10 +170,12 @@ extension TravelRequestView {
             extraLabel.isHidden = false
             extraLabel.attributedText = "*국내 지역을 입력해주세요.".pretendardAttributedString(style: .body2)
             underlineView.isHidden = true
+            skipButton.isHidden = true
             requestPlaceHolder.attributedText = "어디 지역으로 여행을 계획하시나요?".pretendardAttributedString(style: .subtitle6)
         case .mood:
             extraLabel.isHidden = false
             underlineView.isHidden = false
+            skipButton.isHidden = true
             extraLabel.attributedText = "분위기가 구체적일수록 좋아요!".pretendardAttributedString(style: .body2)
             requestPlaceHolder.attributedText = "지금 어떤 분위기의 여행이 가고싶나요?".pretendardAttributedString(style: .subtitle6)
 
@@ -169,13 +190,14 @@ extension TravelRequestView {
             }
         case .video:
             requestPlaceHolder.attributedText = "참고하고 싶은 여행영상이 있나요?".pretendardAttributedString(style: .subtitle6)
-            extraLabel.isHidden = false
+            extraLabel.isHidden = true
             underlineView.isHidden = true
-            extraLabel.text = "*영상 길이 최대 1분\n*참고하고 싶은 영상이 없다면, 다음 버튼을 눌러주세요."
-            extraLabel.snp.remakeConstraints {
-                $0.top.equalTo(exampleLabel.snp.bottom).offset(5)
-                $0.leading.equalTo(titleLabel)
-            }
+            skipButton.isHidden = false
+//            extraLabel.text = "*영상 길이 최대 1분\n*참고하고 싶은 영상이 없다면, 다음 버튼을 눌러주세요."
+//            extraLabel.snp.remakeConstraints {
+//                $0.top.equalTo(exampleLabel.snp.bottom).offset(5)
+//                $0.leading.equalTo(titleLabel)
+//            }
             exampleLabel.attributedText = "www.gills-dream.com/\nshorts/gills1234".pretendardAttributedString(style: .title4, color: .mainYellow)
         }
     }

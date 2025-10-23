@@ -60,7 +60,8 @@ final class TravelRequestViewController: BaseViewController {
             sendButtonTapped: rootView.sendButton.rx.tap
                 .do(onNext: { [weak self] in self?.view.endEditing(true) })
                 .delay(.milliseconds(100), scheduler: MainScheduler.instance)
-                .asObservable()
+                .asObservable(),
+            skipButtonTapped: rootView.skipButton.rx.tap.asObservable()
         )
         
         let output = viewModel.transform(input: input)
